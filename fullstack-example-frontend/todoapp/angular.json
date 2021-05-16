@@ -28,6 +28,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/assets/fonts/MaterialIcons-Regular.ttf",
+              {
+                "glob": "**/GoogleRoboto*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              },
               "src/assets"
             ],
             "styles": [
