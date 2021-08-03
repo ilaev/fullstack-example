@@ -6,10 +6,16 @@
         </a>
     </div>
     <span class="flex-auto"></span>
-    <!-- TODO: user menu? -->
+    <!-- TODO: user menu component -->
     <div class="flex flex-row content-center items-center m-2">
         <span id="user-email" class="m-2 text-sm">{{ user?.email }}</span>
-        <app-avatar></app-avatar>
+        <app-avatar class="user-avatar" [matMenuTriggerFor]="userMenu"></app-avatar>
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="onLogout()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
     </div>
 
 </mat-toolbar>
