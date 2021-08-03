@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  todoApiUri: 'https://localhost:44333'
 };
