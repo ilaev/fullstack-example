@@ -16,19 +16,15 @@ export class ApiErrorHandler {
         }
     }
 
-    public handleError(error: HttpErrorResponse): Observable<never> {
-        if (error.error instanceof ErrorEvent) {
+    public handleError(errResponse: HttpErrorResponse): Observable<never> {
+        if (errResponse.error instanceof ErrorEvent) {
             // A client-side or network error occurred. Handle it accordingly.
-            console.error('An error occurred:', error.error.message);
-            this.logger.logError('A client-side or network error occurred: ' + error.error.message)
+            this.logger.logError('A client-side or network error occurred: ' + errResponse.error.message)
         } else {
             // The backend returned an unsuccessful response code.
             // The response body may contain clues as to what went wrong.
             this.logger.logError('The backend returned an unsuccessful response code: ' +
-                error.status + ' ' + error.error);
-            console.error(
-                `Backend returned code ${error.status}, ` +
-                `body was: ${error.error}`);
+            errResponse.status + ' ' + errResponse.error);
         }
         // Return an observable with a user-facing error message.
         return throwError(

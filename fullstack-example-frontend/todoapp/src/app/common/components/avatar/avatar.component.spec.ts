@@ -8,7 +8,9 @@ describe('AvatarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AvatarComponent ]
+      declarations: [ AvatarComponent ],
+      imports: [
+      ]
     })
     .compileComponents();
   });
