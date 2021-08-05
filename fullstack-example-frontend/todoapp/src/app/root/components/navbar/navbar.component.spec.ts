@@ -1,3 +1,5 @@
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { TodoCommonModule } from './../../../common/components/todo-common.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -15,7 +17,9 @@ describe('NavbarComponent', () => {
       imports: [
         RouterTestingModule,
         MatToolbarModule,
-        TodoCommonModule
+        TodoCommonModule,
+        MatMenuModule,
+        MatIconModule
       ],
       declarations: [ NavbarComponent ]
     })
