@@ -1,0 +1,1 @@
+export const ROUTER_OUTLET_SIDENAV = 'sidenav';

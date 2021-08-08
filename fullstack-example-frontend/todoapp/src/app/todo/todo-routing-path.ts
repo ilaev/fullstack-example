@@ -1,0 +1,1 @@
+export const TODO_ROUTING_PATH_SIDENAV = 'leftnav'
