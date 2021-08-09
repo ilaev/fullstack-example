@@ -1,9 +1,5 @@
-
-
-
-
 <!-- TODO: split up into own component: header with some information -->
-<div class="flex flex-col h-full shadow-md max-w-md w-72">
+<div class="flex flex-col h-full shadow-md max-w-md w-72 bg-white">
     <div class="sidenav-header flex justify-end flex-none bg-gray-50 p-3">
         <div class="flex justify-items-center items-center ">            
             <div class="pr-2">9 / 12</div>
@@ -19,61 +15,61 @@
     <!-- defaults links -->
     <div class="flex-none">
         <mat-nav-list style="padding-top: 0">
-            <mat-list-item>
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'today']">
                 <button mat-icon-button>
                     <mat-icon class="text-blue-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Today</a>
-            </mat-list-item>
-            <mat-list-item>
+                Today
+            </a>  
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'upcoming']">
                 <button mat-icon-button>
                     <mat-icon class="text-blue-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Matrix</a>
-            </mat-list-item>
-            <mat-list-item>
+               Upcoming
+            </a>           
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'all']">
                 <button mat-icon-button>
                     <mat-icon class="text-blue-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Upcoming</a>
-            </mat-list-item>
+               All
+            </a>
           </mat-nav-list>      
     </div>
     <mat-divider class=""></mat-divider>
     <!-- user todo lists -->
     <div class="flex-auto">
         <mat-nav-list style="padding-top: 0">
-            <mat-list-item>
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId1']">
                 <button mat-icon-button>
                     <mat-icon class="text-green-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Project List 1</a>
-            </mat-list-item>
-            <mat-list-item>
-                <button mat-icon-button>
+                Project List 1
+            </a>  
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId2']">
+                <button mat-icon-button class="">
                     <mat-icon class="text-yellow-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Project List 2</a>
-            </mat-list-item>
-            <mat-list-item>
+                <span>Project List 2</span>
+            </a>
+            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId3']">
                 <button mat-icon-button>
                     <mat-icon class="text-red-500">circle</mat-icon>
                 </button>
-                <a matLine href="">Project List 3</a>
-            </mat-list-item>
+                Project List 3
+            </a>
         </mat-nav-list>  
     </div>
     <!-- actions -->
     <div class="w-full">
-        <button mat-button color="primary" class="w-2/4 h-16 text-lg">
-            <div class="flex items-center justify-items-center">
+        <a [routerLink]="['', 'lists', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
+            <div class="w-full h-full flex items-center justify-items-center">
                 <mat-icon>add</mat-icon> Add list
             </div>
-        </button>
-        <button mat-button color="primary" class="w-2/4 h-16 text-lg">
-            <div class="flex items-center justify-items-center">
-                <mat-icon>add</mat-icon> Add Task
+        </a>
+        <a [routerLink]="['', 'tasks', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
+            <div class="w-full h-full flex items-center justify-items-center">
+                <mat-icon>add</mat-icon> Add task
             </div>
-        </button>
+        </a>
     </div>
 </div>

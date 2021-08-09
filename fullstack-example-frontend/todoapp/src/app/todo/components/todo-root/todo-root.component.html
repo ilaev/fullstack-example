@@ -1,5 +1,14 @@
 
 <button (click)="onNav()">NAV</button>
-<router-outlet name="sidenav" class="flex"></router-outlet>
-<router-outlet class="todo-root-body"></router-outlet>
+
+<div class="h-full z-10">
+    <router-outlet name="sidenav" class="flex"></router-outlet>
+</div>
+
+<div class="shadow-lg h-full w-full z-0">
+    <router-outlet class="todo-root-body"></router-outlet>
+</div>
+
+
+
 
