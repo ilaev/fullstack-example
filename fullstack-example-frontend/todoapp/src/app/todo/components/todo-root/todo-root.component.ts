@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-todo-root',
@@ -8,15 +7,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class TodoRootComponent implements OnInit {
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
 
-  onNav(): void {
-    this.router.navigate([{ outlets: { sidenav: 'leftnav' }}]);
-  }
 }

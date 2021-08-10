@@ -1,8 +1,8 @@
-<!-- TODO: split up into own component: header with some information -->
+<!-- TODO: split up into own component: header with some information.-->
 <div class="flex flex-col h-full shadow-md max-w-md w-72 bg-white">
     <div class="sidenav-header flex justify-end flex-none bg-gray-50 p-3">
-        <div class="flex justify-items-center items-center ">            
-            <div class="pr-2">9 / 12</div>
+        <div class="progress-container flex justify-items-center items-center ">            
+            <div class="pr-2" matTooltip="Today's progress" matTooltipPosition="left">9 / 12</div>
             <mat-progress-spinner
             [diameter]="24"
             class="h-2"
@@ -13,7 +13,7 @@
     </div>
 
     <!-- defaults links -->
-    <div class="flex-none">
+    <div class="default-links flex-none">
         <mat-nav-list style="padding-top: 0">
             <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'today']">
                 <button mat-icon-button>
@@ -37,7 +37,7 @@
     </div>
     <mat-divider class=""></mat-divider>
     <!-- user todo lists -->
-    <div class="flex-auto">
+    <div class="list-container flex-auto">
         <mat-nav-list style="padding-top: 0">
             <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId1']">
                 <button mat-icon-button>
@@ -61,12 +61,12 @@
     </div>
     <!-- actions -->
     <div class="w-full">
-        <a [routerLink]="['', 'lists', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
+        <a routerLinkActive="active-nav-item" [routerLink]="['', 'lists', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
             <div class="w-full h-full flex items-center justify-items-center">
                 <mat-icon>add</mat-icon> Add list
             </div>
         </a>
-        <a [routerLink]="['', 'tasks', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
+        <a routerLinkActive="active-nav-item" [routerLink]="['', 'tasks', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
             <div class="w-full h-full flex items-center justify-items-center">
                 <mat-icon>add</mat-icon> Add task
             </div>

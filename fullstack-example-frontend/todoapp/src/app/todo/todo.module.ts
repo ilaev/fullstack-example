@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TodoRoutingModule } from './todo-routing.module';
 import { TodoRootComponent } from './components/todo-root/todo-root.component';
@@ -33,7 +34,8 @@ import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item
     MatDividerModule,
     MatButtonModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatTooltipModule
   ]
 })
 export class TodoModule { }
