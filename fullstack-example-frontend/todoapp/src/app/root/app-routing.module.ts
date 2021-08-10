@@ -5,7 +5,13 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    component: MainContainerComponent
+    component: MainContainerComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('../todo/todo.module').then(m => m.TodoModule)
+      }
+    ]
   }
 ];
 
