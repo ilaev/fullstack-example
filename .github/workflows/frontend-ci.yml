@@ -14,17 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fullstack-example-frontend/todoapp
-    strategy:
-      matrix:
-        firefox: [ 'latest' ]
+        working-directory: ./fullstack-example-frontend/todoapp # only applies to run steps...
+  
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
         node-version: '16'
-        cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
     - run: npm run test -- --karmaConfig=karma-ci.conf.js
