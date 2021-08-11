@@ -1,6 +1,27 @@
-# Todoapp
+# Eisenhower Todo
+
+![build and tests](https://github.com/ilaev/fullstack-example/actions/workflows/frontend-ci.yml/badge.svg)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.0.
+
+## Requirements
+
+- NodeJS version 14+
+- npm v6+
+
+## Install Dependencies
+
+Install all required dependencies for this project. Type the following in this directory:
+
+```
+npm install
+```
+
+If you want the angular cli to be available globally, install it with npm:
+
+```
+npm install -g @angular/cli
+```
 
 ## Development server
 

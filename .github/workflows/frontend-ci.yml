@@ -1,0 +1,35 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test-ng-client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fullstack-example-frontend/todoapp
+    strategy:
+      matrix:
+        firefox: [ 'latest' ]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'npm'
+    - name: Setup firefox
+      uses: browser-actions/setup-firefox@latest
+      with:
+        firefox-version: ${{ matrix.firefox }}
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm run test -- --karmaConfig=karma-ci.conf.js
+
