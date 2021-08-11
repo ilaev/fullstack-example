@@ -13,9 +13,6 @@
 # profiling files
 chrome-profiler-events*.json
 
-# don't commit package-lock.json
-package-lock.json
-
 # IDEs and editors
 /.idea
 .project
