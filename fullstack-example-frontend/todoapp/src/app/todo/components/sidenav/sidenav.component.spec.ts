@@ -165,14 +165,14 @@ describe('SidenavComponent', () => {
     fixture.detectChanges();
     router.navigate(['', 'matrix', 'today']);
     tick();
-    var activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
+    let activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
     expect(activeLinks.length).toBe(1, 'should only have 1 active link');
     expect(activeLinks[0].linkParams).toEqual(['', 'matrix', 'today'], 'active link should be for Home');
 
     router.navigate(['', 'matrix', 'upcoming']);
 
     tick();
-    var activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
+    activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
     expect(activeLinks.length).toBe(1, 'should only have 1 active link');
     expect(activeLinks[0].linkParams).toEqual(['', 'matrix', 'upcoming'], 'active link should be for Home');
   }));

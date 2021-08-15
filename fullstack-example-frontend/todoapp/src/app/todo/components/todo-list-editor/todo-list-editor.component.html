@@ -1,18 +1,29 @@
-<div class="w-full h-full flex">
-   <form class="flex flex-col max-w-screen-md w-1/4">
-       <mat-form-field class="">
-           <mat-label>Title</mat-label>
-           <input matInput type="text">
-       </mat-form-field>
-       <mat-form-field>
-           <mat-label>Description</mat-label>
-           <textarea matInput [mat-autosize]="true" [matAutosizeMaxRows]="5" [matAutosizeMinRows]="5" type="text"></textarea>
-       </mat-form-field>
-       
-       <div>
-           <button mat-button type="button">Cancel</button>
-           <button mat-button type="button">Create</button>
-       </div>
-
-   </form>
+<div class="w-full h-full flex flex-col bg-white">
+    <div *ngIf="isRequestInProgress" class="w-full h-full relative">
+        <ngx-spinner [fullScreen]="false" [name]="spinnerName" type="ball-fussion" size="medium">
+        </ngx-spinner>
+    </div>
+    <!-- TODO: make a common component out of this as soon as I use it a second time. the background color has to be defined in the scss so that it can be set at ONE place. -->
+    <div class="header flex h-28 w-full pl-10 items-center">
+        <span class="text-3xl">Add list</span>
+    </div>
+    <div class="w-1/4 h-full w-full justify-start p-10" *ngIf="!isRequestInProgress">
+        <form *ngIf="!!this.form" [formGroup]="form" class="flex flex-col max-w-screen-md w-full bg-white">
+            <mat-form-field class="mb-4">
+                <mat-label>Name</mat-label>
+                <input formControlName="name" matInput type="text">
+                <mat-error *ngIf="form?.getError('required', 'name')">You must enter a name.</mat-error>
+            </mat-form-field>
+            <mat-form-field class="mb-4">
+                <mat-label>Description (optional)</mat-label>
+                <textarea formControlName="description" matInput [mat-autosize]="true" [matAutosizeMaxRows]="5"
+                    [matAutosizeMinRows]="5" type="text"></textarea>
+            </mat-form-field>
+            <color-circle formControlName="bgColor" class="mb-8"></color-circle>
+            <div class="w-full flex justify-end gap-x-5">
+                <button (click)="onCancel()" mat-flat-button type="button">Cancel</button>
+                <button (click)="onSave()" [disabled]="isSaveDisabled()"mat-flat-button color="primary" type="button">Save</button>
+            </div>
+        </form>
+    </div>
 </div>

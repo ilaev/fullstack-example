@@ -1,6 +1,6 @@
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
@@ -15,8 +15,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { TodoMatrixComponent } from './components/todo-matrix/todo-matrix.component';
 import { TodoListEditorComponent } from './components/todo-list-editor/todo-list-editor.component';
 import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item-editor.component';
-
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { ColorCircleModule } from 'ngx-color/circle';
+import { NgxSpinnerModule } from 'ngx-spinner';
 @NgModule({
   declarations: [
     TodoRootComponent,
@@ -28,6 +29,8 @@ import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item
   imports: [
     CommonModule,
     TodoRoutingModule,
+    ReactiveFormsModule,
+    ColorCircleModule,
     MatProgressSpinnerModule,
     MatListModule,
     MatIconModule,
@@ -35,7 +38,9 @@ import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    MatTooltipModule
-  ]
+    MatTooltipModule,
+    NgxSpinnerModule
+  ],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class TodoModule { }
