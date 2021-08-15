@@ -39,24 +39,12 @@
     <!-- user todo lists -->
     <div class="list-container flex-auto">
         <mat-nav-list style="padding-top: 0">
-            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId1']">
+            <a *ngFor="let list of lists; index as i" mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', list.id]">
                 <button mat-icon-button>
-                    <mat-icon class="text-green-500">circle</mat-icon>
+                    <mat-icon [style.color]="list.color">circle</mat-icon>
                 </button>
-                Project List 1
+                {{ list.name }}
             </a>  
-            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId2']">
-                <button mat-icon-button class="">
-                    <mat-icon class="text-yellow-500">circle</mat-icon>
-                </button>
-                Project List 2
-            </a>
-            <a mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', 'listId3']">
-                <button mat-icon-button>
-                    <mat-icon class="text-red-500">circle</mat-icon>
-                </button>
-                Project List 3
-            </a>
         </mat-nav-list>  
     </div>
     <!-- actions -->

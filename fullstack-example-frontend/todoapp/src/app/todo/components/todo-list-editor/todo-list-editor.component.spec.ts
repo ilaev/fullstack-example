@@ -1,5 +1,5 @@
 import { TodoList } from 'src/app/common/models';
-import { throwError, Observable, of, ReplaySubject } from 'rxjs';
+import { throwError, Observable, of, ReplaySubject, EMPTY } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -78,14 +78,14 @@ export class ActivatedRouteStub {
 
 class TodoServiceFake {
   public getListReturnValue: ReplaySubject<TodoList | undefined> = new ReplaySubject<TodoList | undefined>();
-  public setListReturnValue: any;
+  public setListReturnValue: Observable<TodoList> = EMPTY;
   public getList(id: string): Observable<TodoList | undefined> {
     return this.getListReturnValue.asObservable();
   }
   public setGetListReturnValue(list: TodoList | undefined): void {
     this.getListReturnValue.next(list);
   }
-  public setList(todoList: any): Observable<boolean> {
+  public setList(todoList: any): Observable<TodoList> {
     return this.setListReturnValue;
   }
 }
@@ -431,7 +431,7 @@ describe('TodoListEditorComponent', () => {
 
   it('should be able to save a list.', fakeAsync(() => {
     const onSaveSpy = spyOn(component, 'onSave').and.callThrough();
-    todoServiceFake.setListReturnValue = of(true);
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
     // init component
     todoServiceFake.setGetListReturnValue(undefined);
@@ -462,7 +462,7 @@ describe('TodoListEditorComponent', () => {
 
 
   it('should display saving progress indicator.', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of(true);
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
     const activateSpinnerSpy = spyOn(component, 'activateSpinner');
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner');
 
@@ -493,7 +493,7 @@ describe('TodoListEditorComponent', () => {
 
   // TODO: remember to force the API to do the same thing.
   it('should assign a random color to a list if user choose none.', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of(true);
+    todoServiceFake.setListReturnValue = of( new TodoList('', 'My list name', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#444444'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
         
     // init component
@@ -522,7 +522,7 @@ describe('TodoListEditorComponent', () => {
   
 
   it('should show success message after saving', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of(true);
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
         
     // init component
     todoServiceFake.setGetListReturnValue(undefined);

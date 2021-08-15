@@ -156,9 +156,9 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
       this.activateSpinner();
       this.todoService.setList(listToSave).subscribe({
         next: (result) => {
-          // TODO: update component ( basically ngOnInit has to run once again) through refresh from server, since the is the source of truth.
-          // this.todoList and form have to be updated with the new values. or maybe everything has to be emptied
-          // because, how to you add a new list? what if a user wants to add a second list right after? not possible without clicking the + Add list button
+          // TODO: new idea: redirect to the matrix few of the created list.
+          // TODO: centralized navigator, so that these route commands are not distributed in dozens of components
+          this.router.navigate(['', 'matrix', result.id]);
           this.deactivateSpinner();
           this.toastr.success('List has been successfully saved.');
         },
