@@ -37,8 +37,8 @@
     </div>
     <mat-divider class=""></mat-divider>
     <!-- user todo lists -->
-    <div class="list-container flex-auto">
-        <mat-nav-list style="padding-top: 0">
+    <div class="list-container flex flex-col">
+        <mat-nav-list style="padding-top: 0" class="nav-items overflow-y-auto">
             <a *ngFor="let list of lists; index as i" mat-list-item routerLinkActive="active-nav-item" [routerLink]="['', 'matrix', list.id]">
                 <button mat-icon-button>
                     <mat-icon [style.color]="list.color">circle</mat-icon>
@@ -46,9 +46,8 @@
                 {{ list.name }}
             </a>  
         </mat-nav-list>  
-    </div>
-    <!-- actions -->
-    <div class="w-full">
+            <!-- actions -->
+    <div class="w-full nav-actions">
         <a routerLinkActive="active-nav-item" [routerLink]="['', 'lists', 'new']" mat-button color="primary" class="w-2/4 h-16 text-lg">
             <div class="w-full h-full flex items-center justify-items-center">
                 <mat-icon>add</mat-icon> Add list
@@ -60,4 +59,6 @@
             </div>
         </a>
     </div>
+    </div>
+
 </div>
