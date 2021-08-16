@@ -1,3 +1,6 @@
+import { TodoDataService } from 'src/app/common/data';
+import { ReplaySubject, Observable } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
@@ -12,16 +15,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Component, DebugElement, Directive, HostListener, Input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { Router, Routes } from '@angular/router';
+import { TodoList } from 'src/app/common/models';
+import { rgb2hex } from 'src/app/common/color-utility';
 
 
 @Component({
   template: ''
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class MatrixComponentStub { }
 
 @Component({
   template: ''
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class TodoRootComponentStub { }
 
 const routes: Routes = [
@@ -39,8 +46,10 @@ const routes: Routes = [
 ];
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[routerLink]'
 })
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export class RouterLinkDirectiveStub {
   @Input('routerLink') linkParams: any;
   navigatedTo: any = null;
@@ -51,18 +60,42 @@ export class RouterLinkDirectiveStub {
   }
 }
 
+
+export class TodoDataServiceFake {
+  private getListsSubject: ReplaySubject<TodoList[]> = new ReplaySubject<TodoList[]>();
+
+  public getLists(): Observable<TodoList[]> {
+    return this.getListsSubject.asObservable();
+  }
+
+  public setGetLists(lists: TodoList[]): void {
+    this.getListsSubject.next(lists);
+  }
+}
+
 function getDebugElemsAndRouterLinks(fixture: ComponentFixture<SidenavComponent>): [DebugElement[], RouterLinkDirectiveStub[]] {
   const linkDes = fixture.debugElement.queryAll(By.directive(RouterLinkDirectiveStub));
   const routerLinks = linkDes.map(de => de.injector.get(RouterLinkDirectiveStub));
   return [linkDes, routerLinks];
 }
 
+const INITIAL_MOCK_DATA: TodoList[] = [
+  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
+  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63'),
+  new TodoList('d227c8e8-7aa8-4b7b-8782-644f87de5b98', 'Project Z', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#ffc107')
+];
+
 describe('SidenavComponent', () => {
   let component: SidenavComponent;
   let fixture: ComponentFixture<SidenavComponent>;
   let router: Router;
+  const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
 
+  let todoDataServiceFake: TodoDataServiceFake;
   beforeEach(async () => {
+
+    todoDataServiceFake = new TodoDataServiceFake();
+    todoDataServiceFake.setGetLists(INITIAL_MOCK_DATA);
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes(routes),
@@ -79,6 +112,10 @@ describe('SidenavComponent', () => {
         TodoRootComponentStub,
         MatrixComponentStub,
         SidenavComponent
+      ],
+      providers: [
+        { provide: ToastrService, useValue: toastrSpy },
+        { provide: TodoDataService, useValue: todoDataServiceFake }
       ]
     })
       .compileComponents();
@@ -165,30 +202,32 @@ describe('SidenavComponent', () => {
     fixture.detectChanges();
     router.navigate(['', 'matrix', 'today']);
     tick();
-    var activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
+    let activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
     expect(activeLinks.length).toBe(1, 'should only have 1 active link');
     expect(activeLinks[0].linkParams).toEqual(['', 'matrix', 'today'], 'active link should be for Home');
 
     router.navigate(['', 'matrix', 'upcoming']);
 
     tick();
-    var activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
+    activeLinks = fixture.debugElement.queryAll(By.css('.active-nav-item')).map(element => element.injector.get(RouterLinkDirectiveStub));
     expect(activeLinks.length).toBe(1, 'should only have 1 active link');
     expect(activeLinks[0].linkParams).toEqual(['', 'matrix', 'upcoming'], 'active link should be for Home');
   }));
 
-  it('should display user\'s todo lists.', () => {
+  it('should display user\'s todo lists.', fakeAsync(() => {
     fixture.detectChanges();
+    tick();
     const link1 = getDebugElemsAndRouterLinks(fixture)[1][3];
     const link2 = getDebugElemsAndRouterLinks(fixture)[1][4];
     const link3 = getDebugElemsAndRouterLinks(fixture)[1][5];
-    expect(link1.linkParams).toEqual(['', 'matrix', 'listId1']);
-    expect(link2.linkParams).toEqual(['', 'matrix', 'listId2'])
-    expect(link3.linkParams).toEqual(['', 'matrix', 'listId3'])
-  });
+    expect(link1.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[0].id]);
+    expect(link2.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[1].id]);
+    expect(link3.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[2].id]);
+  }));
 
-  it('should be able to open user\'s list matrix view.', () => {
+  it('should be able to open user\'s list matrix view.', fakeAsync(() => {
     fixture.detectChanges();
+    tick();
     const debugElemAndRouterLinks = getDebugElemsAndRouterLinks(fixture);
     const linkDebugElem = debugElemAndRouterLinks[0][3];
     const link = debugElemAndRouterLinks[1][3];
@@ -198,17 +237,18 @@ describe('SidenavComponent', () => {
     linkDebugElem.triggerEventHandler('click', {});
     fixture.detectChanges();
 
-    expect(link.navigatedTo).toEqual(['', 'matrix', 'listId1']);
-  });
+    expect(link.navigatedTo).toEqual(['', 'matrix', INITIAL_MOCK_DATA[0].id]);
+  }));
 
-  it('should display user\'s todo list color', () => {
+  it('should display user\'s todo list color', fakeAsync(() => {
     fixture.detectChanges();
+    tick();
     var iconElems = fixture.debugElement.queryAll(By.css('.list-container mat-icon'));
 
-    expect(iconElems[0].classes['text-green-500']).toBeTrue();
-    expect(iconElems[1].classes['text-yellow-500']).toBeTrue();
-    expect(iconElems[2].classes['text-red-500']).toBeTrue();
-  });
+    expect(rgb2hex(iconElems[0].styles['color'] as string)).toEqual(INITIAL_MOCK_DATA[0].color);
+    expect(rgb2hex(iconElems[1].styles['color'] as string)).toEqual(INITIAL_MOCK_DATA[1].color);
+    expect(rgb2hex(iconElems[2].styles['color'] as string)).toEqual(INITIAL_MOCK_DATA[2].color);
+  }));
 
   it('should have a redirect to add new todo lists.', () => {
     fixture.detectChanges();

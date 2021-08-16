@@ -3,6 +3,18 @@
     display: flex;
 }
 
+.list-container {
+    height: 100%;
+}
+
+.nav-items {
+    flex: 9 1 0;
+}
+
+.nav-actions {
+    flex: 1 1 1;
+}
+
 .active-nav-item {
     background-color: rgba(0, 0, 0, 0.04);
 }
