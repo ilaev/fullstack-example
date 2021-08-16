@@ -208,6 +208,7 @@ describe('TodoListEditorComponent', () => {
 
     
     expect(todoService.getList).not.toHaveBeenCalled();
+    expect(component.headerTitle).toEqual('Add list');
     expect(component.form?.get('name')?.value).toEqual('');
     expect(component.form?.get('description')?.value).toEqual('');
     expect(component.form?.get('bgColor')?.value).toEqual('');
@@ -226,6 +227,7 @@ describe('TodoListEditorComponent', () => {
 
     const expectedTodoListId = 'unknown-id-01';
     expect(todoService.getList).toHaveBeenCalledWith(expectedTodoListId);
+    expect(component.headerTitle).toEqual('Add list');
     expect(component.form?.get('name')?.value).toEqual('');
     expect(component.form?.get('description')?.value).toEqual('');
     expect(component.form?.get('bgColor')?.value).toEqual('');
@@ -243,6 +245,7 @@ describe('TodoListEditorComponent', () => {
 
     const expectedTodoListId = '6a93632e-0e04-47ea-bd7f-619862a71c30';
     expect(todoService.getList).toHaveBeenCalledWith(expectedTodoListId);
+    expect(component.headerTitle).toEqual('Edit list');
     expect(component.todoList?.id).toEqual(expectedTodoListId);
     expect(component.form?.get('name')?.value).toEqual('my list name');
     expect(component.form?.get('description')?.value).toEqual('');
@@ -576,8 +579,30 @@ describe('TodoListEditorComponent', () => {
     expect(toastr.error).toHaveBeenCalledWith('Ops. Sorry, something went wrong. :(');
   }));
 
-  it('should update component\'s state after saving.', fakeAsync(() => {
+  it('should redirect to matrix view of a list.', fakeAsync(() => {
 
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
+        
+    // init component
+    todoServiceFake.setGetListReturnValue(undefined);
+    routeStub.setParamMap({id: 'new'});
+    fixture.detectChanges();
+    tick();
+
+
+    // mock old list
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    // set values to be saved
+    component.form?.setValue({
+       name: 'My Listname',
+       description: '42',
+       bgColor: '#111111'
+    });
+
+    component.onSave();
+    fixture.detectChanges();
+    tick();
+    expect(router.navigate).toHaveBeenCalledWith(['', 'matrix', '6a93632e-0e04-47ea-bd7f-619862a71c30']);
   }));
 
 });

@@ -23,6 +23,8 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   public todoList: TodoList | undefined;
   public form: FormGroup | undefined;
   public spinnerName: string = 'todoListEditor';
+  
+  public headerTitle: string = '';
 
   private _isRequestInProgress = false;
   public get isRequestInProgress() {
@@ -128,7 +130,13 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
+
   public initComponent(todoList: TodoList) {
+    if (todoList.id === '') {
+      this.headerTitle = 'Add list';
+    } else {
+      this.headerTitle = 'Edit list';
+    }
     this.todoList = todoList;
     this.form = this.createForm(todoList);
   }

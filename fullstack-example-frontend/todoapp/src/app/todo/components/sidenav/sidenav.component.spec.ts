@@ -1,3 +1,4 @@
+import { TodoDataService } from 'src/app/common/data';
 import { ReplaySubject, Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { MatInputModule } from '@angular/material/input';
@@ -113,7 +114,8 @@ describe('SidenavComponent', () => {
         SidenavComponent
       ],
       providers: [
-        { provide: ToastrService, useValue: toastrSpy }
+        { provide: ToastrService, useValue: toastrSpy },
+        { provide: TodoDataService, useValue: todoDataServiceFake }
       ]
     })
       .compileComponents();
