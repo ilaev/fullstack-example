@@ -1,5 +1,5 @@
 import { TodoList, TodoItem } from 'src/app/common/models';
-import { ReplaySubject, Observable, EMPTY } from 'rxjs';
+import { ReplaySubject, Observable, EMPTY, of, throwError } from 'rxjs';
 
 export class FakeTodoService {
   public getTodoItemReturnValue = new ReplaySubject<TodoItem | undefined>();

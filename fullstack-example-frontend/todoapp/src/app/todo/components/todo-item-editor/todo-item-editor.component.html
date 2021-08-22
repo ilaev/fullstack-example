@@ -16,30 +16,33 @@
             </mat-form-field>
             <mat-form-field class="mb-4">
                 <mat-label>Note (optional)</mat-label>
-                <textarea formControlName="note" matInput [mat-autosize]="true" [matAutosizeMaxRows]="5"
+                <textarea id="note-input" formControlName="note" matInput [mat-autosize]="true" [matAutosizeMaxRows]="5"
                     [matAutosizeMinRows]="5" type="text"></textarea>
             </mat-form-field> 
 
-            <div id="matrix-x-container" class="flex-none">
+            <div class="flex-none">
                 <mat-button-toggle-group formControlName="matrixX">
                     <mat-button-toggle [value]="0">Urgent</mat-button-toggle>
                     <mat-button-toggle [value]="1">Not urgent</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
            
-            <div id="matrix-y-container" class="flex-none">
+            <div class="flex-none">
                 <mat-button-toggle-group formControlName="matrixY">
                     <mat-button-toggle [value]="0">Important</mat-button-toggle>
                     <mat-button-toggle [value]="1">Not important</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
 
-            <mat-form-field>
-                <mat-label>Due date</mat-label>
-                <input matInput [matDatepicker]="dueDatepicker" formControlName="dueDate">
-                <mat-datepicker-toggle matSuffix [for]="dueDatepicker"></mat-datepicker-toggle>
-                <mat-datepicker #dueDatepicker></mat-datepicker>
-            </mat-form-field>
+            <div>
+                <mat-form-field>
+                    <mat-label>Due date</mat-label>
+                    <input matInput [matDatepicker]="dueDatepicker" formControlName="dueDate">
+                    <mat-datepicker-toggle matSuffix [for]="dueDatepicker"></mat-datepicker-toggle>
+                    <mat-datepicker #dueDatepicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+
 
             <div>
                 <mat-checkbox formControlName="markedAsDone">Done</mat-checkbox>
