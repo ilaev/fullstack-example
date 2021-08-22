@@ -1,10 +1,10 @@
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
+import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { ToastrService } from 'ngx-toastr';
 import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from './../../../root/services/spinner.service';
-import { of, Subscription } from 'rxjs';
+import { combineLatest, of, Subscription } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { switchMap } from 'rxjs/operators';
   styleUrls: ['./todo-item-editor.component.scss']
 })
 export class TodoItemEditorComponent implements OnInit, OnDestroy {
-
+  public todoLists: TodoList[] = [];
   public todoItem: TodoItem | undefined;
   public form: FormGroup | undefined;
 
@@ -91,12 +91,13 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  public initComponent(todoItem: TodoItem): void {
+  public initComponent(todoItem: TodoItem, todoLists: TodoList[]): void {
     if (todoItem.id === '') {
       this.headerTitle = 'Add task';
     } else {
       this.headerTitle = 'Edit task';
     }
+    this.todoLists = todoLists;
     this.todoItem = todoItem;
     this.form = this.createForm(todoItem);
   }
@@ -106,15 +107,21 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
       switchMap(paramMap => {
         const id = paramMap.get('id');
         if (id == null || id == 'new') {
-          return of(this.createEmptyTodoItem());
+          return combineLatest([
+            of(this.createEmptyTodoItem()),
+            this.todoDataService.getLists()
+          ]);
         } else {
           this.activateSpinner();
-          return this.todoDataService.getTodoItem(id);
+          return combineLatest([
+            this.todoDataService.getTodoItem(id),
+            this.todoDataService.getLists()
+          ]);
         }
       })).subscribe({
-        next: (todoItem) => {
+        next: ([todoItem, todoLists]) => {
           this.deactivateSpinner();
-          this.initComponent(todoItem ? todoItem : this.createEmptyTodoItem());
+          this.initComponent(todoItem ? todoItem : this.createEmptyTodoItem(), todoLists);
         }, 
         error: (err) => {
           this.deactivateSpinner();

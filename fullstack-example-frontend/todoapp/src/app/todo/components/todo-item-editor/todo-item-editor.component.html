@@ -21,6 +21,18 @@
             </mat-form-field> 
 
             <div class="flex-none">
+                <mat-form-field>
+                    <mat-label>List (optional)</mat-label>
+                    <mat-select formControlName="listId">
+                        <mat-option>--</mat-option>
+                        <mat-option *ngFor="let list of todoLists" [value]="list.id">
+                            {{list.name}}
+                          </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="flex-none">
                 <mat-button-toggle-group formControlName="matrixX">
                     <mat-button-toggle [value]="0">Urgent</mat-button-toggle>
                     <mat-button-toggle [value]="1">Not urgent</mat-button-toggle>

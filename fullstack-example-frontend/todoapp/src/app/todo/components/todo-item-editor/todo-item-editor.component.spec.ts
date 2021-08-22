@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { TodoItem, MatrixX, MatrixY } from 'src/app/common/models';
+import { TodoItem, MatrixX, MatrixY, TodoList } from 'src/app/common/models';
 import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,6 +28,8 @@ import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { DateTime } from 'luxon';
+import { MatSelectHarness } from '@angular/material/select/testing';
+import { MatSelectModule } from '@angular/material/select';
 
 function createTodoItem(id?: string, name?: string, note?: string,
   dueDate?: Date, createdAt?: Date, modifiedAt?: Date): TodoItem {
@@ -82,6 +84,7 @@ describe('TodoItemEditorComponent', () => {
         MatCheckboxModule,
         MatDatepickerModule,
         MatLuxonDateModule,
+        MatSelectModule,
         NoopAnimationsModule
       ],
       declarations: [ TodoItemEditorComponent ],
@@ -108,9 +111,15 @@ describe('TodoItemEditorComponent', () => {
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.detectChanges();
+
   });
 
   function initComponentInNewState(): void {
+    const lists = [
+      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
+      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63')
+    ];
+    fakeTodoService.setGetLists(lists);
     fakeTodoService.setGetTodoItemReturnValue(undefined);
     activatedRouteStub.setParamMap({ id: 'new'});
     fixture.detectChanges();
@@ -118,6 +127,11 @@ describe('TodoItemEditorComponent', () => {
   }
 
   function initComponentInEditState(todoItem: TodoItem | undefined): void {
+    const lists = [
+      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
+      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63')
+    ];
+    fakeTodoService.setGetLists(lists);
     if (todoItem) {
       fakeTodoService.setGetTodoItemReturnValue(todoItem);
       activatedRouteStub.setParamMap({ id: todoItem.id});
@@ -271,8 +285,17 @@ describe('TodoItemEditorComponent', () => {
     expect(component.form?.get('name')?.value).toEqual('Task 42');
   }));
 
-  it('should be able to select todo list.', fakeAsync(() => {
+  it('should be able to select todo list.', fakeAsync(async () => {
+    initComponentInNewState();
 
+    const selectHarness = await loader.getHarness(MatSelectHarness);
+    await selectHarness.open();
+
+    const list2Option = await selectHarness.getOptions();
+    // 2 because there is an "empty" option
+    await list2Option[2].click();
+
+    expect(component.form?.get('listId')?.value).toEqual('15ed938b-ec9b-49ec-8575-5c721eff6639');
   }));
 
   it('should be able to add a note.', fakeAsync(async () => {
