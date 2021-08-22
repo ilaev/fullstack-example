@@ -130,6 +130,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
 
   // TODO: base abstract class? or at least an interface.
   // TODO: header component should be a common component
+  // TODO: do above when we get another component which uses the same functionality
   public activateSpinner(): Promise<unknown> {
     this._isRequestInProgress = true;
     return this.spinnerService.show(this.spinnerName);
@@ -163,6 +164,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
       this.activateSpinner();
       this.todoDataService.setTodoItem(todoItemToSave).subscribe({
         next: (result) => {
+          // TODO: reset component after save to 'new' state?
           this.toastr.success('Item saved.');
           this.deactivateSpinner();
         },

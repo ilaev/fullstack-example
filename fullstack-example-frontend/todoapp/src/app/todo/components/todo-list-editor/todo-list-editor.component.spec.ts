@@ -1,5 +1,5 @@
 import { TodoList } from 'src/app/common/models';
-import { throwError, of, ReplaySubject } from 'rxjs';
+import { throwError, of } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,11 @@ import { ToastrService } from 'ngx-toastr';
 import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
 import { ActivatedRouteStub, FakeTodoService } from 'src/app/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatFormFieldHarness } from '@angular/material/form-field/testing';
+import { MatInputHarness } from '@angular/material/input/testing';
 
 const colorCirleBinding = {
   provide: NG_VALUE_ACCESSOR,
@@ -66,6 +71,7 @@ describe('TodoListEditorComponent', () => {
   let toastr: ToastrService;
   let todoService: TodoDataService;
   let spinnerService: SpinnerService;
+  let loader: HarnessLoader;
 
   let todoServiceFake: FakeTodoService;
   let routeStub: ActivatedRouteStub;
@@ -108,8 +114,28 @@ describe('TodoListEditorComponent', () => {
     toastr = TestBed.inject(ToastrService);
     todoService = TestBed.inject(TodoDataService);
     spinnerService = TestBed.inject(SpinnerService);
+    loader = TestbedHarnessEnvironment.loader(fixture);
     component = fixture.componentInstance;
   });
+
+  function initComponentInNewState(): void {
+    todoServiceFake.setGetListReturnValue(undefined);
+    routeStub.setParamMap({id: 'new'});
+    fixture.detectChanges();
+    tick();
+  }
+
+  function initComponentInEditState(todoItem: TodoList | undefined): void {
+    if (todoItem) {
+      todoServiceFake.setGetListReturnValue(todoItem);
+      routeStub.setParamMap({ id: todoItem.id});
+    } else {
+      todoServiceFake.setGetListReturnValue(undefined);
+      routeStub.setParamMap({ id: 'unknown-id-01'});
+    }
+    fixture.detectChanges();
+    tick();
+  }
 
   it('should create', fakeAsync(() => {
     // init component
@@ -139,7 +165,7 @@ describe('TodoListEditorComponent', () => {
   describe('.deactivateSpinner()', () => {
     
     it('should set property indicating request is in progress to false', () => {
-      // init
+      // new init state
       component.activateSpinner();
       
       component.deactivateSpinner();
@@ -157,11 +183,7 @@ describe('TodoListEditorComponent', () => {
     const activateSpinnerSpy = spyOn(component, 'activateSpinner').and.callThrough();
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner').and.callThrough();
 
-    // init component
-    todoServiceFake.setGetListReturnValue( new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
-    routeStub.setParamMap({id: '6a93632e-0e04-47ea-bd7f-619862a71c30'});
-    fixture.detectChanges();
-    tick();
+    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
 
     expect(activateSpinnerSpy).toHaveBeenCalled();
     expect(deactivateSpinnerSpy).toHaveBeenCalled();
@@ -169,12 +191,8 @@ describe('TodoListEditorComponent', () => {
 
   it('should initialize component in creation state when route param id equals "new".', fakeAsync(() => {
     spyOn(todoService, 'getList').and.callThrough();
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
 
+    initComponentInNewState();
     
     expect(todoService.getList).not.toHaveBeenCalled();
     expect(component.headerTitle).toEqual('Add list');
@@ -187,12 +205,8 @@ describe('TodoListEditorComponent', () => {
 
   it('should initialize component in creation state when route param id is non-existent.', fakeAsync(() => {
     spyOn(todoService, 'getList').and.callThrough();
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'unknown-id-01'});
-    fixture.detectChanges();
-    tick();
 
+    initComponentInEditState(undefined);
 
     const expectedTodoListId = 'unknown-id-01';
     expect(todoService.getList).toHaveBeenCalledWith(expectedTodoListId);
@@ -206,11 +220,8 @@ describe('TodoListEditorComponent', () => {
 
   it('should initialize component in edit state when route param is an existing id', fakeAsync(() => {
     spyOn(todoService, 'getList').and.callThrough();
-    // init component
-    todoServiceFake.setGetListReturnValue( new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
-    routeStub.setParamMap({id: '6a93632e-0e04-47ea-bd7f-619862a71c30'});
-    fixture.detectChanges();
-    tick();
+
+    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
 
     const expectedTodoListId = '6a93632e-0e04-47ea-bd7f-619862a71c30';
     expect(todoService.getList).toHaveBeenCalledWith(expectedTodoListId);
@@ -221,63 +232,42 @@ describe('TodoListEditorComponent', () => {
     expect(component.form?.get('bgColor')?.value).toEqual('#121212');
   }));
 
-  it('should disable the save button when form is invalid.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'})
-    fixture.detectChanges();
-    tick();
+  it('should disable the save button when form is invalid.', fakeAsync(async () => {
+    initComponentInNewState();
 
+    const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const saveBtnElement: HTMLButtonElement = btnDes[1].nativeElement;
-
-    expect(saveBtnElement.disabled).toBeTruthy('should disable create button');
+    expect(await saveBtnHarness.isDisabled()).toBeTruthy('should disable create button');
   }));
 
-  it('should disable save button when there are no changes.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should disable save button when there are no changes.', fakeAsync(async () => {
+    initComponentInNewState();
 
-
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const saveBtnElement: HTMLButtonElement = btnDes[1].nativeElement;
+    const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     component.form?.patchValue({name: 'my list name'});
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '');
 
     fixture.detectChanges();
 
-    expect(saveBtnElement.disabled).toBeTruthy();
+    expect(await saveBtnHarness.isDisabled()).toBeTruthy();
   }));
 
-  it('should enable save button when there are changes.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should enable save button when there are changes.', fakeAsync(async () => {
+    initComponentInNewState();
 
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const saveBtnElement: HTMLButtonElement = btnDes[1].nativeElement;
+    const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     component.form?.patchValue({name: 'changed name'});
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '');
 
     fixture.detectChanges();
 
-    expect(saveBtnElement.disabled).toBeFalsy();
+    expect(await saveBtnHarness.isDisabled()).toBeFalsy();
   }));
 
-  it('should display form validation errors in the UI.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should display form validation errors in the UI.', fakeAsync(async () => {
+    initComponentInNewState();
 
     // simulate empty input input and touched
     component.form?.patchValue({name: ''});
@@ -285,95 +275,57 @@ describe('TodoListEditorComponent', () => {
 
     fixture.detectChanges();
 
-    // search for mat-error element
-    const nameRequiredErrorElem = fixture.debugElement.query(By.css('mat-error')).nativeElement as HTMLElement;
+    const errorFormFieldHarness = await loader.getHarness(MatFormFieldHarness.with({ selector: '#name-input'}));
 
-    expect(nameRequiredErrorElem.innerText).toEqual('You must enter a name.');
+    expect(await errorFormFieldHarness.hasErrors()).toBeTruthy();
+    expect(await errorFormFieldHarness.getTextErrors()).toEqual(['You must enter a name.']);
   }));
 
-  it('should enable the save button when form is valid.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should enable the save button when form is valid.', fakeAsync(async () => {
+    initComponentInNewState();
 
+    const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const saveBtnElement: HTMLButtonElement = btnDes[1].nativeElement;
-
-    expect(saveBtnElement.disabled).toBeTruthy();
+    expect(await saveBtnHarness.isDisabled()).toBeTruthy();
 
     component.form?.patchValue({name: 'My List 1'});
 
     fixture.detectChanges();
 
-    expect(saveBtnElement.disabled).toBeFalsy();
+    expect(await saveBtnHarness.isDisabled()).toBeFalsy();
   }));
 
-  it('should be able to set a name of a list.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should be able to set a name of a list.', fakeAsync(async () => {
+    initComponentInNewState();
 
-    const inputDebugElement = fixture.debugElement.query(By.css('input'));
-    const inputElement: HTMLInputElement = inputDebugElement.nativeElement;
-
-    inputElement.value = 'My List 1';
-    inputElement.dispatchEvent(new Event('input'));
+    const nameInputHarness = await loader.getHarness(MatInputHarness);
+    await nameInputHarness.setValue('My List 1');
 
     expect(component.form?.get('name')?.value).toEqual('My List 1');
   }));
 
-  xit('should be able set a description of a list.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+  it('should be able set a description of a list.', fakeAsync(async () => {
+    initComponentInNewState();
 
+    const descriptionInputHarness = await loader.getHarness(MatInputHarness.with({ selector: 'textarea'}));
+    await descriptionInputHarness.setValue('my interesting description');
 
-    const textAreaDebugElement = fixture.debugElement.query(By.css('textarea'));
-    const textAreaElement: HTMLTextAreaElement = textAreaDebugElement.nativeElement;
-
-
-    const text = 'my description';
-    for(let i = 0; i < text.length; i++){ 
-  
-      textAreaElement.dispatchEvent(new KeyboardEvent('keydown', { key: text[i], bubbles: true}));
-      textAreaElement.dispatchEvent(new KeyboardEvent('keypress', { key: text[i], bubbles: true}));
-      textAreaElement.value += text[i];
-      textAreaElement.dispatchEvent(new KeyboardEvent('keyup', { key: text[i], bubbles: true}));
-    }
-    // TODO: can't get it to work at the moment, look at this later.
-    expect(component.form?.get('description')?.value).toEqual('my description');
+    expect(component.form?.get('description')?.value).toEqual('my interesting description');
   }));
 
   it('should be able set a background color of a list.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
 
     const colorComponent = fixture.debugElement.query(By.css('color-circle')).injector.get(ColorCircleMockComponent);
 
-    colorComponent.triggerChange('#808080')
+    colorComponent.triggerChange('#808080');
     fixture.detectChanges();
 
-    expect(component.form?.get('bgColor')?.value).toEqual('#808080')
+    expect(component.form?.get('bgColor')?.value).toEqual('#808080');
   }));
 
   it('should display background color of a list.', fakeAsync(() => {
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
 
     const colorComponent = fixture.debugElement.query(By.css('color-circle')).injector.get(ColorCircleMockComponent);
 
@@ -383,36 +335,26 @@ describe('TodoListEditorComponent', () => {
     expect(colorComponent.getColor()).toEqual('#020202')
   }));
 
-  it('should be able to cancel', fakeAsync(() => {
+  it('should be able to cancel', fakeAsync(async () => {
     const onCancelSpy = spyOn(component, 'onCancel').and.callThrough();
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
 
+    initComponentInNewState();
 
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const cancelBtnElement: HTMLButtonElement = btnDes[0].nativeElement;
-
-    cancelBtnElement.dispatchEvent(new Event('click'));
+    const cancelBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Cancel'}));
+    await cancelBtnHarness.click();
 
     expect(onCancelSpy).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   }));
 
-  it('should be able to save a list.', fakeAsync(() => {
+  it('should be able to save a list.', fakeAsync(async () => {
     const onSaveSpy = spyOn(component, 'onSave').and.callThrough();
     todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
 
-    const btnDes = fixture.debugElement.queryAll(By.css('form div button'));
-    const saveBtnElement: HTMLButtonElement = btnDes[1].nativeElement;
+    initComponentInNewState();
+
+    const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     // mock old list
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
@@ -423,7 +365,8 @@ describe('TodoListEditorComponent', () => {
       bgColor: '#111111'
     });
 
-    saveBtnElement.dispatchEvent(new Event('click'));
+    saveBtnHarness.click();
+
     fixture.detectChanges();
     tick();
     
@@ -438,12 +381,9 @@ describe('TodoListEditorComponent', () => {
     const activateSpinnerSpy = spyOn(component, 'activateSpinner');
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner');
 
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
+    activateSpinnerSpy.calls.reset();
+    deactivateSpinnerSpy.calls.reset();
 
     // mock old list
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
@@ -468,12 +408,7 @@ describe('TodoListEditorComponent', () => {
     todoServiceFake.setListReturnValue = of( new TodoList('', 'My list name', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#444444'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
         
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
 
     // mock old list
     component.todoList = new TodoList('', '', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, ''); 
@@ -496,12 +431,7 @@ describe('TodoListEditorComponent', () => {
   it('should show success message after saving', fakeAsync(() => {
     todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
         
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
 
     // mock old list
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
@@ -524,12 +454,7 @@ describe('TodoListEditorComponent', () => {
     // mock error
     todoServiceFake.setListReturnValue = throwError('API error...');
 
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
-
+    initComponentInNewState();
 
     // mock old list
     component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
@@ -552,11 +477,7 @@ describe('TodoListEditorComponent', () => {
 
     todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
         
-    // init component
-    todoServiceFake.setGetListReturnValue(undefined);
-    routeStub.setParamMap({id: 'new'});
-    fixture.detectChanges();
-    tick();
+    initComponentInNewState();
 
 
     // mock old list

@@ -242,6 +242,10 @@ describe('TodoItemEditorComponent', () => {
 
     const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({text: 'Save'}));
 
+    component.form?.patchValue({name: 'My task'});
+
+    fixture.detectChanges();
+
     expect(await saveBtnHarness.isDisabled()).toBeTruthy();
   }));
  
@@ -442,6 +446,4 @@ describe('TodoItemEditorComponent', () => {
     tick();
     expect(toastr.error).toHaveBeenCalledWith('Ups, sorry! :( Something went wrong, try again later.');
   }));
-
-  it('');
 });
