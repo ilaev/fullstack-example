@@ -1,0 +1,98 @@
+@use '~@angular/material' as mat;
+
+/* Includes prerequisite styles for common freatures used by multiple components, such as ripples
+ * core mixin must be included exactly once for your application, even if you define multiple themes.
+ * Including the core mixin multiple times will result in duplicate CSS
+ */
+@include mat.core();
+
+
+/* For use in src/lib/core/theming/_palette.scss */
+$md-todo-palette: (
+    50 : #e6e6e6,
+    100 : #bfbfbf,
+    200 : #959595,
+    300 : #6b6b6b,
+    400 : #4b4b4b,
+    500 : #2b2b2b,
+    600 : #262626,
+    700 : #202020,
+    800 : #1a1a1a,
+    900 : #101010,
+    A100 : #42b8f8,
+    A200 : #29a9f0,
+    A400 : #009cf1,
+    A700 : #007bd8,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #ffffff,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+/* For use in src/lib/core/theming/_palette.scss */
+/* For use in src/lib/core/theming/_palette.scss */
+$md-todo-warn-palette: (
+    50 : #fae6e6,
+    100 : #f2c1c1,
+    200 : #e99797,
+    300 : #e06d6d,
+    400 : #da4e4e,
+    500 : #d32f2f,
+    600 : #ce2a2a,
+    700 : #c82323,
+    800 : #c21d1d,
+    900 : #b71212,
+    A100 : #ffe7e7,
+    A200 : #ffb4b4,
+    A400 : #ff8181,
+    A700 : #ff6868,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+
+
+
+
+
+$my-primary: mat.define-palette($md-todo-palette, 500);
+$my-accent: mat.define-palette($md-todo-palette, A200, A100, A400);
+
+// The "warn" palette is optional and defaults to red if not specified.
+$my-warn: mat.define-palette($md-todo-warn-palette);
+
+$my-theme: mat.define-light-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+   warn: $my-warn,
+ )
+));
+
+@include mat.all-component-themes($my-theme);

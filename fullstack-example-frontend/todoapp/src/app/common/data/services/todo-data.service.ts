@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { of, Observable, BehaviorSubject } from 'rxjs';
-import { TodoList } from 'src/app/common/models';
+import { TodoItem, TodoList } from 'src/app/common/models';
 
 
 const INITIAL_MOCK_DATA: TodoList[] = [
@@ -32,13 +32,42 @@ const INITIAL_MOCK_DATA: TodoList[] = [
   new TodoList('d227c8e8-7aa8-4b7b-8782-644f87de5b98', 'Project Z', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#ffc107')
 ];
 
+const INITIAL_MOCK_TODO_ITEM_DATA: TodoItem[] = [
+
+];
+
 @Injectable({
   providedIn: 'root'
 })
 export class TodoDataService {
   // TODO: tmp until there is a solution for client side storage or server side persistence 
   private listsSubject: BehaviorSubject<TodoList[]> = new BehaviorSubject<TodoList[]>(INITIAL_MOCK_DATA);
-  constructor() { }
+  private todoItemsSubject: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>(INITIAL_MOCK_TODO_ITEM_DATA);
+
+
+  public getTodoItems(): Observable<TodoItem[]> {
+    return this.todoItemsSubject.asObservable();
+  }
+
+  public getTodoItem(id: string): Observable<TodoItem | undefined> {
+    return this.getTodoItems().pipe(
+      map(todoItems => {
+        return todoItems.find(ti => ti.id === id);
+      })
+    );
+  }
+
+  public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
+    const currentItems = this.todoItemsSubject.getValue();
+    let itemToAdd;
+    if (todoItem.id === '')
+      itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
+    else 
+      itemToAdd = todoItem;
+    const newTodoItemList = currentItems.concat([itemToAdd]);
+    this.todoItemsSubject.next(newTodoItemList);
+    return of(itemToAdd);
+  }
 
   public getLists(): Observable<TodoList[]> {
     return this.listsSubject.asObservable();

@@ -7,6 +7,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { TodoRoutingModule } from './todo-routing.module';
 import { TodoRootComponent } from './components/todo-root/todo-root.component';
@@ -39,7 +42,10 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     MatInputModule,
     MatFormFieldModule,
     MatTooltipModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    MatCheckboxModule,
+    MatButtonToggleModule,
+    MatDatepickerModule
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })

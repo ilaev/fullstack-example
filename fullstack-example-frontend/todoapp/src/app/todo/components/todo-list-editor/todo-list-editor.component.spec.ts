@@ -1,5 +1,5 @@
 import { TodoList } from 'src/app/common/models';
-import { throwError, Observable, of, ReplaySubject, EMPTY } from 'rxjs';
+import { throwError, of, ReplaySubject } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,11 +8,12 @@ import { TodoListEditorComponent } from './todo-list-editor.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, convertToParamMap, ParamMap, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, forwardRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
+import { ActivatedRouteStub, FakeTodoService } from 'src/app/testing';
 
 const colorCirleBinding = {
   provide: NG_VALUE_ACCESSOR,
@@ -28,8 +29,8 @@ const colorCirleBinding = {
 })
 export class ColorCircleMockComponent implements ControlValueAccessor {
 
-  private color: string = '';
-  private isDisabled: boolean = false;
+  private color = '';
+  private isDisabled = false;
 
   private cbRegisterOnChange: any;
   private cbRegisterOnTouched: any;
@@ -47,7 +48,7 @@ export class ColorCircleMockComponent implements ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
-  triggerChange(hex: string) {
+  triggerChange(hex: string): void {
     this.cbRegisterOnChange(hex);
     this.cbRegisterOnTouched(hex);
   }
@@ -58,38 +59,6 @@ export class ColorCircleMockComponent implements ControlValueAccessor {
  
 }
 
-export class ActivatedRouteStub {
-  // Use a ReplaySubject to share previous values with subscribers
-  // and pump new values into the `paramMap` observable
-  private subject = new ReplaySubject<ParamMap>();
-
-  constructor(initialParams?: Params) {
-    this.setParamMap(initialParams);
-  }
-
-  /** The mock paramMap observable */
-  readonly paramMap = this.subject.asObservable();
-
-  /** Set the paramMap observable's next value */
-  setParamMap(params: Params = {}) {
-    this.subject.next(convertToParamMap(params));
-  }
-}
-
-class TodoServiceFake {
-  public getListReturnValue: ReplaySubject<TodoList | undefined> = new ReplaySubject<TodoList | undefined>();
-  public setListReturnValue: Observable<TodoList> = EMPTY;
-  public getList(id: string): Observable<TodoList | undefined> {
-    return this.getListReturnValue.asObservable();
-  }
-  public setGetListReturnValue(list: TodoList | undefined): void {
-    this.getListReturnValue.next(list);
-  }
-  public setList(todoList: any): Observable<TodoList> {
-    return this.setListReturnValue;
-  }
-}
-
 describe('TodoListEditorComponent', () => {
   let component: TodoListEditorComponent;
   let fixture: ComponentFixture<TodoListEditorComponent>;
@@ -98,7 +67,7 @@ describe('TodoListEditorComponent', () => {
   let todoService: TodoDataService;
   let spinnerService: SpinnerService;
 
-  let todoServiceFake: TodoServiceFake;
+  let todoServiceFake: FakeTodoService;
   let routeStub: ActivatedRouteStub;
 
   beforeEach(async () => {
@@ -106,7 +75,7 @@ describe('TodoListEditorComponent', () => {
     const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
     const spinnerSpy = jasmine.createSpyObj('SpinnerService', ['show', 'hide']);
 
-    todoServiceFake = new TodoServiceFake();
+    todoServiceFake = new FakeTodoService();
     routeStub = new ActivatedRouteStub();
 
     await TestBed.configureTestingModule({
@@ -371,7 +340,7 @@ describe('TodoListEditorComponent', () => {
 
 
     const text = 'my description';
-    for(var i = 0; i < text.length; i++){ 
+    for(let i = 0; i < text.length; i++){ 
   
       textAreaElement.dispatchEvent(new KeyboardEvent('keydown', { key: text[i], bubbles: true}));
       textAreaElement.dispatchEvent(new KeyboardEvent('keypress', { key: text[i], bubbles: true}));
