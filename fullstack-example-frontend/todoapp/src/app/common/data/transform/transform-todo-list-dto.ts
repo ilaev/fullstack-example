@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { TodoList } from 'src/app/common/models';
 
 export function transformTodoListDTO(todoListDto: any): TodoList {
@@ -5,9 +6,9 @@ export function transformTodoListDTO(todoListDto: any): TodoList {
         todoListDto.id,
         todoListDto.name,
         todoListDto.description,
-        new Date(todoListDto.createdAt),
-        new Date(todoListDto.modifiedAt),
-        todoListDto.deletedAt ? new Date(todoListDto.deletedAt) : null,
+        DateTime.fromISO(todoListDto.createdAt),
+        DateTime.fromISO(todoListDto.modifiedAt),
+        todoListDto.deletedAt ? DateTime.fromISO(todoListDto.deletedAt) : null,
         todoListDto.color
-    )
+    );
   }

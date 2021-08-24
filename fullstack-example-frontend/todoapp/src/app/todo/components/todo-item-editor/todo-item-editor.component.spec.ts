@@ -32,13 +32,13 @@ import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatSelectModule } from '@angular/material/select';
 
 function createTodoItem(id?: string, name?: string, note?: string,
-  dueDate?: Date, createdAt?: Date, modifiedAt?: Date): TodoItem {
+  dueDate?: DateTime | null, createdAt?: DateTime, modifiedAt?: DateTime): TodoItem {
   id = id ? id : '';
   name = name ? name : '';
   note = note ? note : '';
-  dueDate = dueDate ? dueDate : new Date(9999, 1, 1);
-  createdAt = createdAt ? createdAt : new Date(2021, 8, 1);
-  modifiedAt = modifiedAt ? modifiedAt : new Date(2021, 8, 1);
+  dueDate = dueDate ? dueDate : null;
+  createdAt = createdAt ? createdAt : DateTime.utc(2021, 8, 1);
+  modifiedAt = modifiedAt ? modifiedAt : DateTime.utc(2021, 8, 1);
   return new TodoItem(
     id,
     null,
@@ -116,8 +116,8 @@ describe('TodoItemEditorComponent', () => {
 
   function initComponentInNewState(): void {
     const lists = [
-      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
-      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63')
+      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
+      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63')
     ];
     fakeTodoService.setGetLists(lists);
     fakeTodoService.setGetTodoItemReturnValue(undefined);
@@ -128,8 +128,8 @@ describe('TodoItemEditorComponent', () => {
 
   function initComponentInEditState(todoItem: TodoItem | undefined): void {
     const lists = [
-      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
-      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63')
+      new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
+      new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63')
     ];
     fakeTodoService.setGetLists(lists);
     if (todoItem) {
@@ -200,7 +200,7 @@ describe('TodoItemEditorComponent', () => {
     expect(component.form?.get('matrixX')?.value).toEqual(MatrixX.NotUrgent);
     expect(component.form?.get('matrixY')?.value).toEqual(MatrixY.NotImportant);
     expect(component.form?.get('note')?.value).toEqual('');
-    expect(component.form?.get('dueDate')?.value).toEqual(new Date(9999,1, 1));
+    expect(component.form?.get('dueDate')?.value).toEqual(null);
     expect(component.form?.get('markedAsDone')?.value).toEqual(false);
     expect(component.todoItem?.id).toEqual('');
   }));
@@ -218,7 +218,7 @@ describe('TodoItemEditorComponent', () => {
     expect(component.form?.get('matrixX')?.value).toEqual(MatrixX.NotUrgent);
     expect(component.form?.get('matrixY')?.value).toEqual(MatrixY.NotImportant);
     expect(component.form?.get('note')?.value).toEqual('');
-    expect(component.form?.get('dueDate')?.value).toEqual(new Date(9999,1, 1));
+    expect(component.form?.get('dueDate')?.value).toEqual(null);
     expect(component.form?.get('markedAsDone')?.value).toEqual(false);
     expect(component.todoItem?.id).toEqual('');
   }));
@@ -236,7 +236,7 @@ describe('TodoItemEditorComponent', () => {
     expect(component.form?.get('matrixX')?.value).toEqual(MatrixX.NotUrgent);
     expect(component.form?.get('matrixY')?.value).toEqual(MatrixY.NotImportant);
     expect(component.form?.get('note')?.value).toEqual(todoItem.note);
-    expect(component.form?.get('dueDate')?.value).toEqual(new Date(9999,1, 1));
+    expect(component.form?.get('dueDate')?.value).toEqual(null);
     expect(component.form?.get('markedAsDone')?.value).toEqual(false);
   }));
 
@@ -346,8 +346,9 @@ describe('TodoItemEditorComponent', () => {
     expect(component.form?.get('markedAsDone')?.value).toBeTruthy();
   }));
 
-  it('should be able to delete the todo item.', fakeAsync(() => {
-
+  xit('should be able to delete the todo item.', fakeAsync(() => {
+    // TODO: unsure whether I want the delete operation in these editor dialogs or whether they should be actions in the lists
+    // maybe both is the best. It could be pretty annoying for a user to either find the delete action or have to change to a different view to actually delete an item he changed his opinion about.
   }));
 
   it('should be able to cancel and leave dialog.', fakeAsync(async () => {
@@ -364,8 +365,8 @@ describe('TodoItemEditorComponent', () => {
   it('should be able to save a todo item.', fakeAsync(async () => {
     const onSaveSpy = spyOn(component, 'onSave').and.callThrough();
     const setTodoItemSpy = spyOn(todoService, 'setTodoItem').and.callThrough();
-    // mock return value for easier expected comparison later on, since there are new Date() calls
-    const itemSetByInit = createTodoItem('', '', '',  new Date(9999,1, 1));
+    // mock return value for easier expected comparison later on, since there are DateTime.utc() calls
+    const itemSetByInit = createTodoItem('', '', '', null);
     spyOn(component, 'createEmptyTodoItem').and.returnValue(itemSetByInit);
 
     // init
@@ -393,8 +394,8 @@ describe('TodoItemEditorComponent', () => {
   it('should display saving indicator.', fakeAsync(async () => {
     const activateSpinnerSpy = spyOn(component, 'activateSpinner').and.callThrough();
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner').and.callThrough();
-    // mock return value for easier expected comparison later on, since there are new Date() calls
-    const itemSetByInit = createTodoItem('', '', '',  new Date(9999,1, 1));
+    // mock return value for easier expected comparison later on, since there are DateTime.utc() calls
+    const itemSetByInit = createTodoItem('', '', '', null);
     spyOn(component, 'createEmptyTodoItem').and.returnValue(itemSetByInit);
 
     // init
@@ -421,8 +422,8 @@ describe('TodoItemEditorComponent', () => {
   }));
 
   it('should display success message after saving.', fakeAsync(async () => {
-    // mock return value for easier expected comparison later on, since there are new Date() calls
-    const itemSetByInit = createTodoItem('', '', '',  new Date(9999,1, 1));
+    // mock return value for easier expected comparison later on, since there are DateTime.utc() calls
+    const itemSetByInit = createTodoItem('', '', '',  null);
     spyOn(component, 'createEmptyTodoItem').and.returnValue(itemSetByInit);
 
     // mock return value of setTodoItem 
@@ -446,8 +447,8 @@ describe('TodoItemEditorComponent', () => {
   }));
 
   it('should display error message if the saving fails for whatever reason.', fakeAsync(async () => {
-    // mock return value for easier expected comparison later on, since there are new Date() calls
-    const itemSetByInit = createTodoItem('', '', '',  new Date(9999,1, 1));
+    // mock return value for easier expected comparison later on, since there are DateTime.utc() calls
+    const itemSetByInit = createTodoItem('', '', '',  null);
     spyOn(component, 'createEmptyTodoItem').and.returnValue(itemSetByInit);
 
     // mock return value of setTodoItem 

@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TodoDataService } from 'src/app/common/data';
 import { switchMap } from 'rxjs/operators';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
+import { DateTime } from 'luxon';
 
 function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
@@ -44,7 +45,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
   private createEmptyTodoList(): TodoList {
-    return new TodoList('', '', '', new Date(), new Date(), null, '');
+    return new TodoList('', '', '', DateTime.now().toUTC(), DateTime.now().toUTC(), null, '');
   }
 
   private createForm(todoList: TodoList): FormGroup {

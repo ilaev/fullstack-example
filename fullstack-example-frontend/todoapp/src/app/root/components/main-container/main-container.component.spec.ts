@@ -7,6 +7,7 @@ import { User } from 'src/app/common/models';
 
 import { MainContainerComponent } from './main-container.component';
 import { Component, Input } from '@angular/core';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: "app-navbar",
@@ -15,7 +16,7 @@ import { Component, Input } from '@angular/core';
 
 class MockNavbarComponent {
     @Input() user: User | undefined;
-    @Input() appName: string = '';
+    @Input() appName = '';
 }
 
 describe('MainContainerComponent', () => {
@@ -30,8 +31,8 @@ describe('MainContainerComponent', () => {
       'dwight.eisenhower@outlook.com', 
       'Dwight Eisenhower',
       'placeholder',
-      new Date(2021, 1, 1),
-      new Date(2021, 1, 1)
+      DateTime.utc(2021, 1, 1),
+      DateTime.utc(2021, 1, 1)
       );
     userDataServiceSpy = jasmine.createSpyObj('UserDataService', {
       getCurrentUser: defer(() => Promise.resolve(expectedUser))

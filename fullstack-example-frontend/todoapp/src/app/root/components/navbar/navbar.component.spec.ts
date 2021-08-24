@@ -7,6 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { User } from 'src/app/common/models/user';
 
 import { NavbarComponent } from './navbar.component';
+import { DateTime } from 'luxon';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -51,10 +52,10 @@ describe('NavbarComponent', () => {
   });
 
   it('should display a user email.', () => {
-    component.user = new User('960b9dbc-87c1-492c-b042-84d4dab14e9d', 'dwight.eisenhower@outlook.com', 'Dwight D. Eisenhower', 'placeholder', new Date(), new Date());
+    component.user = new User('960b9dbc-87c1-492c-b042-84d4dab14e9d', 'dwight.eisenhower@outlook.com', 'Dwight D. Eisenhower', 'placeholder', DateTime.now().toUTC(), DateTime.now().toUTC());
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
     expect(compiled.querySelector('mat-toolbar #user-email').textContent).toContain('dwight.eisenhower@outlook.com');
-  })
+  });
 
 });

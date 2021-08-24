@@ -1,6 +1,7 @@
 import { MatrixY } from './matrix-y';
 import { MatrixX } from './matrix-x';
 import { isDateEqual } from '../date-utility';
+import { DateTime } from 'luxon';
 
 export class TodoItem {
     public id: string;
@@ -9,10 +10,10 @@ export class TodoItem {
     public matrixX: MatrixX;
     public matrixY: MatrixY;
     public note: string;
-    public dueDate: Date;
-    public createdAt: Date;
-    public modifiedAt: Date;
-    public deletedAt: Date | null;
+    public dueDate: DateTime | null;
+    public createdAt: DateTime;
+    public modifiedAt: DateTime;
+    public deletedAt: DateTime | null;
     public markedAsDone: boolean;
 
     constructor(
@@ -22,10 +23,10 @@ export class TodoItem {
         matrixX: MatrixX,
         matrixY: MatrixY,
         note: string,
-        dueDate: Date,
-        createdAt: Date,
-        modifiedAt: Date,
-        deletedAt: Date | null,
+        dueDate: DateTime | null,
+        createdAt: DateTime,
+        modifiedAt: DateTime,
+        deletedAt: DateTime | null,
         markedAsDone: boolean
     ) {
         this.id = id;

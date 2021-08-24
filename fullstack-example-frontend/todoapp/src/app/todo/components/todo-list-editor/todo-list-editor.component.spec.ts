@@ -19,6 +19,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { MatInputHarness } from '@angular/material/input/testing';
+import { DateTime } from 'luxon';
 
 const colorCirleBinding = {
   provide: NG_VALUE_ACCESSOR,
@@ -183,7 +184,7 @@ describe('TodoListEditorComponent', () => {
     const activateSpinnerSpy = spyOn(component, 'activateSpinner').and.callThrough();
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner').and.callThrough();
 
-    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
+    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#121212'));
 
     expect(activateSpinnerSpy).toHaveBeenCalled();
     expect(deactivateSpinnerSpy).toHaveBeenCalled();
@@ -221,7 +222,7 @@ describe('TodoListEditorComponent', () => {
   it('should initialize component in edit state when route param is an existing id', fakeAsync(() => {
     spyOn(todoService, 'getList').and.callThrough();
 
-    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#121212'));
+    initComponentInEditState(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#121212'));
 
     const expectedTodoListId = '6a93632e-0e04-47ea-bd7f-619862a71c30';
     expect(todoService.getList).toHaveBeenCalledWith(expectedTodoListId);
@@ -246,7 +247,7 @@ describe('TodoListEditorComponent', () => {
     const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     component.form?.patchValue({name: 'my list name'});
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '');
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '');
 
     fixture.detectChanges();
 
@@ -259,7 +260,7 @@ describe('TodoListEditorComponent', () => {
     const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     component.form?.patchValue({name: 'changed name'});
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '');
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'my list name', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '');
 
     fixture.detectChanges();
 
@@ -349,7 +350,7 @@ describe('TodoListEditorComponent', () => {
 
   it('should be able to save a list.', fakeAsync(async () => {
     const onSaveSpy = spyOn(component, 'onSave').and.callThrough();
-    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
 
     initComponentInNewState();
@@ -357,7 +358,7 @@ describe('TodoListEditorComponent', () => {
     const saveBtnHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Save'}));
 
     // mock old list
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'); 
     // set values to be saved
     component.form?.setValue({
       name: 'My Listname',
@@ -370,14 +371,14 @@ describe('TodoListEditorComponent', () => {
     fixture.detectChanges();
     tick();
     
-    const expectedList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111');
+    const expectedList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111');
     expect(onSaveSpy).toHaveBeenCalled();
     expect(setListSpy).toHaveBeenCalledWith(expectedList);
   }));
 
 
   it('should display saving progress indicator.', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'));
     const activateSpinnerSpy = spyOn(component, 'activateSpinner');
     const deactivateSpinnerSpy = spyOn(component, 'deactivateSpinner');
 
@@ -386,7 +387,7 @@ describe('TodoListEditorComponent', () => {
     deactivateSpinnerSpy.calls.reset();
 
     // mock old list
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'); 
     // set values to be saved
     component.form?.setValue({
        name: 'My Listname',
@@ -405,13 +406,13 @@ describe('TodoListEditorComponent', () => {
 
   // TODO: remember to force the API to do the same thing.
   it('should assign a random color to a list if user choose none.', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of( new TodoList('', 'My list name', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#444444'));
+    todoServiceFake.setListReturnValue = of( new TodoList('', 'My list name', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#444444'));
     const setListSpy = spyOn(todoService, 'setList').and.callThrough();
         
     initComponentInNewState();
 
     // mock old list
-    component.todoList = new TodoList('', '', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, ''); 
+    component.todoList = new TodoList('', '', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, ''); 
     // set values to be saved
     component.form?.setValue({
        name: 'My list name',
@@ -429,12 +430,12 @@ describe('TodoListEditorComponent', () => {
   
 
   it('should show success message after saving', fakeAsync(() => {
-    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'));
         
     initComponentInNewState();
 
     // mock old list
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'); 
     // set values to be saved
     component.form?.setValue({
        name: 'My Listname',
@@ -457,7 +458,7 @@ describe('TodoListEditorComponent', () => {
     initComponentInNewState();
 
     // mock old list
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'); 
     // set values to be saved
     component.form?.setValue({
         name: 'My Listname',
@@ -475,13 +476,13 @@ describe('TodoListEditorComponent', () => {
 
   it('should redirect to matrix view of a list.', fakeAsync(() => {
 
-    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'));
+    todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'));
         
     initComponentInNewState();
 
 
     // mock old list
-    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#111111'); 
+    component.todoList = new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My old listname', 'old description', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'); 
     // set values to be saved
     component.form?.setValue({
        name: 'My Listname',

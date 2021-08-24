@@ -8,6 +8,7 @@ import { combineLatest, of, Subscription } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-todo-item-editor',
@@ -45,7 +46,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
     const matrixX: MatrixX = form.get('matrixX')?.value;
     const matrixY: MatrixY = form.get('matrixY')?.value;
     const note: string = form.get('note')?.value;
-    const dueDate: Date = form.get('dueDate')?.value;
+    const dueDate: DateTime = form.get('dueDate')?.value;
     const markedAsDone: boolean = form.get('markedAsDone')?.value;
 
     return new TodoItem(
@@ -71,9 +72,9 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
       MatrixX.NotUrgent,
       MatrixY.NotImportant,
       '',
-      new Date(9999,1, 1),
-      new Date(),
-      new Date(),
+      null,
+      DateTime.now().toUTC(),
+      DateTime.now().toUTC(),
       null,
       false
     );
