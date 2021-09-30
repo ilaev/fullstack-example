@@ -24,6 +24,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ColorCircleModule } from 'ngx-color/circle';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { TodoMatrixQuadrantComponent } from './components/todo-matrix-quadrant/todo-matrix-quadrant.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     SidenavComponent,
     TodoMatrixComponent,
     TodoListEditorComponent,
-    TodoItemEditorComponent
+    TodoItemEditorComponent,
+    TodoMatrixQuadrantComponent
   ],
   imports: [
     CommonModule,

@@ -173,6 +173,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
       this.todoDataService.setTodoItem(todoItemToSave).subscribe({
         next: (result) => {
           // TODO: reset component after save to 'new' state?
+          this.initComponent(this.createEmptyTodoItem(), this.todoLists);
           this.toastr.success('Item saved.');
           this.deactivateSpinner();
         },
