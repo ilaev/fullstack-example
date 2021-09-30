@@ -1,3 +1,4 @@
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
@@ -7,6 +8,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {  MatLuxonDateModule, MAT_LUXON_DATE_ADAPTER_OPTIONS } from '@angular/material-luxon-adapter';
 
 import { TodoRoutingModule } from './todo-routing.module';
 import { TodoRootComponent } from './components/todo-root/todo-root.component';
@@ -18,6 +23,9 @@ import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item
 import { ReactiveFormsModule } from '@angular/forms';
 import { ColorCircleModule } from 'ngx-color/circle';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+
+
 @NgModule({
   declarations: [
     TodoRootComponent,
@@ -39,7 +47,16 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     MatInputModule,
     MatFormFieldModule,
     MatTooltipModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    MatCheckboxModule,
+    MatButtonToggleModule,
+    MatDatepickerModule,
+    MatLuxonDateModule,  // NOTE: if I want a different starting week, I have to extend LuxonDateAdapter and override the getFirstDayOfWeek method. Will be necessary for german language
+    MatSelectModule
+  ],
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    {provide: MAT_LUXON_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true }}
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })

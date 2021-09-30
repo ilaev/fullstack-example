@@ -17,6 +17,7 @@ import { By } from '@angular/platform-browser';
 import { Router, Routes } from '@angular/router';
 import { TodoList } from 'src/app/common/models';
 import { rgb2hex } from 'src/app/common/color-utility';
+import { DateTime } from 'luxon';
 
 
 @Component({
@@ -80,9 +81,9 @@ function getDebugElemsAndRouterLinks(fixture: ComponentFixture<SidenavComponent>
 }
 
 const INITIAL_MOCK_DATA: TodoList[] = [
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#e91e63'),
-  new TodoList('d227c8e8-7aa8-4b7b-8782-644f87de5b98', 'Project Z', '', new Date(2021, 1, 22), new Date(2021, 1, 22), null, '#ffc107')
+  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
+  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
+  new TodoList('d227c8e8-7aa8-4b7b-8782-644f87de5b98', 'Project Z', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#ffc107')
 ];
 
 describe('SidenavComponent', () => {
@@ -243,7 +244,7 @@ describe('SidenavComponent', () => {
   it('should display user\'s todo list color', fakeAsync(() => {
     fixture.detectChanges();
     tick();
-    var iconElems = fixture.debugElement.queryAll(By.css('.list-container mat-icon'));
+    const iconElems = fixture.debugElement.queryAll(By.css('.list-container mat-icon'));
 
     expect(rgb2hex(iconElems[0].styles['color'] as string)).toEqual(INITIAL_MOCK_DATA[0].color);
     expect(rgb2hex(iconElems[1].styles['color'] as string)).toEqual(INITIAL_MOCK_DATA[1].color);

@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TodoDataService } from 'src/app/common/data';
 import { switchMap } from 'rxjs/operators';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
+import { DateTime } from 'luxon';
 
 function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
@@ -22,14 +23,14 @@ function getRandomIntInclusive(min: number, max: number): number {
 export class TodoListEditorComponent implements OnInit, OnDestroy {
   public todoList: TodoList | undefined;
   public form: FormGroup | undefined;
-  public spinnerName: string = 'todoListEditor';
+  public spinnerName = 'todoListEditor';
   
-  public headerTitle: string = '';
+  public headerTitle = '';
 
   private _isRequestInProgress = false;
-  public get isRequestInProgress() {
+  public get isRequestInProgress(): boolean {
     return this._isRequestInProgress;
-  };
+  }
 
   private subscriptions: Subscription[];
 
@@ -44,7 +45,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
   private createEmptyTodoList(): TodoList {
-    return new TodoList('', '', '', new Date(), new Date(), null, '');
+    return new TodoList('', '', '', DateTime.now().toUTC(), DateTime.now().toUTC(), null, '');
   }
 
   private createForm(todoList: TodoList): FormGroup {
@@ -56,9 +57,9 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
   private extractModelFromForm(todoList: TodoList, form: FormGroup): TodoList {
-    const name = form.get('name')?.value;
-    const description = form.get('description')?.value;
-    let color = form.get('bgColor')?.value;
+    const name: string = form.get('name')?.value;
+    const description: string = form.get('description')?.value;
+    const color: string = form.get('bgColor')?.value;
 
     return new TodoList(
       todoList.id,
@@ -131,7 +132,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
 
-  public initComponent(todoList: TodoList) {
+  public initComponent(todoList: TodoList): void {
     if (todoList.id === '') {
       this.headerTitle = 'Add list';
     } else {
@@ -146,13 +147,13 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
   public isSaveDisabled(): boolean {
-    return this.form?.invalid || !this.hasFormChanges();
+    return this.form?.invalid || !this.areThereChangesBetweenFormAndItem();
   }
 
-  public hasFormChanges(): boolean {
+  public areThereChangesBetweenFormAndItem(): boolean {
     if (this.todoList && this.form) {
       const currentList = this.extractModelFromForm(this.todoList, this.form);
-      const areListsEqual = currentList.equals(this.todoList)
+      const areListsEqual = currentList.equals(this.todoList);
       return !areListsEqual;
     }
     return false;

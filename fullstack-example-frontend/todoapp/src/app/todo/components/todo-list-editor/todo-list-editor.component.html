@@ -9,7 +9,7 @@
     </div>
     <div class="w-1/4 h-full w-full justify-start p-10" *ngIf="!isRequestInProgress">
         <form *ngIf="!!this.form" [formGroup]="form" class="flex flex-col max-w-screen-md w-full bg-white">
-            <mat-form-field class="mb-4">
+            <mat-form-field id="name-input" class="mb-4">
                 <mat-label>Name</mat-label>
                 <input formControlName="name" matInput type="text">
                 <mat-error *ngIf="form?.getError('required', 'name')">You must enter a name.</mat-error>

@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { User } from "../../models";
 
 export function transformUserDTO(userDto: any): User {
@@ -6,7 +7,7 @@ export function transformUserDTO(userDto: any): User {
       userDto.email,
       userDto.name,
       userDto.avatar,
-      new Date(userDto.createdAt), // TODO: use luxon date lib
-      new Date(userDto.modifiedAt)
-    )
+      DateTime.fromISO(userDto.createdAt), // TODO: use luxon date lib
+      DateTime.fromISO(userDto.modifiedAt)
+    );
   }
