@@ -1,7 +1,7 @@
 import { TodoItemEditorComponent } from './components/todo-item-editor/todo-item-editor.component';
 import { TodoListEditorComponent } from './components/todo-list-editor/todo-list-editor.component';
 import { TodoMatrixComponent } from './components/todo-matrix/todo-matrix.component';
-import { TODO_ROUTING_PATH_SIDENAV } from './todo-routing-path';
+import { TODO_MATRIX_KIND_ID, TODO_ROUTING_PATH_SIDENAV } from './todo-routing-path';
 import { ROUTER_OUTLET_SIDENAV } from './router-outlets';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { TodoRootComponent } from './components/todo-root/todo-root.component';
@@ -14,7 +14,7 @@ const routes: Routes = [
     component: TodoRootComponent,
     children: [
       {
-        path: 'matrix/:matrixId',
+        path: 'matrix/:' + TODO_MATRIX_KIND_ID,
         component: TodoMatrixComponent
       },
       {
