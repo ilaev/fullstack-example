@@ -1,5 +1,5 @@
-import { Router, ActivatedRoute } from '@angular/router';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatSelectionListChange } from '@angular/material/list';
 import { TodoQuadrantItem } from './todo-quadrant-item';
 
 
@@ -9,26 +9,18 @@ import { TodoQuadrantItem } from './todo-quadrant-item';
   templateUrl: './todo-matrix-quadrant.component.html',
   styleUrls: ['./todo-matrix-quadrant.component.scss']
 })
-export class TodoMatrixQuadrantComponent implements OnInit {
-
+export class TodoMatrixQuadrantComponent {
   @Input() items: TodoQuadrantItem[] | undefined;
-  @Output() marked: EventEmitter<TodoQuadrantItem> = new EventEmitter<TodoQuadrantItem>();
-  
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
-  }
+  @Output() marked: EventEmitter<TodoQuadrantItem[]> = new EventEmitter<TodoQuadrantItem[]>();
+  @Output() edited: EventEmitter<TodoQuadrantItem> = new EventEmitter<TodoQuadrantItem>();
 
-  ngOnInit(): void {
-    console.log('');
-  }
-
-  public edit($event: MouseEvent, todoItemId: string): void {
+  public edit($event: MouseEvent, item: TodoQuadrantItem): void {
     $event.stopPropagation();
-    // TODO: centralize navigation
-    this.router.navigate(['/tasks/', todoItemId], {relativeTo: this.route }); 
-    console.log('edit: ', $event);
+    this.edited.emit(item);
+  }
+
+  public onSelect($event: MatSelectionListChange): void {
+    this.marked.emit($event.options.map(x => x.value));
   }
 
 }

@@ -1,5 +1,5 @@
 import { MATRIX_KIND } from './../../matrix-kind';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { combineLatest, Subscription } from 'rxjs';
 import { TodoQuadrantItem } from './../todo-matrix-quadrant/todo-quadrant-item';
@@ -30,7 +30,8 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   constructor(
     private todoDataService: TodoDataService,
     private toastr: ToastrService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
     this.itemsImportantAndUrgent = [];
     this.itemsImportantAndNotUrgent = [];
@@ -98,6 +99,16 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach( s => s.unsubscribe());
+  }
+
+  public onEdit(quadrantItem: TodoQuadrantItem): void {
+    // TODO: centralize navigation
+    this.router.navigate(['/tasks/', quadrantItem], {relativeTo: this.activatedRoute }); 
+  }
+
+  public onMarked(quadrantItem: TodoQuadrantItem): void {
+    // TODO: 
+    // map itemDictionanyForBulkActions id
   }
 
 }

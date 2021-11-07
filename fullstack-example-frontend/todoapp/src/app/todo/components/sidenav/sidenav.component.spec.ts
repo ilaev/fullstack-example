@@ -62,7 +62,7 @@ export class RouterLinkDirectiveStub {
 }
 
 
-export class TodoDataServiceFake {
+class TodoDataServiceFake {
   private getListsSubject: ReplaySubject<TodoList[]> = new ReplaySubject<TodoList[]>();
 
   public getLists(): Observable<TodoList[]> {
