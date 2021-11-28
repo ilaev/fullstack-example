@@ -18,6 +18,10 @@ const routes: Routes = [
         component: TodoMatrixComponent
       },
       {
+        path: 'list-view/:' + TODO_MATRIX_KIND_ID,
+        // TODO: create component
+      },
+      {
         path: 'lists/:id',
         component: TodoListEditorComponent
       },

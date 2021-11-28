@@ -7,3 +7,8 @@
 .todo-items {
     flex: 1 1 0;
 }
+
+.done {
+    text-decoration: line-through;
+    color: #585858;
+}

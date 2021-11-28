@@ -11,8 +11,8 @@ import { MatButtonHarness } from '@angular/material/button/testing';
 
 function generateQuadrantItems(): TodoQuadrantItem[] {
   const result: TodoQuadrantItem[] = [];
-  const item1 = new TodoQuadrantItem("ccb6fb0f-f55e-4f1d-89c1-43b10f377eb8", "important task 1", 'really');
-  const item2 = new TodoQuadrantItem("862feca0-ad5e-4168-b1a0-f36a8ef50793", "important task 2", 'really');
+  const item1 = new TodoQuadrantItem("ccb6fb0f-f55e-4f1d-89c1-43b10f377eb8", "important task 1", 'really', false);
+  const item2 = new TodoQuadrantItem("862feca0-ad5e-4168-b1a0-f36a8ef50793", "important task 2", 'really', false);
   
   result.push(item1);
   result.push(item2);

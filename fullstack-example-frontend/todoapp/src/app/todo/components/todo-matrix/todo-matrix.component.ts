@@ -11,7 +11,7 @@ import { getToday } from 'src/app/common/date-utility';
 
 
 function transformToTodoQuadrantItem(item: TodoItem): TodoQuadrantItem {
-  return new TodoQuadrantItem(item.id, item.name, item.note);
+  return new TodoQuadrantItem(item.id, item.name, item.note, item.markedAsDone);
 }
 @Component({
   selector: 'app-todo-matrix',
@@ -19,12 +19,15 @@ function transformToTodoQuadrantItem(item: TodoItem): TodoQuadrantItem {
   styleUrls: ['./todo-matrix.component.scss']
 })
 export class TodoMatrixComponent implements OnInit, OnDestroy {
-
+  public MATRIX_X = MatrixX;
+  public MATRIX_Y = MatrixY;
+  public id = '';
   public itemsImportantAndUrgent: TodoQuadrantItem[];
   public itemsImportantAndNotUrgent: TodoQuadrantItem[];
   public itemsUrgentAndNotImportant: TodoQuadrantItem[];
   public itemsNotUrgentAndNotImportant: TodoQuadrantItem[];  
 
+  private selectedItemsMap = new Map<string, string>();
   private subscriptions: Subscription[];
 
   constructor(
@@ -73,6 +76,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   private initComponent(matrixKindId: string, items: TodoItem[]): void {
+    this.id = matrixKindId;
     const itemsToSplit = this.filterItemsByMatrixKind(matrixKindId, items);
     this.itemsImportantAndUrgent = itemsToSplit.filter(i => i.matrixY === MatrixY.Important && i.matrixX === MatrixX.Urgent).map(i => transformToTodoQuadrantItem(i));
     this.itemsImportantAndNotUrgent = itemsToSplit.filter(i => i.matrixY === MatrixY.Important &&  i.matrixX === MatrixX.NotUrgent).map(i => transformToTodoQuadrantItem(i));
@@ -103,12 +107,19 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
 
   public onEdit(quadrantItem: TodoQuadrantItem): void {
     // TODO: centralize navigation
-    this.router.navigate(['/tasks/', quadrantItem], {relativeTo: this.activatedRoute }); 
+    this.router.navigate(['/tasks/', quadrantItem.id], {relativeTo: this.activatedRoute }); 
   }
 
-  public onMarked(quadrantItem: TodoQuadrantItem): void {
-    // TODO: 
-    // map itemDictionanyForBulkActions id
+  public onMarked(quadrantItem: TodoQuadrantItem[]): void {
+    quadrantItem.forEach((qi => {
+      if (!this.selectedItemsMap.has(qi.id)) {
+        this.selectedItemsMap.set(qi.id, qi.id);
+      } else {
+        this.selectedItemsMap.delete(qi.id);
+      }
+    }));
+    console.log('selected items: ', this.selectedItemsMap);
   }
+
 
 }

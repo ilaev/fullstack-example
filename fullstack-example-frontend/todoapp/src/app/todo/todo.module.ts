@@ -1,3 +1,4 @@
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -56,7 +57,8 @@ import { DATE_LOCALE } from '../common/date-locale';
     MatButtonToggleModule,
     MatDatepickerModule,
     MatLuxonDateModule,  // NOTE: if I want a different starting week, I have to extend LuxonDateAdapter and override the getFirstDayOfWeek method. Will be necessary for german language
-    MatSelectModule
+    MatSelectModule,
+    MatMenuModule
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: DATE_LOCALE.EN_GB },

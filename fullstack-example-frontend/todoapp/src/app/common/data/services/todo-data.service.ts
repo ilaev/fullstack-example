@@ -34,7 +34,7 @@ const INITIAL_MOCK_DATA: TodoList[] = [
 ];
 
 const INITIAL_MOCK_TODO_ITEM_DATA: TodoItem[] = [
-  new TodoItem('id1', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 1', MatrixX.Urgent, MatrixY.Important, "Note 1", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id1', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 1', MatrixX.Urgent, MatrixY.Important, "Note 1", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, true),
   new TodoItem('id2', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 2', MatrixX.Urgent, MatrixY.NotImportant, "Note 2", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
   new TodoItem('id3', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 3', MatrixX.NotUrgent, MatrixY.Important, "Note 3", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
   new TodoItem('id4', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 4', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 4", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),

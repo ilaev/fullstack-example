@@ -2,39 +2,63 @@
     <div class="h-full w-full p-16 grid grid-flow-row grid-cols-2 grid-rows-2 gap-4">
         <div class="bg-green-200 flex flex-col">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
-                <a mat-button>Important and urgent</a>
-                <button mat-icon-button>
+                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.Important, matrixX: MATRIX_X.Urgent }" >Important and urgent</a>
+                 <!-- TODO: create component with command pattern for actions. not part of this merge request -->
+                <button mat-icon-button [matMenuTriggerFor]="quadrant1Menu">
                     <mat-icon>more</mat-icon>
                 </button>
+                <mat-menu #quadrant1Menu="matMenu">
+                  <button mat-menu-item>
+                    <span>Mark selected as done</span>
+                  </button>
+                </mat-menu>
             </div> 
-            <app-todo-matrix-quadrant [items]="itemsImportantAndUrgent"></app-todo-matrix-quadrant>
+            <app-todo-matrix-quadrant [items]="itemsImportantAndUrgent" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
         <div class="bg-green-100 flex flex-col">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
-                <a mat-button>Important and not urgent</a>
-                <button mat-icon-button>
+                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.Important, matrixX: MATRIX_X.NotUrgent }">Important and not urgent</a>
+                 <!-- TODO: create component with command pattern for actions. not part of this merge request -->
+                 <button mat-icon-button [matMenuTriggerFor]="quadrant1Menu">
                     <mat-icon>more</mat-icon>
                 </button>
+                <mat-menu #quadrant1Menu="matMenu">
+                  <button mat-menu-item>
+                    <span>Mark selected as done</span>
+                  </button>
+                </mat-menu>
             </div> 
-            <app-todo-matrix-quadrant [items]="itemsImportantAndNotUrgent"></app-todo-matrix-quadrant>
+            <app-todo-matrix-quadrant [items]="itemsImportantAndNotUrgent" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
         <div class="bg-yellow-100 flex flex-col">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
-                <a mat-button>Urgent and not important</a>
-                <button mat-icon-button>
+                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.NotImportant, matrixX: MATRIX_X.Urgent }">Urgent and not important</a>
+                 <!-- TODO: create component with command pattern for actions. not part of this merge request -->
+                 <button mat-icon-button [matMenuTriggerFor]="quadrant1Menu">
                     <mat-icon>more</mat-icon>
                 </button>
+                <mat-menu #quadrant1Menu="matMenu">
+                  <button mat-menu-item>
+                    <span>Mark selected as done</span>
+                  </button>
+                </mat-menu>
             </div> 
-            <app-todo-matrix-quadrant [items]="itemsUrgentAndNotImportant"></app-todo-matrix-quadrant>
+            <app-todo-matrix-quadrant [items]="itemsUrgentAndNotImportant" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
         <div class="bg-gray-100	flex flex-col">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
-                <a mat-button>Not important and not urgent</a>
-                <button mat-icon-button>
+                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.NotImportant, matrixX: MATRIX_X.NotUrgent }">Not important and not urgent</a>
+                 <!-- TODO: create component with command pattern for actions. not part of this merge request -->
+                 <button mat-icon-button [matMenuTriggerFor]="quadrant1Menu">
                     <mat-icon>more</mat-icon>
                 </button>
+                <mat-menu #quadrant1Menu="matMenu">
+                  <button mat-menu-item>
+                    <span>Mark selected as done</span>
+                  </button>
+                </mat-menu>
             </div> 
-            <app-todo-matrix-quadrant [items]="itemsNotUrgentAndNotImportant"></app-todo-matrix-quadrant>
+            <app-todo-matrix-quadrant [items]="itemsNotUrgentAndNotImportant" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
     </div>
 </div>
