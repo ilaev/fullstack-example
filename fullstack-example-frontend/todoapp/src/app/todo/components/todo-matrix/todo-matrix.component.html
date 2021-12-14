@@ -8,7 +8,7 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
                 </mat-menu>

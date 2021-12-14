@@ -8,6 +8,7 @@ import { TodoDataService } from 'src/app/common/data';
 import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
 import { TODO_MATRIX_KIND_ID } from '../../todo-routing-path';
 import { getToday } from 'src/app/common/date-utility';
+import { first } from 'rxjs/operators';
 
 
 function transformToTodoQuadrantItem(item: TodoItem): TodoQuadrantItem {
@@ -27,7 +28,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   public itemsUrgentAndNotImportant: TodoQuadrantItem[];
   public itemsNotUrgentAndNotImportant: TodoQuadrantItem[];  
 
-  private selectedItemsMap = new Map<string, string>();
+  public selectedItemsMap = new Map<string, string>();
   private subscriptions: Subscription[];
 
   constructor(
@@ -110,16 +111,18 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
     this.router.navigate(['/tasks/', quadrantItem.id], {relativeTo: this.activatedRoute }); 
   }
 
-  public onMarked(quadrantItem: TodoQuadrantItem[]): void {
-    quadrantItem.forEach((qi => {
-      if (!this.selectedItemsMap.has(qi.id)) {
-        this.selectedItemsMap.set(qi.id, qi.id);
+  public onMarked(quadrantItems: TodoQuadrantItem[]): void {
+    quadrantItems.forEach((quadrantItem => {
+      if (!this.selectedItemsMap.has(quadrantItem.id)) {
+        this.selectedItemsMap.set(quadrantItem.id, quadrantItem.id);
       } else {
-        this.selectedItemsMap.delete(qi.id);
+        this.selectedItemsMap.delete(quadrantItem.id);
       }
     }));
-    console.log('selected items: ', this.selectedItemsMap);
   }
 
-
+  public markSelectedAsDone(): void {
+    const itemsToMarkAsDone = Array.from(this.selectedItemsMap.values());
+    this.todoDataService.markAsDone(itemsToMarkAsDone).pipe(first()).subscribe();
+  }
 }

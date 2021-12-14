@@ -78,6 +78,48 @@ export class TodoDataService {
     return of(itemToAdd);
   }
 
+  public setTodoItems(todoItems: TodoItem[]): Observable<TodoItem[]> {
+    const currentItems = this.todoItemsSubject.getValue();
+    const itemsToAdd: TodoItem[] = [];
+
+    todoItems.forEach(todoItem => {
+      let itemToAdd: TodoItem | null = null;
+      if (todoItem.id === '')
+          itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
+      else 
+        itemToAdd = todoItem;
+      
+      itemsToAdd.push(itemToAdd);
+    });
+
+    for(let i = 0; i < itemsToAdd.length; i++) {
+      for (let j = 0; j < currentItems.length; j++) {
+        if (itemsToAdd[i].id === currentItems[j].id) {
+          currentItems[j] = itemsToAdd[i];
+        }
+      }
+    }
+    this.todoItemsSubject.next(currentItems);
+    return of(itemsToAdd);
+  }
+
+  public markAsDone(todoItemIds: string[]): Observable<TodoItem[]> {
+    const currentItems = this.todoItemsSubject.getValue();
+    const affectedItems: TodoItem[] = [];
+
+    for(let i = 0; i < currentItems.length; i++) {
+      const item = currentItems[i];
+      for(let j = 0; j < todoItemIds.length; j++) {
+        if (item.id === todoItemIds[j]) {
+          item.markedAsDone = true;
+          affectedItems.push(item);
+        }
+      }
+    }
+
+    return this.setTodoItems(affectedItems);
+  }
+
   public getLists(): Observable<TodoList[]> {
     return this.listsSubject.asObservable();
   }

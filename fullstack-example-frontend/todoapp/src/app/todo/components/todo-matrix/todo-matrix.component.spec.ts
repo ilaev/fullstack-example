@@ -2,7 +2,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { TODO_MATRIX_KIND_ID } from './../../todo-routing-path';
 import { TodoDataService } from 'src/app/common/data';
-import { ActivatedRoute, Router, Params, NavigationExtras } from '@angular/router';
+import { ActivatedRoute, Router, Params } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
@@ -14,11 +14,13 @@ import { getToday } from 'src/app/common/date-utility';
 import { Input, Component, Output, EventEmitter, Directive, HostListener, DebugElement } from '@angular/core';
 import { TodoQuadrantItem } from '../todo-matrix-quadrant/todo-quadrant-item';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { By } from '@angular/platform-browser';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatMenuHarness } from '@angular/material/menu/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   template: '',
@@ -54,12 +56,13 @@ function getDebugElemsAndRouterLinks(fixture: ComponentFixture<TodoMatrixCompone
 }
 
 
-fdescribe('TodoMatrixComponent', () => {
+describe('TodoMatrixComponent', () => {
   let component: TodoMatrixComponent;
   let fixture: ComponentFixture<TodoMatrixComponent>;
   let router: Router;
   let activatedRoute: ActivatedRoute;
   let todoDataServiceFake: FakeTodoService;
+  let todoDataService: TodoDataService;
   let activatedRouteStub: ActivatedRouteStub;
   let loader: HarnessLoader;
 
@@ -86,6 +89,7 @@ fdescribe('TodoMatrixComponent', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     await TestBed.configureTestingModule({
       imports: [
+        NoopAnimationsModule,
         MatIconModule,
         MatButtonModule,
         MatMenuModule
@@ -111,6 +115,7 @@ fdescribe('TodoMatrixComponent', () => {
     loader = TestbedHarnessEnvironment.loader(fixture);
     router = TestBed.inject(Router);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    todoDataService = TestBed.inject(TodoDataService);
     fixture.detectChanges();
   });
 
@@ -178,7 +183,7 @@ fdescribe('TodoMatrixComponent', () => {
     expect(component.itemsImportantAndUrgent.length).toEqual(3);
   }));
 
-  it('should navigate to item editor if edit event is emitted by quadrant component.', fakeAsync(() => {
+  it('should be able to edit an quadrant item by navigating to the editor.', fakeAsync(() => {
     initComponent();
     
     const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
@@ -189,7 +194,7 @@ fdescribe('TodoMatrixComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/tasks/', 'id1'], { relativeTo: activatedRoute });
   }));
 
-  it('should select/unselect item if marked event is emitted by quadrant component.', fakeAsync(() => {
+  it('should be able to collect selected quadrant items for bulk actions.', fakeAsync(() => {
     initComponent();
 
     const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
@@ -197,6 +202,44 @@ fdescribe('TodoMatrixComponent', () => {
 
  
     quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    expect(component.selectedItemsMap.size).toEqual(1);
+  }));
+
+  it('should be able to deselect quadrant items for bulk actions.', fakeAsync(() => {
+    initComponent();
+
+    const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
+    const quadrantComponents = quadrantsDes.map(de => de.injector.get(TodoMatrixQuadrantComponentStub));
+
+    quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    expect(component.selectedItemsMap.size).toEqual(1);
+
+    quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    expect(component.selectedItemsMap.size).toEqual(0);
+  }));
+
+  it('should be able to use marked quadrant items for action - "mark selected as done".', fakeAsync(async () => {
+    const markAsDoneSpy = spyOn(todoDataService, 'markAsDone').and.callThrough();
+    initComponent();
+
+    // arrange by selecting some quadrant items to be marked as done
+    const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
+    const quadrantComponents = quadrantsDes.map(de => de.injector.get(TodoMatrixQuadrantComponentStub));
+
+    quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[0] as TodoQuadrantItem, quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    // act
+    const matMenuHarnesses = await loader.getAllHarnesses(MatMenuHarness.with({ triggerText: 'more' }));    
+    const matMenu1stQuadrant = matMenuHarnesses[0];
+    await matMenu1stQuadrant.open();
+    const markAsDoneMenuItemHarnesses = await matMenu1stQuadrant.getItems({text: 'Mark selected as done'});
+    await markAsDoneMenuItemHarnesses[0].click();
+
+    // assert
+    expect(markAsDoneSpy).toHaveBeenCalledWith([(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id, (quadrantComponents[0].items?.[1] as TodoQuadrantItem).id]);
 
   }));
 

@@ -7,6 +7,7 @@ export class FakeTodoService {
   public getListReturnValue: ReplaySubject<TodoList | undefined> = new ReplaySubject<TodoList | undefined>(1);
   public setListReturnValue: Observable<TodoList> = EMPTY;
   public getTodoItemsReturnValue = new ReplaySubject<TodoItem[]>();
+  public markAsDoneReturnValue = new ReplaySubject<TodoItem[]>(1);
 
   private listsSubject: ReplaySubject<TodoList[]> = new ReplaySubject<TodoList[]>(1);
   
@@ -34,9 +35,13 @@ export class FakeTodoService {
     return this.setListReturnValue;
   }
 
+  public markAsDone(ids: string[]): Observable<TodoItem[]> {
+    return this.markAsDoneReturnValue.asObservable();
+  }
+
   // only in fake
   public setGetTodoItems(items: TodoItem[]): void {
-    this.getTodoItemsReturnValue.next(items);
+    return this.getTodoItemsReturnValue.next(items);
   }
   // only in fake
   public setGetTodoItemReturnValue(todoItem: TodoItem | undefined): void {
