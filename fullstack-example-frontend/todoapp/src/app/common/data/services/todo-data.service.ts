@@ -66,6 +66,14 @@ export class TodoDataService {
     );
   }
 
+  public getTodoItemsByListId(listId: string): Observable<TodoItem[]> {
+    return this.getTodoItems().pipe(
+      map((items) => {
+        return items.filter(i => i.listId === listId);
+      })
+    );
+  }
+
   public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
     const currentItems = this.todoItemsSubject.getValue();
     let itemToAdd;

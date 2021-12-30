@@ -123,6 +123,27 @@ describe('TodoMatrixComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should only display items of a list.', fakeAsync(() => {
+    const item1 = new TodoItem('id6', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 6', MatrixX.Urgent, MatrixY.Important, "Note 6", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    const item2 = new TodoItem('id7', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 7', MatrixX.Urgent, MatrixY.Important, "Note 7", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    const item3 = new TodoItem('id8', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 8', MatrixX.Urgent, MatrixY.Important, "Note 8", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    const item4 = new TodoItem('id9', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 9', MatrixX.Urgent, MatrixY.Important, "Note 9", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    const item5 = new TodoItem('id10', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 10', MatrixX.Urgent, MatrixY.Important, "Note 10", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    const item6 = new TodoItem('id11', '77777777-0e04-47ea-bd7f-619862a71c30', 'Task 11', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 11", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false);
+    initComponent([ item1, item2, item3, item4, item5, item6], '77777777-0e04-47ea-bd7f-619862a71c30');
+
+    const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
+    const quadrantComponents = quadrantsDes.map(de => de.injector.get(TodoMatrixQuadrantComponentStub));
+
+    expect(component.itemsImportantAndUrgent.length).toEqual(5);
+    expect(quadrantComponents[0].items?.length).toEqual(5);
+    expect(quadrantComponents[1].items?.length).toEqual(0);
+    expect(quadrantComponents[2].items?.length).toEqual(0);
+    expect(component.itemsNotUrgentAndNotImportant.length).toEqual(1);
+    expect(quadrantComponents[3].items?.length).toEqual(1);
+
+  }));
+
   it('should only display items with a due date of either today or null if the route matrix param is today.', fakeAsync(() => {
     initComponent([], MATRIX_KIND.TODAY);
     const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));

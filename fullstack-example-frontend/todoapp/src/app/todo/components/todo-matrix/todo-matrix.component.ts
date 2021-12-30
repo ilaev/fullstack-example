@@ -1,15 +1,15 @@
 import { MATRIX_KIND } from './../../matrix-kind';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription, of } from 'rxjs';
 import { TodoQuadrantItem } from './../todo-matrix-quadrant/todo-quadrant-item';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TodoDataService } from 'src/app/common/data';
 import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
 import { TODO_MATRIX_KIND_ID } from '../../todo-routing-path';
 import { getToday } from 'src/app/common/date-utility';
-import { first } from 'rxjs/operators';
-
+import { first, map, switchMap } from 'rxjs/operators';
+import { validate as uuidValidate } from 'uuid';
 
 function transformToTodoQuadrantItem(item: TodoItem): TodoQuadrantItem {
   return new TodoQuadrantItem(item.id, item.name, item.note, item.markedAsDone);
@@ -78,27 +78,50 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
 
   private initComponent(matrixKindId: string, items: TodoItem[]): void {
     this.id = matrixKindId;
-    const itemsToSplit = this.filterItemsByMatrixKind(matrixKindId, items);
-    this.itemsImportantAndUrgent = itemsToSplit.filter(i => i.matrixY === MatrixY.Important && i.matrixX === MatrixX.Urgent).map(i => transformToTodoQuadrantItem(i));
-    this.itemsImportantAndNotUrgent = itemsToSplit.filter(i => i.matrixY === MatrixY.Important &&  i.matrixX === MatrixX.NotUrgent).map(i => transformToTodoQuadrantItem(i));
-    this.itemsUrgentAndNotImportant = itemsToSplit.filter(i => i.matrixX === MatrixX.Urgent && i.matrixY === MatrixY.NotImportant).map(i => transformToTodoQuadrantItem(i));
-    this.itemsNotUrgentAndNotImportant = itemsToSplit.filter(i => i.matrixX === MatrixX.NotUrgent && i.matrixY === MatrixY.NotImportant).map(i => transformToTodoQuadrantItem(i));
+    this.itemsImportantAndUrgent = items.filter(i => i.matrixY === MatrixY.Important && i.matrixX === MatrixX.Urgent).map(i => transformToTodoQuadrantItem(i));
+    this.itemsImportantAndNotUrgent = items.filter(i => i.matrixY === MatrixY.Important &&  i.matrixX === MatrixX.NotUrgent).map(i => transformToTodoQuadrantItem(i));
+    this.itemsUrgentAndNotImportant = items.filter(i => i.matrixX === MatrixX.Urgent && i.matrixY === MatrixY.NotImportant).map(i => transformToTodoQuadrantItem(i));
+    this.itemsNotUrgentAndNotImportant = items.filter(i => i.matrixX === MatrixX.NotUrgent && i.matrixY === MatrixY.NotImportant).map(i => transformToTodoQuadrantItem(i));
   }
 
   ngOnInit(): void {
-    const todoItemsSub = combineLatest([
-      this.todoDataService.getTodoItems(),
-      this.activatedRoute.paramMap
-    ])
-    .subscribe({
-      next: ([items, paramMap]) => {
+    const todoItemsSub = this.activatedRoute.paramMap.pipe(
+      switchMap((paramMap) => {
         const matrixKindId = paramMap.get(TODO_MATRIX_KIND_ID) || '';
+        if (uuidValidate(matrixKindId)) {
+          return combineLatest([
+            of(matrixKindId),
+            this.todoDataService.getTodoItemsByListId(matrixKindId)
+          ]);
+        } else {
+          return  combineLatest([
+            of(matrixKindId),
+            this.todoDataService.getTodoItems().pipe(
+              map((items) => this.filterItemsByMatrixKind(matrixKindId, items)))
+          ]);
+        }
+      })
+    ).subscribe({
+      next: ([matrixKindId, items]) => {
         this.initComponent(matrixKindId, items ?? []);
       },
       error: (err) => {
         this.toastr.error(err);
       }
     });
+    // const todoItemsSub = combineLatest([
+    //   this.todoDataService.getTodoItems(),
+      
+    // ])
+    // .subscribe({
+    //   next: ([items, paramMap]) => {
+        
+    //     this.initComponent(matrixKindId, items ?? []);
+    //   },
+    //   error: (err) => {
+    //     this.toastr.error(err);
+    //   }
+    // });
     this.subscriptions.push(todoItemsSub);
   }
 

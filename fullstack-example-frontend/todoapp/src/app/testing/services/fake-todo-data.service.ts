@@ -1,5 +1,6 @@
 import { TodoList, TodoItem } from 'src/app/common/models';
 import { ReplaySubject, Observable, EMPTY, of, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class FakeTodoService {
   public getTodoItemReturnValue = new ReplaySubject<TodoItem | undefined>();
@@ -25,6 +26,10 @@ export class FakeTodoService {
 
   public getTodoItems(): Observable<TodoItem[]> {
     return this.getTodoItemsReturnValue.asObservable();
+  }
+
+  public getTodoItemsByListId(listId: string): Observable<TodoItem[]> {
+    return this.getTodoItems().pipe(map(items => items.filter(i => i.listId === listId)));
   }
 
   public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
