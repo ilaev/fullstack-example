@@ -163,6 +163,8 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
   }
 
   public onCancel(): void {
+    // TODO: remember previous route and navigate back to it.
+    // since this dialog can be opened from multiple other routes, it's better for the user to be redirected back to his previous view
     this.router.navigate(['/']);
   }
 
@@ -173,6 +175,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
       this.todoDataService.setTodoItem(todoItemToSave).subscribe({
         next: (result) => {
           // TODO: reset component after save to 'new' state?
+          this.initComponent(this.createEmptyTodoItem(), this.todoLists);
           this.toastr.success('Item saved.');
           this.deactivateSpinner();
         },

@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { of, Observable, BehaviorSubject } from 'rxjs';
-import { TodoItem, TodoList } from 'src/app/common/models';
+import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { DateTime } from 'luxon';
 
 
@@ -34,7 +34,15 @@ const INITIAL_MOCK_DATA: TodoList[] = [
 ];
 
 const INITIAL_MOCK_TODO_ITEM_DATA: TodoItem[] = [
+  new TodoItem('id1', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 1', MatrixX.Urgent, MatrixY.Important, "Note 1", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, true),
+  new TodoItem('id2', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 2', MatrixX.Urgent, MatrixY.NotImportant, "Note 2", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id3', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 3', MatrixX.NotUrgent, MatrixY.Important, "Note 3", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id4', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 4', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 4", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
 
+  new TodoItem('id5', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 5', MatrixX.Urgent, MatrixY.Important, "Note 5", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id6', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 6', MatrixX.Urgent, MatrixY.NotImportant, "Note 6", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id7', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 7', MatrixX.NotUrgent, MatrixY.Important, "Note 7", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
+  new TodoItem('id8', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 8', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 8", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
 ];
 
 @Injectable({
@@ -58,6 +66,14 @@ export class TodoDataService {
     );
   }
 
+  public getTodoItemsByListId(listId: string): Observable<TodoItem[]> {
+    return this.getTodoItems().pipe(
+      map((items) => {
+        return items.filter(i => i.listId === listId);
+      })
+    );
+  }
+
   public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
     const currentItems = this.todoItemsSubject.getValue();
     let itemToAdd;
@@ -68,6 +84,48 @@ export class TodoDataService {
     const newTodoItemList = currentItems.concat([itemToAdd]);
     this.todoItemsSubject.next(newTodoItemList);
     return of(itemToAdd);
+  }
+
+  public setTodoItems(todoItems: TodoItem[]): Observable<TodoItem[]> {
+    const currentItems = this.todoItemsSubject.getValue();
+    const itemsToAdd: TodoItem[] = [];
+
+    todoItems.forEach(todoItem => {
+      let itemToAdd: TodoItem | null = null;
+      if (todoItem.id === '')
+          itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
+      else 
+        itemToAdd = todoItem;
+      
+      itemsToAdd.push(itemToAdd);
+    });
+
+    for(let i = 0; i < itemsToAdd.length; i++) {
+      for (let j = 0; j < currentItems.length; j++) {
+        if (itemsToAdd[i].id === currentItems[j].id) {
+          currentItems[j] = itemsToAdd[i];
+        }
+      }
+    }
+    this.todoItemsSubject.next(currentItems);
+    return of(itemsToAdd);
+  }
+
+  public markAsDone(todoItemIds: string[]): Observable<TodoItem[]> {
+    const currentItems = this.todoItemsSubject.getValue();
+    const affectedItems: TodoItem[] = [];
+
+    for(let i = 0; i < currentItems.length; i++) {
+      const item = currentItems[i];
+      for(let j = 0; j < todoItemIds.length; j++) {
+        if (item.id === todoItemIds[j]) {
+          item.markedAsDone = true;
+          affectedItems.push(item);
+        }
+      }
+    }
+
+    return this.setTodoItems(affectedItems);
   }
 
   public getLists(): Observable<TodoList[]> {

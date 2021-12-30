@@ -1,0 +1,12 @@
+<div class="h-full w-full flex flex-col">
+    <mat-selection-list (selectionChange)="onSelect($event)" class="todo-items overflow-y-auto" *ngIf="!!items">
+        <mat-list-option *ngFor="let item of items; index as i" [value]="items[i]" checkboxPosition="before">
+            <div class="flex flex-row justify-between items-center">
+                <div [ngClass]="{ done: item.markedAsDone }">{{ item.name }}</div> 
+                <button (click)="edit($event, item)" class="opacity-50" mat-icon-button>
+                    <mat-icon>edit</mat-icon>
+                </button>
+                </div>
+        </mat-list-option>
+    </mat-selection-list>
+</div>

@@ -9,3 +9,12 @@ export function isDateEqual(date1: DateTime | null, date2: DateTime | null): boo
     }
     return result;
 }
+
+/**
+ * Returns current date without the time  
+ * @returns DateTime
+ */
+export function getToday(): DateTime {
+    const now = DateTime.now();
+    return DateTime.utc(now.year, now.month, now.day);
+}

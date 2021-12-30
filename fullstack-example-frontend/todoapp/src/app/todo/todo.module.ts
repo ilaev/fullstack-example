@@ -1,3 +1,4 @@
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +25,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ColorCircleModule } from 'ngx-color/circle';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { TodoMatrixQuadrantComponent } from './components/todo-matrix-quadrant/todo-matrix-quadrant.component';
+import { Settings } from 'luxon';
+import { DATE_LOCALE } from '../common/date-locale';
 
 
 @NgModule({
@@ -32,7 +36,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     SidenavComponent,
     TodoMatrixComponent,
     TodoListEditorComponent,
-    TodoItemEditorComponent
+    TodoItemEditorComponent,
+    TodoMatrixQuadrantComponent
   ],
   imports: [
     CommonModule,
@@ -52,12 +57,17 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     MatButtonToggleModule,
     MatDatepickerModule,
     MatLuxonDateModule,  // NOTE: if I want a different starting week, I have to extend LuxonDateAdapter and override the getFirstDayOfWeek method. Will be necessary for german language
-    MatSelectModule
+    MatSelectModule,
+    MatMenuModule
   ],
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    {provide: MAT_DATE_LOCALE, useValue: DATE_LOCALE.EN_GB },
     {provide: MAT_LUXON_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true }}
   ],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
-export class TodoModule { }
+export class TodoModule { 
+  constructor(){
+    Settings.defaultLocale = DATE_LOCALE.EN_GB;
+  }
+}
