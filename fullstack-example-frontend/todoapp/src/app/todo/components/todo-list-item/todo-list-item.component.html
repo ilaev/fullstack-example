@@ -1,16 +1,18 @@
-<div class="f">
-    <div>
-        <mat-checkbox class="text-lg">
-            Buy woodworking material
-        </mat-checkbox>
-    </div>
-    <div class="mt-1">
-        <div class="flex text-xs ml-6">
-            <div class="flex-1 flex items-center">
-                <div class="flex-none h-2 w-2 rounded-full bg-red-500 mr-1"></div>
-                <div class="flex-1">Project Y</div>
+<ng-container *ngIf="item">
+    <div class="">
+        <div>
+            <mat-checkbox class="text-lg">
+                 {{ item.name }}
+            </mat-checkbox>
+        </div>
+        <div class="mt-1">
+            <div class="flex text-xs ml-6 space-x-8">
+                <div class="flex-auto flex items-center" *ngIf="item.listName">
+                    <div class="flex-none h-2 w-2 rounded-full mr-1" [style.backgroundColor]="item.listColor"></div>
+                    <div class="flex-auto"> {{ item.listName }}</div>
+                </div>
+                <div *ngIf="item.dueDate" class="flex-auto" matTooltip="Due date" matTooltipPosition="left">{{ item.dueDate }}</div>
             </div>
-            <div class="flex-1" matTooltip="Due date" matTooltipPosition="left">17. Dez 2021</div>
         </div>
     </div>
-</div>
+</ng-container>

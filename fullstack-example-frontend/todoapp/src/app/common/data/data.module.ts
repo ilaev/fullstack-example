@@ -31,7 +31,7 @@ export class DataModule {
     // hide web api module from rest of the app.
     const apiSettings: TodoApiSettings = {
       todoApiUri: dataSettings.todoApiUri
-    }
+    };
 
     return {
       ngModule: DataModule,
@@ -39,7 +39,7 @@ export class DataModule {
         { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: apiSettings },
         { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
       ]
-    }
+    };
   }
 
   static forChild(): ModuleWithProviders<DataModule> {
@@ -47,6 +47,6 @@ export class DataModule {
       ngModule: DataModule,
       providers: [
       ]
-    }
+    };
   }
 }

@@ -51,7 +51,6 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
         return items;
       case MATRIX_KIND.TODAY:
         return items.filter(i => {
-          console.log(`${i.id}: ${i.dueDate}`);
           if (i.dueDate == null) {
             // for now show items without a duedate in today
             return true;
