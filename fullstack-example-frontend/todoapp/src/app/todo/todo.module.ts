@@ -28,6 +28,9 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { TodoMatrixQuadrantComponent } from './components/todo-matrix-quadrant/todo-matrix-quadrant.component';
 import { Settings } from 'luxon';
 import { DATE_LOCALE } from '../common/date-locale';
+import { TodoListViewComponent } from './components/todo-list-view/todo-list-view.component';
+import { TodoListComponent } from './components/todo-list/todo-list.component';
+import { TodoListItemComponent } from './components/todo-list-item/todo-list-item.component';
 
 
 @NgModule({
@@ -37,7 +40,10 @@ import { DATE_LOCALE } from '../common/date-locale';
     TodoMatrixComponent,
     TodoListEditorComponent,
     TodoItemEditorComponent,
-    TodoMatrixQuadrantComponent
+    TodoMatrixQuadrantComponent,
+    TodoListViewComponent,
+    TodoListComponent,
+    TodoListItemComponent
   ],
   imports: [
     CommonModule,

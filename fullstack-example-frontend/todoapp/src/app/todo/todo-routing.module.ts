@@ -7,6 +7,7 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { TodoRootComponent } from './components/todo-root/todo-root.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { TodoListViewComponent } from './components/todo-list-view/todo-list-view.component';
 
 const routes: Routes = [
   {
@@ -19,7 +20,7 @@ const routes: Routes = [
       },
       {
         path: 'list-view/:' + TODO_MATRIX_KIND_ID,
-        // TODO: create component
+        component: TodoListViewComponent
       },
       {
         path: 'lists/:id',
