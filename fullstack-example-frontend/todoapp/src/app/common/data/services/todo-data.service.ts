@@ -1,8 +1,9 @@
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { of, Observable, BehaviorSubject } from 'rxjs';
-import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
+import { MatrixX, MatrixY, TodoItem, TodoList, TodoStats } from 'src/app/common/models';
 import { DateTime } from 'luxon';
+import { getToday } from '../../date-utility';
 
 
 const INITIAL_MOCK_DATA: TodoList[] = [
@@ -70,6 +71,21 @@ export class TodoDataService {
     return this.getTodoItems().pipe(
       map((items) => {
         return items.filter(i => i.listId === listId);
+      })
+    );
+  }
+
+  public getTodoStats(): Observable<TodoStats> {
+    return this.getTodoItems().pipe(
+      map((items) => {
+        const todoItemsDueDateGreaterThanOrEqualToToday = items.filter(i => {
+          return i.dueDate ? i.dueDate >= getToday() : true;  
+
+        });
+        const numberOfItemsMarkedAsDone = todoItemsDueDateGreaterThanOrEqualToToday.reduce((prevValue, currentItem, index) => {
+          return currentItem.markedAsDone ? prevValue + 1 : prevValue + 0;
+        }, 0);
+        return new TodoStats(numberOfItemsMarkedAsDone, todoItemsDueDateGreaterThanOrEqualToToday.length);
       })
     );
   }

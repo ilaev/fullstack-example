@@ -1,3 +1,4 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TodoDataService } from 'src/app/common/data';
 import { ReplaySubject, Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
@@ -15,9 +16,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Component, DebugElement, Directive, HostListener, Input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { Router, Routes } from '@angular/router';
-import { TodoList } from 'src/app/common/models';
+import { TodoList, TodoStats } from 'src/app/common/models';
 import { rgb2hex } from 'src/app/common/color-utility';
 import { DateTime } from 'luxon';
+import { FakeTodoService } from 'src/app/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { MatProgressSpinnerHarness } from '@angular/material/progress-spinner/testing';
 
 
 @Component({
@@ -62,17 +66,7 @@ export class RouterLinkDirectiveStub {
 }
 
 
-class TodoDataServiceFake {
-  private getListsSubject: ReplaySubject<TodoList[]> = new ReplaySubject<TodoList[]>();
 
-  public getLists(): Observable<TodoList[]> {
-    return this.getListsSubject.asObservable();
-  }
-
-  public setGetLists(lists: TodoList[]): void {
-    this.getListsSubject.next(lists);
-  }
-}
 
 function getDebugElemsAndRouterLinks(fixture: ComponentFixture<SidenavComponent>): [DebugElement[], RouterLinkDirectiveStub[]] {
   const linkDes = fixture.debugElement.queryAll(By.directive(RouterLinkDirectiveStub));
@@ -90,13 +84,14 @@ describe('SidenavComponent', () => {
   let component: SidenavComponent;
   let fixture: ComponentFixture<SidenavComponent>;
   let router: Router;
-  const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
+  let loader: HarnessLoader;
 
-  let todoDataServiceFake: TodoDataServiceFake;
+  let fakeTodoDataService: FakeTodoService;
   beforeEach(async () => {
+    const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
+    fakeTodoDataService = new FakeTodoService();
+    fakeTodoDataService.setGetLists(INITIAL_MOCK_DATA);
 
-    todoDataServiceFake = new TodoDataServiceFake();
-    todoDataServiceFake.setGetLists(INITIAL_MOCK_DATA);
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes(routes),
@@ -116,7 +111,7 @@ describe('SidenavComponent', () => {
       ],
       providers: [
         { provide: ToastrService, useValue: toastrSpy },
-        { provide: TodoDataService, useValue: todoDataServiceFake }
+        { provide: TodoDataService, useValue: fakeTodoDataService }
       ]
     })
       .compileComponents();
@@ -126,6 +121,7 @@ describe('SidenavComponent', () => {
     fixture = TestBed.createComponent(SidenavComponent);
     router = TestBed.inject(Router);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
   it('should create', () => {
@@ -133,11 +129,25 @@ describe('SidenavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display today\'s progress.', () => {
+  it('should display progress.', fakeAsync(() => {
+    fakeTodoDataService.setGetTodoStats(new TodoStats(2, 4));
     fixture.detectChanges();
+    tick();
     const progressContentElem = fixture.nativeElement.querySelector('.progress-container div') as HTMLElement;
-    expect(progressContentElem.innerText).toEqual('9 / 12');
-  });
+    expect(progressContentElem.innerText).toEqual('2 / 4');
+  }));
+
+  it('should display progress spinner.', fakeAsync(async () => {
+    const stats = new TodoStats(2, 4);
+    fakeTodoDataService.setGetTodoStats(stats);
+    fixture.detectChanges();
+    tick();
+
+    const matProgressHarness = await loader.getHarness(MatProgressSpinnerHarness.with({selector: 'mat-progress-spinner'}));
+    const matProgressValue = await matProgressHarness.getValue();
+
+    expect(matProgressValue).toEqual(stats.numberOfItemsMarkedAsDonePercentage);
+  }));
 
   it('should have a redirect to today matrix view.', () => {
     fixture.detectChanges();
