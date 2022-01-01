@@ -16,8 +16,8 @@
             </mat-form-field>
             <mat-form-field class="mb-4">
                 <mat-label>Description (optional)</mat-label>
-                <textarea formControlName="description" matInput [mat-autosize]="true" [matAutosizeMaxRows]="5"
-                    [matAutosizeMinRows]="5" type="text"></textarea>
+                <textarea formControlName="description" matInput [cdkTextareaAutosize]="true" [cdkAutosizeMaxRows]="5"
+                    [cdkAutosizeMinRows]="5" type="text"></textarea>
             </mat-form-field>
             <color-circle formControlName="bgColor" class="mb-8"></color-circle>
             <div class="w-full flex justify-end gap-x-5">
