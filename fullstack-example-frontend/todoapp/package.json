@@ -2,12 +2,12 @@
   "name": "todoapp",
   "version": "0.0.0",
   "scripts": {
-    "ng": "./node_modules/@angular/cli/bin/ng",
-    "start": "./node_modules/@angular/cli/bin/ng serve",
-    "build": "NODE_ENV=production ./node_modules/@angular/cli/bin/ng build",
-    "watch": "./node_modules/@angular/cli/bin/ng build --watch --configuration development",
-    "test": "./node_modules/@angular/cli/bin/ng test",
-    "lint": "ng lint"
+    "ng": "./node_modules/.bin/ng",
+    "start": "./node_modules/.bin/ng serve",
+    "build": "NODE_ENV=production ./node_modules/.bin/ng build",
+    "watch": "./node_modules/.bin/ng build --watch --configuration development",
+    "test": "./node_modules/.bin/ng test",
+    "lint": "./node_modules/.bin/ng lint"
   },
   "private": true,
   "dependencies": {
