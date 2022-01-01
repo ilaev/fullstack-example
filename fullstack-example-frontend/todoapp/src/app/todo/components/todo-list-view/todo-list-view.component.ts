@@ -27,6 +27,7 @@ interface ExtractedParams {
 export class TodoListViewComponent implements OnInit, OnDestroy {
   public title = ''
   public subtitle = '';
+  public headerBgColor = '#3b82f6';
   public todoViewListItems: TodoViewListItem[] = [];
   private subscriptions: Subscription[];
   constructor(
@@ -130,8 +131,9 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
     if (uuidValidate(extractedParams.matrixKindId)) {
       const list = todoLists.find(l => l.id === extractedParams.matrixKindId);
       this.title = list ? list.name : 'LIST NOT FOUND';
+      this.headerBgColor = list ? list.color : this.headerBgColor;
     } else {
-      this.title = this.toStringMatrixKindId(extractedParams.matrixKindId)
+      this.title = this.toStringMatrixKindId(extractedParams.matrixKindId);
     }
     // TODO: this component should be able to display everything from matrixkindid or list
     // so subtitle will be removed?
