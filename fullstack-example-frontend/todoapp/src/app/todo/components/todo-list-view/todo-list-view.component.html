@@ -1,5 +1,5 @@
 <div class="h-full w-full flex flex-col">
-    <div class="h-32 flex-none bg-blue-500 flex items-center shadow-md shadow-black ">
+    <div class="h-32 flex-none bg-blue-500 flex items-center shadow shadow-gray-900 ">
         <!-- HEADER -->
         <div class="flex-1 text-white ml-6">
             <p class="text-3xl m-0">{{ title }}</p>
@@ -23,6 +23,7 @@
                 <mat-list-item class="my-4" role="listitem">
                     <app-todo-list-item [item]="item"></app-todo-list-item>
                 </mat-list-item>
+                <mat-divider></mat-divider>
             </ng-container>
             <!-- <mat-divider></mat-divider>
             <mat-list-item class="my-4" role="listitem">
