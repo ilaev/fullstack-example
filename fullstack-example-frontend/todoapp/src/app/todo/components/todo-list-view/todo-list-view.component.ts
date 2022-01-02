@@ -3,13 +3,14 @@ import { TODO_MATRIX_KIND_ID, TODO_QUERY_PARAM_MATRIX_Y, TODO_QUERY_PARAM_MATRIX
 import { combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
+import { first, map, switchMap } from 'rxjs/operators';
 import { validate as uuidValidate } from 'uuid';
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { TodoDataService } from 'src/app/common/data';
 import { filterItemsByMatrixKind } from '../../filters';
 import { MATRIX_KIND } from '../../matrix-kind';
 import { DateTime } from 'luxon';
+import { NavigationService } from 'src/app/root/services/navigation.service';
 
 
 
@@ -32,7 +33,8 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[];
   constructor(
     private activatedRoute: ActivatedRoute,
-    private todoDataService: TodoDataService
+    private todoDataService: TodoDataService,
+    private navigationService: NavigationService
   ) {
     this.subscriptions = [];
   }
@@ -41,23 +43,21 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
 
     const $params = combineLatest([ this.activatedRoute.paramMap, this.activatedRoute.queryParamMap ]).pipe(
       map(([paramMap, queryParamMap]) => {
-        console.log('paramMap', paramMap);
-        console.log('queryParamMap: ', queryParamMap);
         const matrixKindId = paramMap.get(TODO_MATRIX_KIND_ID) || '';
         
-        const parsedIntY = parseInt(queryParamMap.get(TODO_QUERY_PARAM_MATRIX_Y) || '');
+        const queryParamY = queryParamMap.get(TODO_QUERY_PARAM_MATRIX_Y);
+        const parsedIntY = parseInt( queryParamY != null ? queryParamY : '');
         const matrixY: MatrixY | undefined = Number.isNaN(parsedIntY)  ? undefined : parsedIntY;
-        const parsedIntX = parseInt(queryParamMap.get(TODO_QUERY_PARAM_MATRIX_X) || '');
+        const queryParamX = queryParamMap.get(TODO_QUERY_PARAM_MATRIX_X);
+        const parsedIntX = parseInt( queryParamX != null ? queryParamX : '');
         const matrixX: MatrixX | undefined = Number.isNaN(parsedIntX) ? undefined : parsedIntX;
 
-        console.log(`${matrixKindId}`);
         const params: ExtractedParams = {
           isCustomUserList: uuidValidate(matrixKindId),
           matrixKindId: matrixKindId,
           matrixX: matrixX,
           matrixY: matrixY
         };
-        console.log('extractedparams: ', params)
         return params;
       })
     );
@@ -106,7 +106,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
       return 'Not urgent and not important';
     }
   }
-
+  
   private toStringMatrixKindId(matrixKindId: string): string {
     switch(matrixKindId) {
       case MATRIX_KIND.ALL: return 'All';
@@ -121,6 +121,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
     return new TodoViewListItem(
       todoItem.name,
       todoItem.id,
+      todoItem.markedAsDone,
       listOfTodoItem ? listOfTodoItem.name : '',
       listOfTodoItem ? listOfTodoItem.color : '',
       dueDate
@@ -135,16 +136,12 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
     } else {
       this.title = this.toStringMatrixKindId(extractedParams.matrixKindId);
     }
-    // TODO: this component should be able to display everything from matrixkindid or list
-    // so subtitle will be removed?
     if (extractedParams.matrixX != null && extractedParams.matrixY != null)
       this.subtitle = this.toStringMatrixCoords(extractedParams.matrixX, extractedParams.matrixY);
     else
       this.subtitle = 'Displaying all items';
     
-    if (items.length > 0) {
-      // TODO: if no matrixY and matrixX are provided, we shall display everything
-      // TODO: filter by matrixX and matrixY
+      if (items.length > 0) {
       let itemsToMap = items;
       if (extractedParams.matrixX != null && extractedParams.matrixY != null)
         itemsToMap = items.filter(i => i.matrixX === extractedParams.matrixX && i.matrixY === extractedParams.matrixY);
@@ -156,8 +153,20 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
         return this.transformToTodoViewListItem(item, listOfItem);
       });
 
-      console.log('mappeditems: ', items, this.todoViewListItems)
     }
+  }
 
+  public onDoneChanged(item: TodoViewListItem): void {
+    const changes: { [ key:string ]: boolean } = {};
+    changes[item.id] = item.isDone;
+    this.todoDataService.changeDoneStatusOfItems(changes).pipe(first()).subscribe();
+  }
+
+  public onBackBtnClick(): void {
+    this.navigationService.back();
+  }
+
+  public showAllItems(): void {
+    
   }
 }

@@ -4,17 +4,27 @@ import { ReplaySubject } from 'rxjs';
 export class ActivatedRouteStub {
     // Use a ReplaySubject to share previous values with subscribers
     // and pump new values into the `paramMap` observable
-    private subject = new ReplaySubject<ParamMap>();
+    private paramMapSubject = new ReplaySubject<ParamMap>();
+    private queryParamMapSubject = new ReplaySubject<ParamMap>();
   
-    constructor(initialParams?: Params) {
-      this.setParamMap(initialParams);
+    constructor(initialParams?: Params, initialQueryParams?: Params) {
+      if (initialParams)
+        this.setParamMap(initialParams);
+      if (initialQueryParams)
+      this.setQueryParamMap(initialQueryParams);
     }
   
     /** The mock paramMap observable */
-    readonly paramMap = this.subject.asObservable();
+    readonly paramMap = this.paramMapSubject.asObservable();
+    
+    readonly queryParamMap = this.queryParamMapSubject.asObservable();
   
     /** Set the paramMap observable's next value */
-    setParamMap(params: Params = {}) {
-      this.subject.next(convertToParamMap(params));
+    setParamMap(params: Params = {}): void {
+      this.paramMapSubject.next(convertToParamMap(params));
+    }
+
+    setQueryParamMap(queryParams: Params = {}): void {
+      this.queryParamMapSubject.next(convertToParamMap(queryParams));
     }
 }

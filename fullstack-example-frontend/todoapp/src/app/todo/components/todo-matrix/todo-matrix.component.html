@@ -11,6 +11,9 @@
                   <button mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
+                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
+                  </button>
                 </mat-menu>
             </div> 
             <app-todo-matrix-quadrant [items]="itemsImportantAndUrgent" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
@@ -23,8 +26,11 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 
@@ -38,8 +44,11 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 
@@ -53,8 +62,11 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 

@@ -243,7 +243,7 @@ describe('TodoMatrixComponent', () => {
   }));
 
   it('should be able to use marked quadrant items for action - "mark selected as done".', fakeAsync(async () => {
-    const markAsDoneSpy = spyOn(todoDataService, 'markAsDone').and.callThrough();
+    const markAsDoneSpy = spyOn(todoDataService, 'changeDoneStatusOfItems').and.callThrough();
     initComponent();
 
     // arrange by selecting some quadrant items to be marked as done
@@ -260,7 +260,35 @@ describe('TodoMatrixComponent', () => {
     await markAsDoneMenuItemHarnesses[0].click();
 
     // assert
-    expect(markAsDoneSpy).toHaveBeenCalledWith([(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id, (quadrantComponents[0].items?.[1] as TodoQuadrantItem).id]);
+    const expectedMapOfChanges: { [key: string]: boolean} = {};
+    expectedMapOfChanges[(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id] = true;
+    expectedMapOfChanges[(quadrantComponents[0].items?.[1] as TodoQuadrantItem).id] = true;
+    expect(markAsDoneSpy).toHaveBeenCalledWith(expectedMapOfChanges);
+
+  }));
+
+  it('should be able to use marked quadrant items for action - "mark selected as undone".', fakeAsync(async () => {
+    const markAsDoneSpy = spyOn(todoDataService, 'changeDoneStatusOfItems').and.callThrough();
+    initComponent();
+
+    // arrange by selecting some quadrant items to be marked as done
+    const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
+    const quadrantComponents = quadrantsDes.map(de => de.injector.get(TodoMatrixQuadrantComponentStub));
+
+    quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[0] as TodoQuadrantItem, quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    // act
+    const matMenuHarnesses = await loader.getAllHarnesses(MatMenuHarness.with({ triggerText: 'more' }));    
+    const matMenu1stQuadrant = matMenuHarnesses[0];
+    await matMenu1stQuadrant.open();
+    const markAsDoneMenuItemHarnesses = await matMenu1stQuadrant.getItems({text: 'Mark selected as undone'});
+    await markAsDoneMenuItemHarnesses[0].click();
+
+    // assert
+    const expectedMapOfChanges: { [key: string]: boolean} = {};
+    expectedMapOfChanges[(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id] = false;
+    expectedMapOfChanges[(quadrantComponents[0].items?.[1] as TodoQuadrantItem).id] = false;
+    expect(markAsDoneSpy).toHaveBeenCalledWith(expectedMapOfChanges);
 
   }));
 

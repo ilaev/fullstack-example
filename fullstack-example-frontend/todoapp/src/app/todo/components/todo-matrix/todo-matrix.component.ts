@@ -76,6 +76,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   private initComponent(matrixKindId: string, items: TodoItem[]): void {
+    this.selectedItemsMap.clear();
     this.id = matrixKindId;
     this.itemsImportantAndUrgent = items.filter(i => i.matrixY === MatrixY.Important && i.matrixX === MatrixX.Urgent).map(i => transformToTodoQuadrantItem(i));
     this.itemsImportantAndNotUrgent = items.filter(i => i.matrixY === MatrixY.Important &&  i.matrixX === MatrixX.NotUrgent).map(i => transformToTodoQuadrantItem(i));
@@ -108,19 +109,6 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
         this.toastr.error(err);
       }
     });
-    // const todoItemsSub = combineLatest([
-    //   this.todoDataService.getTodoItems(),
-      
-    // ])
-    // .subscribe({
-    //   next: ([items, paramMap]) => {
-        
-    //     this.initComponent(matrixKindId, items ?? []);
-    //   },
-    //   error: (err) => {
-    //     this.toastr.error(err);
-    //   }
-    // });
     this.subscriptions.push(todoItemsSub);
   }
 
@@ -144,7 +132,19 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   public markSelectedAsDone(): void {
-    const itemsToMarkAsDone = Array.from(this.selectedItemsMap.values());
-    this.todoDataService.markAsDone(itemsToMarkAsDone).pipe(first()).subscribe();
+    const changes: { [key: string]: boolean } = {};
+    this.selectedItemsMap.forEach((value, key) => {
+      changes[key] = true;
+    });
+    this.todoDataService.changeDoneStatusOfItems(changes).pipe(first()).subscribe();
+  }
+
+  public markSelectedAsUnDone(): void {
+    const changes: { [ key: string]: boolean } = {};
+    this.selectedItemsMap.forEach((value, key) => {
+      changes[key] = false;
+    });
+
+    this.todoDataService.changeDoneStatusOfItems(changes).pipe(first()).subscribe();
   }
 }

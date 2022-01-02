@@ -1,8 +1,8 @@
 <ng-container *ngIf="item">
-    <div class="">
-        <div>
-            <mat-checkbox class="text-lg">
-                 {{ item.name }}
+    <div class="w-full">
+        <div class="w-full">
+            <mat-checkbox class="text-lg w-full" (change)="onCheckboxChange($event, item)" [checked]="item.isDone">
+                 <span [ngClass]="{ done: item.isDone}">{{ item.name }}</span>
             </mat-checkbox>
         </div>
         <div class="mt-1">

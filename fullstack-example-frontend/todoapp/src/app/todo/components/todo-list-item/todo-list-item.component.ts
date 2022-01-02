@@ -1,5 +1,6 @@
 import { TodoViewListItem } from './../todo-view-list-item';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-todo-list-item',
@@ -8,5 +9,11 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class TodoListItemComponent {
   @Input() item: TodoViewListItem | undefined;
+  @Output() doneChanged = new EventEmitter<TodoViewListItem>();
 
+  public onCheckboxChange(event: MatCheckboxChange, item: TodoViewListItem): void {
+    console.log('item markedstatuschange: ', event, item);
+    item.isDone = event.checked;
+    this.doneChanged.next(item);
+  }
 }

@@ -127,17 +127,15 @@ export class TodoDataService {
     return of(itemsToAdd);
   }
 
-  public markAsDone(todoItemIds: string[]): Observable<TodoItem[]> {
+  public changeDoneStatusOfItems(mapOfChanges: { [key: string]: boolean }): Observable<TodoItem[]> {
     const currentItems = this.todoItemsSubject.getValue();
     const affectedItems: TodoItem[] = [];
-
-    for(let i = 0; i < currentItems.length; i++) {
-      const item = currentItems[i];
-      for(let j = 0; j < todoItemIds.length; j++) {
-        if (item.id === todoItemIds[j]) {
-          item.markedAsDone = true;
-          affectedItems.push(item);
-        }
+    const keys = Object.keys(mapOfChanges);
+    for (let i = 0; i < keys.length; i++) {
+      const currentItem = currentItems.find(item => item.id === keys[i]);
+      if (currentItem) {
+        currentItem.markedAsDone = mapOfChanges[keys[i]];
+        affectedItems.push(currentItem);
       }
     }
 
