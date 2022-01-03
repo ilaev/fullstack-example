@@ -20,6 +20,9 @@
                 <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #actionMenu>
+                <button mat-menu-item (click)="editList()">
+                    <span>Edit list</span>
+                </button>
                 <button mat-menu-item (click)="showAllItems()">
                     <span>Show all items</span>
                 </button>

@@ -29,10 +29,12 @@ describe('AppComponent', () => {
   });
 
   it('should create the app', () => {
+    fixture.detectChanges();
     expect(app).toBeTruthy();
   });
 
   it('should start tracking routing history on init.', () => {
+    fixture.detectChanges();
     expect(navigationService.trackHistory).toHaveBeenCalled();
   });
 

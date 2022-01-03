@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Injectable({
@@ -22,6 +22,10 @@ export class NavigationService {
         this.routingHistory.push((event as NavigationEnd).urlAfterRedirects);
       }
     });
+  }
+
+  public navigate(commands: any[], extras?: NavigationExtras | undefined): Promise<boolean> {
+    return this.router.navigate(commands, extras);
   }
 
   public back(): void {

@@ -1,3 +1,5 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatMenuModule } from '@angular/material/menu';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatIconModule } from '@angular/material/icon';
 import { TODO_MATRIX_KIND_ID, TODO_QUERY_PARAM_MATRIX_X, TODO_QUERY_PARAM_MATRIX_Y } from './../../todo-routing-path';
@@ -21,6 +23,8 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { MatListHarness } from '@angular/material/list/testing';
 import { NavigationService } from 'src/app/root/services/navigation.service';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { ToastrService } from 'ngx-toastr';
+import { MatMenuHarness } from '@angular/material/menu/testing';
 @Component({
   selector: 'app-todo-list-item',
   template: '<div>{{ item?.name }}</div>'
@@ -37,7 +41,7 @@ export class TodoListItemStubComponent {
   }
 }
 
-fdescribe('TodoListViewComponent', () => {
+describe('TodoListViewComponent', () => {
   let component: TodoListViewComponent;
   let fixture: ComponentFixture<TodoListViewComponent>;
   let loader: HarnessLoader;
@@ -50,18 +54,22 @@ fdescribe('TodoListViewComponent', () => {
   beforeEach(async () => {
     fakeActivatedRoute = new ActivatedRouteStub();
     fakeTodoDataService = new FakeTodoService();
-    const spyNavigationService = jasmine.createSpyObj<NavigationService>('NavigationService', ['trackHistory', 'back'])
+    const spyNavigationService = jasmine.createSpyObj<NavigationService>('NavigationService', ['trackHistory', 'back', 'navigate'])
+    const spyToastr = jasmine.createSpyObj<ToastrService>('ToastrService', ['info']);
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
+        NoopAnimationsModule,
         MatButtonModule,
         MatListModule,
-        MatIconModule
+        MatIconModule,
+        MatMenuModule
       ],
       providers: [
         { provide: ActivatedRoute, useValue: fakeActivatedRoute },
         { provide: TodoDataService, useValue: fakeTodoDataService },
-        { provide: NavigationService, useValue: spyNavigationService }
+        { provide: NavigationService, useValue: spyNavigationService },
+        { provide: ToastrService, useValue: spyToastr }
       ],
       declarations: [ 
         TodoListViewComponent,
@@ -247,8 +255,15 @@ fdescribe('TodoListViewComponent', () => {
     expect(matButtonHarnessActionMenu).toBeDefined();
   });
 
-  it('should offer action to display all items of a list.', () => {
-
+  it('should offer action to display all items of a list.', async () => {
+    const matButtonHarnessActionMenu = await loader.getHarness(MatButtonHarness.with({ text: 'more_vert' }));
+    await matButtonHarnessActionMenu.click();
+    const matMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: 'more_vert'}));
+    await matMenuHarness.open();
+    const matMenuItemsShowAllItems = await matMenuHarness.getItems({text: 'Show all items'});
+    console.log('harness: ', matMenuItemsShowAllItems);
+    await matMenuItemsShowAllItems[0].click();
+    expect(navigationService.navigate).toHaveBeenCalled();
   });
 
 

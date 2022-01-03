@@ -29,6 +29,10 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   public itemsNotUrgentAndNotImportant: TodoQuadrantItem[];  
 
   public selectedItemsMap = new Map<string, string>();
+
+  public get hasSelectedItems(): boolean {
+    return this.selectedItemsMap.size !== 0;
+  }
   private subscriptions: Subscription[];
 
   constructor(

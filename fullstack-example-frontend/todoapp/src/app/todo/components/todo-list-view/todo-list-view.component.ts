@@ -1,7 +1,7 @@
 import { TodoViewListItem } from './../todo-view-list-item';
 import { TODO_MATRIX_KIND_ID, TODO_QUERY_PARAM_MATRIX_Y, TODO_QUERY_PARAM_MATRIX_X } from './../../todo-routing-path';
 import { combineLatest, Subscription, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Params } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { first, map, switchMap } from 'rxjs/operators';
 import { validate as uuidValidate } from 'uuid';
@@ -11,6 +11,7 @@ import { filterItemsByMatrixKind } from '../../filters';
 import { MATRIX_KIND } from '../../matrix-kind';
 import { DateTime } from 'luxon';
 import { NavigationService } from 'src/app/root/services/navigation.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 
@@ -26,15 +27,17 @@ interface ExtractedParams {
   styleUrls: ['./todo-list-view.component.scss']
 })
 export class TodoListViewComponent implements OnInit, OnDestroy {
-  public title = ''
+  public title = '';
   public subtitle = '';
   public headerBgColor = '#3b82f6';
+  public userListId = '';
   public todoViewListItems: TodoViewListItem[] = [];
   private subscriptions: Subscription[];
   constructor(
     private activatedRoute: ActivatedRoute,
     private todoDataService: TodoDataService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    private toastr: ToastrService
   ) {
     this.subscriptions = [];
   }
@@ -130,6 +133,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
 
   private initComponent(extractedParams: ExtractedParams, items: TodoItem[], todoLists: TodoList[]): void {
     if (uuidValidate(extractedParams.matrixKindId)) {
+      this.userListId = extractedParams.matrixKindId;
       const list = todoLists.find(l => l.id === extractedParams.matrixKindId);
       this.title = list ? list.name : 'LIST NOT FOUND';
       this.headerBgColor = list ? list.color : this.headerBgColor;
@@ -167,6 +171,18 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   }
 
   public showAllItems(): void {
-    
+    const params: Params = {};
+    params[TODO_QUERY_PARAM_MATRIX_X] = null;
+    params[TODO_QUERY_PARAM_MATRIX_Y] = null;
+    const extras: NavigationExtras = { queryParams: params };
+    extras.queryParamsHandling = 'merge';
+    this.navigationService.navigate([], extras); 
+  }
+
+  public editList(): void {
+    if (uuidValidate(this.userListId))
+      this.navigationService.navigate(['lists/' + this.userListId]);
+    else
+      this.toastr.info('Only user created lists can be edited.');
   }
 }

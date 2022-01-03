@@ -8,10 +8,10 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item (click)="markSelectedAsDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
-                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
                     <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
@@ -26,10 +26,10 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item (click)="markSelectedAsDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
-                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
                     <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
@@ -44,10 +44,10 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item (click)="markSelectedAsDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
-                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
                     <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
@@ -62,10 +62,10 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item (click)="markSelectedAsDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
                   </button>
-                  <button mat-menu-item (click)="markSelectedAsUnDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
                     <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
