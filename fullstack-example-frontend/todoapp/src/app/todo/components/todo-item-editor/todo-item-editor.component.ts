@@ -1,3 +1,4 @@
+import { NavigationService } from './../../../root/services/navigation.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
@@ -6,7 +7,7 @@ import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from './../../../root/services/spinner.service';
 import { combineLatest, of, Subscription } from 'rxjs';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { DateTime } from 'luxon';
 
@@ -32,7 +33,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private navigationService: NavigationService,
     private spinnerService: SpinnerService,
     private toastr: ToastrService,
     private todoDataService: TodoDataService
@@ -165,7 +166,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
   public onCancel(): void {
     // TODO: remember previous route and navigate back to it.
     // since this dialog can be opened from multiple other routes, it's better for the user to be redirected back to his previous view
-    this.router.navigate(['/']);
+    this.navigationService.back();
   }
 
   public onSave(): void {
