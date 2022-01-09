@@ -1,3 +1,4 @@
+import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { MatMenuModule } from '@angular/material/menu';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { TODO_MATRIX_KIND_ID } from './../../todo-routing-path';
@@ -59,8 +60,7 @@ function getDebugElemsAndRouterLinks(fixture: ComponentFixture<TodoMatrixCompone
 describe('TodoMatrixComponent', () => {
   let component: TodoMatrixComponent;
   let fixture: ComponentFixture<TodoMatrixComponent>;
-  let router: Router;
-  let activatedRoute: ActivatedRoute;
+  let navigator: ITodoNavigator;
   let todoDataServiceFake: FakeTodoService;
   let todoDataService: TodoDataService;
   let activatedRouteStub: ActivatedRouteStub;
@@ -86,7 +86,7 @@ describe('TodoMatrixComponent', () => {
     const toastrSpy = jasmine.createSpyObj('ToastrService', ['error']);
     activatedRouteStub = new ActivatedRouteStub();
     todoDataServiceFake = new FakeTodoService(); 
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const spyNavigator = jasmine.createSpyObj<ITodoNavigator>('TodoNavigator', ['navigateToTaskEditor']);
     await TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
@@ -103,7 +103,7 @@ describe('TodoMatrixComponent', () => {
         { provide: TodoDataService, useValue: todoDataServiceFake },
         { provide: ToastrService, useValue: toastrSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
-        { provide: Router, useValue: routerSpy}
+        { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigator }
       ]
     })
     .compileComponents();
@@ -113,8 +113,7 @@ describe('TodoMatrixComponent', () => {
     fixture = TestBed.createComponent(TodoMatrixComponent);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    router = TestBed.inject(Router);
-    activatedRoute = TestBed.inject(ActivatedRoute);
+    navigator = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     todoDataService = TestBed.inject(TodoDataService);
     fixture.detectChanges();
   });
@@ -212,7 +211,7 @@ describe('TodoMatrixComponent', () => {
     
     quadrantComponents[0].edited.emit(quadrantComponents[0].items?.[0]);
     
-    expect(router.navigate).toHaveBeenCalledWith(['/tasks/', 'id1'], { relativeTo: activatedRoute });
+    expect(navigator.navigateToTaskEditor).toHaveBeenCalledWith('id1');
   }));
 
   it('should be able to collect selected quadrant items for bulk actions.', fakeAsync(() => {

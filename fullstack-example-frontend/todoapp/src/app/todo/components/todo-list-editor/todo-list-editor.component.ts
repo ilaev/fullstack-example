@@ -1,8 +1,9 @@
+import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
 import { NavigationService } from './../../../root/services/navigation.service';
 import { of, Subscription } from 'rxjs';
 import { TodoList } from 'src/app/common/models';
 import { ToastrService } from 'ngx-toastr';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TodoDataService } from 'src/app/common/data';
@@ -37,7 +38,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private navigationService: NavigationService,
+    @Inject(TODO_NAVIGATOR_TOKEN) private navigationService: ITodoNavigator,
     private toastr: ToastrService,
     private todoService: TodoDataService,
     private spinnerService: SpinnerService

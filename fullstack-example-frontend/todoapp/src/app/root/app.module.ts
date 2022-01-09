@@ -8,6 +8,8 @@ import { DataModule } from '../common/data';
 import { DATA_SETTINGS } from '../settings/data-api-settings';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
+import { TODO_NAVIGATOR_TOKEN } from '../todo';
+import { NavigationService } from './services/navigation.service';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { ToastrModule } from 'ngx-toastr';
     TodoRootComponentsModule,
     DataModule.forRoot(DATA_SETTINGS)
   ],
-  providers: [],
+  providers: [
+    { provide: TODO_NAVIGATOR_TOKEN, useClass: NavigationService }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

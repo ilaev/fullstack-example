@@ -1,8 +1,9 @@
+import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { TodoViewListItem } from './../todo-view-list-item';
-import { TODO_MATRIX_KIND_ID, TODO_QUERY_PARAM_MATRIX_Y, TODO_QUERY_PARAM_MATRIX_X } from './../../todo-routing-path';
+import {  TODO_QUERY_PARAM_MATRIX_Y, TODO_QUERY_PARAM_MATRIX_X, TODO_LIST_KIND_ID } from './../../todo-routing-path';
 import { combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute, NavigationExtras, Params } from '@angular/router';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { first, map, switchMap } from 'rxjs/operators';
 import { validate as uuidValidate } from 'uuid';
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
@@ -10,13 +11,12 @@ import { TodoDataService } from 'src/app/common/data';
 import { filterItemsByMatrixKind } from '../../filters';
 import { MATRIX_KIND } from '../../matrix-kind';
 import { DateTime } from 'luxon';
-import { NavigationService } from 'src/app/root/services/navigation.service';
 import { ToastrService } from 'ngx-toastr';
 
 
 
 interface ExtractedParams {
-  matrixKindId: string;
+  listKindId: string;
   isCustomUserList: boolean;
   matrixY: MatrixY | undefined;
   matrixX: MatrixX | undefined;
@@ -36,7 +36,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private todoDataService: TodoDataService,
-    private navigationService: NavigationService,
+    @Inject(TODO_NAVIGATOR_TOKEN) private navigator: ITodoNavigator,
     private toastr: ToastrService
   ) {
     this.subscriptions = [];
@@ -46,7 +46,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
 
     const $params = combineLatest([ this.activatedRoute.paramMap, this.activatedRoute.queryParamMap ]).pipe(
       map(([paramMap, queryParamMap]) => {
-        const matrixKindId = paramMap.get(TODO_MATRIX_KIND_ID) || '';
+        const listKindId = paramMap.get(TODO_LIST_KIND_ID) || '';
         
         const queryParamY = queryParamMap.get(TODO_QUERY_PARAM_MATRIX_Y);
         const parsedIntY = parseInt( queryParamY != null ? queryParamY : '');
@@ -56,8 +56,8 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
         const matrixX: MatrixX | undefined = Number.isNaN(parsedIntX) ? undefined : parsedIntX;
 
         const params: ExtractedParams = {
-          isCustomUserList: uuidValidate(matrixKindId),
-          matrixKindId: matrixKindId,
+          isCustomUserList: uuidValidate(listKindId),
+          listKindId: listKindId,
           matrixX: matrixX,
           matrixY: matrixY
         };
@@ -70,13 +70,13 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
         if (extractedParams.isCustomUserList) {
           return combineLatest([
             of(extractedParams),
-            this.todoDataService.getTodoItemsByListId(extractedParams.matrixKindId),
+            this.todoDataService.getTodoItemsByListId(extractedParams.listKindId),
             this.todoDataService.getLists()
           ]);
         } else {
           return combineLatest([
             of(extractedParams),
-            this.todoDataService.getTodoItems().pipe(map(items => filterItemsByMatrixKind(extractedParams.matrixKindId, items))),
+            this.todoDataService.getTodoItems().pipe(map(items => filterItemsByMatrixKind(extractedParams.listKindId, items))),
             this.todoDataService.getLists()
           ]);
         }
@@ -132,13 +132,13 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   }
 
   private initComponent(extractedParams: ExtractedParams, items: TodoItem[], todoLists: TodoList[]): void {
-    if (uuidValidate(extractedParams.matrixKindId)) {
-      this.userListId = extractedParams.matrixKindId;
-      const list = todoLists.find(l => l.id === extractedParams.matrixKindId);
+    if (uuidValidate(extractedParams.listKindId)) {
+      this.userListId = extractedParams.listKindId;
+      const list = todoLists.find(l => l.id === extractedParams.listKindId);
       this.title = list ? list.name : 'LIST NOT FOUND';
       this.headerBgColor = list ? list.color : this.headerBgColor;
     } else {
-      this.title = this.toStringMatrixKindId(extractedParams.matrixKindId);
+      this.title = this.toStringMatrixKindId(extractedParams.listKindId);
     }
     if (extractedParams.matrixX != null && extractedParams.matrixY != null)
       this.subtitle = this.toStringMatrixCoords(extractedParams.matrixX, extractedParams.matrixY);
@@ -167,7 +167,7 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   }
 
   public onBackBtnClick(): void {
-    this.navigationService.back();
+    this.navigator.back();
   }
 
   public showAllItems(): void {
@@ -176,12 +176,12 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
     params[TODO_QUERY_PARAM_MATRIX_Y] = null;
     const extras: NavigationExtras = { queryParams: params };
     extras.queryParamsHandling = 'merge';
-    this.navigationService.navigate([], extras); 
+    this.navigator.navigate([], extras); 
   }
 
   public editList(): void {
     if (uuidValidate(this.userListId))
-      this.navigationService.navigate(['lists/' + this.userListId]);
+      this.navigator.navigateToListEditor(this.userListId);
     else
       this.toastr.info('Only user created lists can be edited.');
   }

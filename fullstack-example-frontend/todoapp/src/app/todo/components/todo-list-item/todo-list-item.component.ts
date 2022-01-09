@@ -12,7 +12,6 @@ export class TodoListItemComponent {
   @Output() doneChanged = new EventEmitter<TodoViewListItem>();
 
   public onCheckboxChange(event: MatCheckboxChange, item: TodoViewListItem): void {
-    console.log('item markedstatuschange: ', event, item);
     item.isDone = event.checked;
     this.doneChanged.next(item);
   }

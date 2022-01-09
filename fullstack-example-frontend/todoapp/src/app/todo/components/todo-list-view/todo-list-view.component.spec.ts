@@ -1,8 +1,9 @@
+import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatMenuModule } from '@angular/material/menu';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatIconModule } from '@angular/material/icon';
-import { TODO_MATRIX_KIND_ID, TODO_QUERY_PARAM_MATRIX_X, TODO_QUERY_PARAM_MATRIX_Y } from './../../todo-routing-path';
+import { TODO_LIST_KIND_ID, TODO_QUERY_PARAM_MATRIX_X, TODO_QUERY_PARAM_MATRIX_Y } from './../../todo-routing-path';
 import { MatListModule } from '@angular/material/list';
 import { ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,11 +18,10 @@ import { DateTime } from 'luxon';
 import { MATRIX_KIND } from '../../matrix-kind';
 import { getToday } from 'src/app/common/date-utility';
 import { By } from '@angular/platform-browser';
-import { Component, EventEmitter, Input, Output, Inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TodoViewListItem } from '../todo-view-list-item';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { MatListHarness } from '@angular/material/list/testing';
-import { NavigationService } from 'src/app/root/services/navigation.service';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { ToastrService } from 'ngx-toastr';
 import { MatMenuHarness } from '@angular/material/menu/testing';
@@ -46,7 +46,7 @@ describe('TodoListViewComponent', () => {
   let fixture: ComponentFixture<TodoListViewComponent>;
   let loader: HarnessLoader;
   let todoDataService: TodoDataService;
-  let navigationService: NavigationService;
+  let navigationService: ITodoNavigator;
 
   let fakeActivatedRoute: ActivatedRouteStub;
   let fakeTodoDataService: FakeTodoService;
@@ -54,7 +54,7 @@ describe('TodoListViewComponent', () => {
   beforeEach(async () => {
     fakeActivatedRoute = new ActivatedRouteStub();
     fakeTodoDataService = new FakeTodoService();
-    const spyNavigationService = jasmine.createSpyObj<NavigationService>('NavigationService', ['trackHistory', 'back', 'navigate'])
+    const spyNavigationService = jasmine.createSpyObj<ITodoNavigator>('NavigationService', [ 'back', 'navigate', 'navigateToListEditor']);
     const spyToastr = jasmine.createSpyObj<ToastrService>('ToastrService', ['info']);
     await TestBed.configureTestingModule({
       imports: [
@@ -68,7 +68,7 @@ describe('TodoListViewComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: fakeActivatedRoute },
         { provide: TodoDataService, useValue: fakeTodoDataService },
-        { provide: NavigationService, useValue: spyNavigationService },
+        { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigationService },
         { provide: ToastrService, useValue: spyToastr }
       ],
       declarations: [ 
@@ -83,7 +83,7 @@ describe('TodoListViewComponent', () => {
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
     todoDataService = TestBed.inject(TodoDataService);
-    navigationService = TestBed.inject(NavigationService);
+    navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
   });
 
   function initComponent(items: TodoItem[] = [], matrixKindId = MATRIX_KIND.ALL, matrixX: MatrixX | null = MatrixX.Urgent, matrixY: MatrixY | null = MatrixY.Important): void {
@@ -112,7 +112,7 @@ describe('TodoListViewComponent', () => {
     
     
     const params: Params = {};
-    params[TODO_MATRIX_KIND_ID] = matrixKindId;
+    params[TODO_LIST_KIND_ID] = matrixKindId;
     fakeActivatedRoute.setParamMap(params);
 
     if (matrixX != null && matrixY != null) {
@@ -261,10 +261,21 @@ describe('TodoListViewComponent', () => {
     const matMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: 'more_vert'}));
     await matMenuHarness.open();
     const matMenuItemsShowAllItems = await matMenuHarness.getItems({text: 'Show all items'});
-    console.log('harness: ', matMenuItemsShowAllItems);
     await matMenuItemsShowAllItems[0].click();
     expect(navigationService.navigate).toHaveBeenCalled();
   });
+
+  it('should offer action to edit list.', fakeAsync(async () => {
+    initComponent([], '6a93632e-0e04-47ea-bd7f-619862a71c30');
+    const matButtonHarnessActionMenu = await loader.getHarness(MatButtonHarness.with({ text: 'more_vert' }));
+    await matButtonHarnessActionMenu.click();
+    const matMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: 'more_vert'}));
+    await matMenuHarness.open();
+    const matMenuItemsEditList = await matMenuHarness.getItems({text: 'Edit list'});
+    await matMenuItemsEditList[0].click();
+    expect(navigationService.navigateToListEditor).toHaveBeenCalledWith(component.userListId);
+  }));
+
 
 
 });

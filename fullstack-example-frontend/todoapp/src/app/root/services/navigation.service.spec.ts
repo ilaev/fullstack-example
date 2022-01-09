@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { NavigationService } from './navigation.service';
 
@@ -7,10 +8,9 @@ describe('NavigationService', () => {
   let service: NavigationService;
 
   beforeEach(() => {
-    const spyRouter = jasmine.createSpyObj('Router', ['events', 'navigate']);
     TestBed.configureTestingModule({
+      imports: [ RouterTestingModule ],
       providers: [
-        { provide: Router, useValue: spyRouter }
       ]
     });
     service = TestBed.inject(NavigationService);

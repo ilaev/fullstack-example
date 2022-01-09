@@ -1,9 +1,10 @@
+import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { combineLatest, Subscription, of } from 'rxjs';
 import { TodoQuadrantItem } from './../todo-matrix-quadrant/todo-quadrant-item';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { TodoDataService } from 'src/app/common/data';
 import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
 import { TODO_MATRIX_KIND_ID } from '../../todo-routing-path';
@@ -39,7 +40,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
     private todoDataService: TodoDataService,
     private toastr: ToastrService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    @Inject(TODO_NAVIGATOR_TOKEN) private navigator: ITodoNavigator 
   ) {
     this.itemsImportantAndUrgent = [];
     this.itemsImportantAndNotUrgent = [];
@@ -121,8 +122,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   public onEdit(quadrantItem: TodoQuadrantItem): void {
-    // TODO: centralize navigation
-    this.router.navigate(['/tasks/', quadrantItem.id], {relativeTo: this.activatedRoute }); 
+    this.navigator.navigateToTaskEditor(quadrantItem.id); 
   }
 
   public onMarked(quadrantItems: TodoQuadrantItem[]): void {
