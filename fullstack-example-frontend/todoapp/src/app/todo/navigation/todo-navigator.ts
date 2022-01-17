@@ -15,7 +15,7 @@ export class TodoNavigator {
 
     public static isSidenavActive(router: Router, sidenav?: string): boolean {
         const currentSidenav = new Navigator(router, []).getAuxiliaryOutletValue(ROUTER_OUTLET_SIDENAV);
-        return currentSidenav ? sidenav === currentSidenav : !!currentSidenav;
+        return sidenav ? sidenav === currentSidenav : !!currentSidenav;
     }
 
     public static navigationEndEvents(events: Observable<Event>): Observable<NavigationEnd> {
@@ -23,7 +23,7 @@ export class TodoNavigator {
             filter((event) => event instanceof NavigationEnd)) as Observable<NavigationEnd>;
     }
 
-    public static switchSidebarOn(router: Router, baseCommands: any[], extras?: NavigationExtras): Promise<boolean> {
+    public static switchSidenavOn(router: Router, baseCommands: any[], extras?: NavigationExtras): Promise<boolean> {
         return new Navigator(router, baseCommands).setAuxiliaryOutlet(ROUTER_OUTLET_SIDENAV, 'leftnav').navigate(extras);
     }
 

@@ -57,7 +57,7 @@ export class NavigationService implements ITodoNavigator  {
   }
 
   public switchSidebarOn(): Promise<boolean> {
-    return TodoNavigator.switchSidebarOn(this.router, []);
+    return TodoNavigator.switchSidenavOn(this.router, []);
   }
 
   public trackHistory(): void {
