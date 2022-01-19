@@ -4,7 +4,7 @@ import { of, Observable, BehaviorSubject } from 'rxjs';
 import { MatrixX, MatrixY, TodoItem, TodoList, TodoStats } from 'src/app/common/models';
 import { DateTime } from 'luxon';
 import { getToday } from '../../date-utility';
-
+import { v4 as uuidv4 } from 'uuid';
 
 const INITIAL_MOCK_DATA: TodoList[] = [
   new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
@@ -92,14 +92,17 @@ export class TodoDataService {
 
   public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
     const currentItems = this.todoItemsSubject.getValue();
-    let itemToAdd;
-    if (todoItem.id === '')
-      itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
-    else 
-      itemToAdd = todoItem;
-    const newTodoItemList = currentItems.concat([itemToAdd]);
-    this.todoItemsSubject.next(newTodoItemList);
-    return of(itemToAdd);
+    const foundItemIndex = currentItems.findIndex(i => i.id === todoItem.id);
+    if (foundItemIndex === -1) {
+      const itemToAdd = new TodoItem(uuidv4(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
+      const newTodoItemList = currentItems.concat([itemToAdd]);
+      this.todoItemsSubject.next(newTodoItemList);
+      return of(itemToAdd);
+    } else {
+      currentItems[foundItemIndex] = todoItem;
+      this.todoItemsSubject.next(currentItems);
+      return of(todoItem);
+    }
   }
 
   public setTodoItems(todoItems: TodoItem[]): Observable<TodoItem[]> {
@@ -107,23 +110,20 @@ export class TodoDataService {
     const itemsToAdd: TodoItem[] = [];
 
     todoItems.forEach(todoItem => {
-      let itemToAdd: TodoItem | null = null;
-      if (todoItem.id === '')
-          itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
-      else 
-        itemToAdd = todoItem;
-      
-      itemsToAdd.push(itemToAdd);
+      const foundItemIndex = currentItems.findIndex(i => i.id === todoItem.id);
+      if (foundItemIndex === -1) {
+        const itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
+        itemsToAdd.push(itemToAdd);
+      } else {
+        currentItems[foundItemIndex] = todoItem;
+      }
     });
 
-    for(let i = 0; i < itemsToAdd.length; i++) {
-      for (let j = 0; j < currentItems.length; j++) {
-        if (itemsToAdd[i].id === currentItems[j].id) {
-          currentItems[j] = itemsToAdd[i];
-        }
-      }
+    if (itemsToAdd.length > 0) {
+      this.todoItemsSubject.next(currentItems.concat(itemsToAdd));
+    } else {
+      this.todoItemsSubject.next(currentItems);
     }
-    this.todoItemsSubject.next(currentItems);
     return of(itemsToAdd);
   }
 
@@ -156,9 +156,17 @@ export class TodoDataService {
 
   public setList(list: TodoList): Observable<TodoList> {
     const currentLists = this.listsSubject.getValue();
-    const listWithId = new TodoList((currentLists.length + 1).toString(), list.name, list.description, list.createdAt, list.modifiedAt, list.deletedAt, list.color);
-    const newLists = currentLists.concat([list]);
-    this.listsSubject.next(newLists);
-    return of(listWithId);
+    const foundIndex = currentLists.findIndex(l => l.id === list.id);
+    if (foundIndex === -1) {
+      const newList = new TodoList(uuidv4(), list.name, list.description, list.createdAt, list.modifiedAt, list.deletedAt, list.color);
+      const newLists = currentLists.concat([newList]);
+      this.listsSubject.next(newLists);
+      return of(newList);
+    } else {
+      currentLists[foundIndex] = list;
+      const newLists = currentLists.concat([list]);
+      this.listsSubject.next(newLists);
+      return of(list);
+    }
   }
 }

@@ -17,7 +17,7 @@ export class TodoRootComponent implements OnInit {
       next: (event) => {
         const isSidenavActive = this.navigator.isSidenavActive();
         if (!isSidenavActive) 
-          this.navigator.switchSidebarOn();
+          this.navigator.switchSidebarOn({ replaceUrl: true });
       }
     });
   }
