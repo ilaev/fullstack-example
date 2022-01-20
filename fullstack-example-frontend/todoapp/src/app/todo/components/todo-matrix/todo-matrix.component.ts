@@ -1,9 +1,10 @@
+import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { combineLatest, Subscription, of } from 'rxjs';
 import { TodoQuadrantItem } from './../todo-matrix-quadrant/todo-quadrant-item';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { TodoDataService } from 'src/app/common/data';
 import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
 import { TODO_MATRIX_KIND_ID } from '../../todo-routing-path';
@@ -29,13 +30,17 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   public itemsNotUrgentAndNotImportant: TodoQuadrantItem[];  
 
   public selectedItemsMap = new Map<string, string>();
+
+  public get hasSelectedItems(): boolean {
+    return this.selectedItemsMap.size !== 0;
+  }
   private subscriptions: Subscription[];
 
   constructor(
     private todoDataService: TodoDataService,
     private toastr: ToastrService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    @Inject(TODO_NAVIGATOR_TOKEN) private navigator: ITodoNavigator 
   ) {
     this.itemsImportantAndUrgent = [];
     this.itemsImportantAndNotUrgent = [];
@@ -51,7 +56,6 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
         return items;
       case MATRIX_KIND.TODAY:
         return items.filter(i => {
-          console.log(`${i.id}: ${i.dueDate}`);
           if (i.dueDate == null) {
             // for now show items without a duedate in today
             return true;
@@ -77,6 +81,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   private initComponent(matrixKindId: string, items: TodoItem[]): void {
+    this.selectedItemsMap.clear();
     this.id = matrixKindId;
     this.itemsImportantAndUrgent = items.filter(i => i.matrixY === MatrixY.Important && i.matrixX === MatrixX.Urgent).map(i => transformToTodoQuadrantItem(i));
     this.itemsImportantAndNotUrgent = items.filter(i => i.matrixY === MatrixY.Important &&  i.matrixX === MatrixX.NotUrgent).map(i => transformToTodoQuadrantItem(i));
@@ -109,19 +114,6 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
         this.toastr.error(err);
       }
     });
-    // const todoItemsSub = combineLatest([
-    //   this.todoDataService.getTodoItems(),
-      
-    // ])
-    // .subscribe({
-    //   next: ([items, paramMap]) => {
-        
-    //     this.initComponent(matrixKindId, items ?? []);
-    //   },
-    //   error: (err) => {
-    //     this.toastr.error(err);
-    //   }
-    // });
     this.subscriptions.push(todoItemsSub);
   }
 
@@ -130,8 +122,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   public onEdit(quadrantItem: TodoQuadrantItem): void {
-    // TODO: centralize navigation
-    this.router.navigate(['/tasks/', quadrantItem.id], {relativeTo: this.activatedRoute }); 
+    this.navigator.navigateToTaskEditor(quadrantItem.id); 
   }
 
   public onMarked(quadrantItems: TodoQuadrantItem[]): void {
@@ -145,7 +136,19 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   }
 
   public markSelectedAsDone(): void {
-    const itemsToMarkAsDone = Array.from(this.selectedItemsMap.values());
-    this.todoDataService.markAsDone(itemsToMarkAsDone).pipe(first()).subscribe();
+    const changes: { [key: string]: boolean } = {};
+    this.selectedItemsMap.forEach((value, key) => {
+      changes[key] = true;
+    });
+    this.todoDataService.changeDoneStatusOfItems(changes).pipe(first()).subscribe();
+  }
+
+  public markSelectedAsUnDone(): void {
+    const changes: { [ key: string]: boolean } = {};
+    this.selectedItemsMap.forEach((value, key) => {
+      changes[key] = false;
+    });
+
+    this.todoDataService.changeDoneStatusOfItems(changes).pipe(first()).subscribe();
   }
 }

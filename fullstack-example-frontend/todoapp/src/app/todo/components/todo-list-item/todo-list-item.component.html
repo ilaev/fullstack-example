@@ -1,0 +1,18 @@
+<ng-container *ngIf="item">
+    <div class="w-full">
+        <div class="w-full">
+            <mat-checkbox class="text-lg w-full" (change)="onCheckboxChange($event, item)" [checked]="item.isDone">
+                 <span [ngClass]="{ done: item.isDone}">{{ item.name }}</span>
+            </mat-checkbox>
+        </div>
+        <div class="mt-1">
+            <div class="flex text-xs ml-6 space-x-8">
+                <div class="flex-auto flex items-center" *ngIf="item.listName">
+                    <div class="flex-none h-2 w-2 rounded-full mr-1" [style.backgroundColor]="item.listColor"></div>
+                    <div class="flex-auto"> {{ item.listName }}</div>
+                </div>
+                <div *ngIf="item.dueDate" class="flex-auto" matTooltip="Due date" matTooltipPosition="left">{{ item.dueDate }}</div>
+            </div>
+        </div>
+    </div>
+</ng-container>

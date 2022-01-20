@@ -1,3 +1,4 @@
+import { TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { throwError, of } from 'rxjs';
 import { MatLuxonDateModule, MAT_LUXON_DATE_ADAPTER_OPTIONS } from '@angular/material-luxon-adapter';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,7 +11,7 @@ import { By } from '@angular/platform-browser';
 import { TodoItem, MatrixX, MatrixY, TodoList } from 'src/app/common/models';
 import { TodoDataService } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { TodoItemEditorComponent } from './todo-item-editor.component';
@@ -30,6 +31,7 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatSelectModule } from '@angular/material/select';
+import { ITodoNavigator } from '../..';
 
 function createTodoItem(id?: string, name?: string, note?: string,
   dueDate?: DateTime | null, createdAt?: DateTime, modifiedAt?: DateTime): TodoItem {
@@ -58,7 +60,7 @@ describe('TodoItemEditorComponent', () => {
   let component: TodoItemEditorComponent;
   let fixture: ComponentFixture<TodoItemEditorComponent>;
   let todoService: TodoDataService;
-  let router: Router;
+  let navigationService: ITodoNavigator;
   let spinnerService: SpinnerService;
   let toastr: ToastrService;
   let loader: HarnessLoader;
@@ -67,7 +69,7 @@ describe('TodoItemEditorComponent', () => {
   let activatedRouteStub: ActivatedRouteStub;
   beforeEach(async () => {
 
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const spyNavigationService = jasmine.createSpyObj<ITodoNavigator>('NavigationService', ['back']);
     const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
     const spinnerSpy = jasmine.createSpyObj('SpinnerService', ['show', 'hide']);
 
@@ -89,7 +91,7 @@ describe('TodoItemEditorComponent', () => {
       ],
       declarations: [ TodoItemEditorComponent ],
       providers: [
-        { provide: Router, useValue: routerSpy },
+        { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigationService },
         { provide: ToastrService, useValue: toastrSpy },
         { provide: SpinnerService, useValue: spinnerSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
@@ -104,7 +106,7 @@ describe('TodoItemEditorComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TodoItemEditorComponent);
-    router = TestBed.inject(Router);
+    navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     spinnerService = TestBed.inject(SpinnerService);
     toastr = TestBed.inject(ToastrService);
     todoService = TestBed.inject(TodoDataService);
@@ -359,7 +361,7 @@ describe('TodoItemEditorComponent', () => {
     await cancelBtnHarness.click();
 
     expect(onCancelSpy).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(navigationService.back).toHaveBeenCalled();
   }));
 
   it('should be able to save a todo item.', fakeAsync(async () => {

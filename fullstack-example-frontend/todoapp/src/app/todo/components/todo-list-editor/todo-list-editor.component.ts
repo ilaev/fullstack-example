@@ -1,9 +1,11 @@
+import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
+import { NavigationService } from './../../../root/services/navigation.service';
 import { of, Subscription } from 'rxjs';
 import { TodoList } from 'src/app/common/models';
 import { ToastrService } from 'ngx-toastr';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TodoDataService } from 'src/app/common/data';
 import { switchMap } from 'rxjs/operators';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
@@ -36,7 +38,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    @Inject(TODO_NAVIGATOR_TOKEN) private navigationService: ITodoNavigator,
     private toastr: ToastrService,
     private todoService: TodoDataService,
     private spinnerService: SpinnerService
@@ -143,7 +145,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
   }
 
   public onCancel(): void {
-    this.router.navigate(['/']);
+    this.navigationService.back();
   }
 
   public isSaveDisabled(): boolean {
@@ -167,12 +169,13 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
         next: (result) => {
           // TODO: new idea: redirect to the matrix few of the created list.
           // TODO: centralized navigator, so that these route commands are not distributed in dozens of components
-          this.router.navigate(['', 'matrix', result.id]);
+          this.navigationService.navigate(['', 'matrix', result.id]);
           this.deactivateSpinner();
           this.toastr.success('List has been successfully saved.');
         },
         error: (err) => {
           this.deactivateSpinner();
+          // TODO: generic error handler 
           this.toastr.error('Ops. Sorry, something went wrong. :(');
         }
       });

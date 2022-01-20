@@ -1,6 +1,6 @@
 <div class="h-full w-full ">
     <div class="h-full w-full p-16 grid grid-flow-row grid-cols-2 grid-rows-2 gap-4">
-        <div class="bg-green-200 flex flex-col">
+        <div class="bg-green-200 flex flex-col shadow shadow-green-900/50">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
                 <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.Important, matrixX: MATRIX_X.Urgent }" >Important and urgent</a>
                  <!-- TODO: create component with command pattern for actions. not part of this merge request -->
@@ -8,14 +8,17 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item (click)="markSelectedAsDone()">
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 
             <app-todo-matrix-quadrant [items]="itemsImportantAndUrgent" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
-        <div class="bg-green-100 flex flex-col">
+        <div class="bg-green-100 flex flex-col shadow shadow-green-800/50">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
                 <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.Important, matrixX: MATRIX_X.NotUrgent }">Important and not urgent</a>
                  <!-- TODO: create component with command pattern for actions. not part of this merge request -->
@@ -23,14 +26,17 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 
             <app-todo-matrix-quadrant [items]="itemsImportantAndNotUrgent" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
-        <div class="bg-yellow-100 flex flex-col">
+        <div class="bg-yellow-100 flex flex-col shadow shadow-yellow-800/50">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
                 <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.NotImportant, matrixX: MATRIX_X.Urgent }">Urgent and not important</a>
                  <!-- TODO: create component with command pattern for actions. not part of this merge request -->
@@ -38,23 +44,29 @@
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 
             <app-todo-matrix-quadrant [items]="itemsUrgentAndNotImportant" (edited)="onEdit($event)" (marked)="onMarked($event)"></app-todo-matrix-quadrant>
         </div>
-        <div class="bg-gray-100	flex flex-col">
+        <div class="bg-gray-100	flex flex-col shadow shadow-gray-800/50">
             <div class="pt-4 pl-4 pb-2 pr-2 flex items-center ">
-                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.NotImportant, matrixX: MATRIX_X.NotUrgent }">Not important and not urgent</a>
+                <a mat-button [routerLink]="['', 'list-view', this.id]" [queryParams]="{ matrixY: MATRIX_Y.NotImportant, matrixX: MATRIX_X.NotUrgent }">Not urgent and not important</a>
                  <!-- TODO: create component with command pattern for actions. not part of this merge request -->
                  <button mat-icon-button [matMenuTriggerFor]="quadrant1Menu">
                     <mat-icon>more</mat-icon>
                 </button>
                 <mat-menu #quadrant1Menu="matMenu">
-                  <button mat-menu-item>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsDone()">
                     <span>Mark selected as done</span>
+                  </button>
+                  <button [disabled]="!hasSelectedItems" mat-menu-item (click)="markSelectedAsUnDone()">
+                    <span>Mark selected as undone</span>
                   </button>
                 </mat-menu>
             </div> 

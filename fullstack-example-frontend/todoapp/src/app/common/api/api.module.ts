@@ -24,19 +24,19 @@ export class ApiModule {
     if (parentModule) {
       throw new Error(
         'ApiModule is already loaded. Import it in the root module only.'
-      )
+      );
     }
   }
 
   static forRoot(apiSettings: TodoApiSettings): ModuleWithProviders<ApiModule> {
     const providers: Provider[] = [
       { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: apiSettings }
-    ]
+    ];
 
     return {
       ngModule: ApiModule,
       providers: providers
-    }
+    };
   }
 
   /** called by feature modules */
@@ -44,6 +44,6 @@ export class ApiModule {
     return {
       ngModule: ApiModule,
       providers: []
-    }
+    };
   }
 }

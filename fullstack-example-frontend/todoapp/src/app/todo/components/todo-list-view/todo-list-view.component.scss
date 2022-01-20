@@ -1,0 +1,12 @@
+:host {
+    height: 100%;
+    display: flex;
+}
+
+.list-items {
+    flex: 1 1 0;
+}
+
+mat-list {
+    height: 100%;
+}

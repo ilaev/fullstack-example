@@ -1,3 +1,4 @@
+import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { MatMenuModule } from '@angular/material/menu';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { TODO_MATRIX_KIND_ID } from './../../todo-routing-path';
@@ -59,8 +60,7 @@ function getDebugElemsAndRouterLinks(fixture: ComponentFixture<TodoMatrixCompone
 describe('TodoMatrixComponent', () => {
   let component: TodoMatrixComponent;
   let fixture: ComponentFixture<TodoMatrixComponent>;
-  let router: Router;
-  let activatedRoute: ActivatedRoute;
+  let navigator: ITodoNavigator;
   let todoDataServiceFake: FakeTodoService;
   let todoDataService: TodoDataService;
   let activatedRouteStub: ActivatedRouteStub;
@@ -86,7 +86,7 @@ describe('TodoMatrixComponent', () => {
     const toastrSpy = jasmine.createSpyObj('ToastrService', ['error']);
     activatedRouteStub = new ActivatedRouteStub();
     todoDataServiceFake = new FakeTodoService(); 
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const spyNavigator = jasmine.createSpyObj<ITodoNavigator>('TodoNavigator', ['navigateToTaskEditor']);
     await TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
@@ -103,7 +103,7 @@ describe('TodoMatrixComponent', () => {
         { provide: TodoDataService, useValue: todoDataServiceFake },
         { provide: ToastrService, useValue: toastrSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
-        { provide: Router, useValue: routerSpy}
+        { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigator }
       ]
     })
     .compileComponents();
@@ -113,8 +113,7 @@ describe('TodoMatrixComponent', () => {
     fixture = TestBed.createComponent(TodoMatrixComponent);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    router = TestBed.inject(Router);
-    activatedRoute = TestBed.inject(ActivatedRoute);
+    navigator = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     todoDataService = TestBed.inject(TodoDataService);
     fixture.detectChanges();
   });
@@ -212,7 +211,7 @@ describe('TodoMatrixComponent', () => {
     
     quadrantComponents[0].edited.emit(quadrantComponents[0].items?.[0]);
     
-    expect(router.navigate).toHaveBeenCalledWith(['/tasks/', 'id1'], { relativeTo: activatedRoute });
+    expect(navigator.navigateToTaskEditor).toHaveBeenCalledWith('id1');
   }));
 
   it('should be able to collect selected quadrant items for bulk actions.', fakeAsync(() => {
@@ -243,7 +242,7 @@ describe('TodoMatrixComponent', () => {
   }));
 
   it('should be able to use marked quadrant items for action - "mark selected as done".', fakeAsync(async () => {
-    const markAsDoneSpy = spyOn(todoDataService, 'markAsDone').and.callThrough();
+    const markAsDoneSpy = spyOn(todoDataService, 'changeDoneStatusOfItems').and.callThrough();
     initComponent();
 
     // arrange by selecting some quadrant items to be marked as done
@@ -260,7 +259,35 @@ describe('TodoMatrixComponent', () => {
     await markAsDoneMenuItemHarnesses[0].click();
 
     // assert
-    expect(markAsDoneSpy).toHaveBeenCalledWith([(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id, (quadrantComponents[0].items?.[1] as TodoQuadrantItem).id]);
+    const expectedMapOfChanges: { [key: string]: boolean} = {};
+    expectedMapOfChanges[(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id] = true;
+    expectedMapOfChanges[(quadrantComponents[0].items?.[1] as TodoQuadrantItem).id] = true;
+    expect(markAsDoneSpy).toHaveBeenCalledWith(expectedMapOfChanges);
+
+  }));
+
+  it('should be able to use marked quadrant items for action - "mark selected as undone".', fakeAsync(async () => {
+    const markAsDoneSpy = spyOn(todoDataService, 'changeDoneStatusOfItems').and.callThrough();
+    initComponent();
+
+    // arrange by selecting some quadrant items to be marked as done
+    const quadrantsDes = fixture.debugElement.queryAll(By.directive(TodoMatrixQuadrantComponentStub));
+    const quadrantComponents = quadrantsDes.map(de => de.injector.get(TodoMatrixQuadrantComponentStub));
+
+    quadrantComponents[0].marked.emit([quadrantComponents[0].items?.[0] as TodoQuadrantItem, quadrantComponents[0].items?.[1] as TodoQuadrantItem]);
+
+    // act
+    const matMenuHarnesses = await loader.getAllHarnesses(MatMenuHarness.with({ triggerText: 'more' }));    
+    const matMenu1stQuadrant = matMenuHarnesses[0];
+    await matMenu1stQuadrant.open();
+    const markAsDoneMenuItemHarnesses = await matMenu1stQuadrant.getItems({text: 'Mark selected as undone'});
+    await markAsDoneMenuItemHarnesses[0].click();
+
+    // assert
+    const expectedMapOfChanges: { [key: string]: boolean} = {};
+    expectedMapOfChanges[(quadrantComponents[0].items?.[0] as TodoQuadrantItem).id] = false;
+    expectedMapOfChanges[(quadrantComponents[0].items?.[1] as TodoQuadrantItem).id] = false;
+    expect(markAsDoneSpy).toHaveBeenCalledWith(expectedMapOfChanges);
 
   }));
 

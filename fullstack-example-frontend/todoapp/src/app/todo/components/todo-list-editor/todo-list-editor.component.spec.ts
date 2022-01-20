@@ -1,3 +1,4 @@
+import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { TodoList } from 'src/app/common/models';
 import { throwError, of } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
@@ -8,7 +9,7 @@ import { TodoListEditorComponent } from './todo-list-editor.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, forwardRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { TodoDataService } from 'src/app/common/data';
@@ -68,7 +69,7 @@ export class ColorCircleMockComponent implements ControlValueAccessor {
 describe('TodoListEditorComponent', () => {
   let component: TodoListEditorComponent;
   let fixture: ComponentFixture<TodoListEditorComponent>;
-  let router: Router;
+  let navigationService: ITodoNavigator;
   let toastr: ToastrService;
   let todoService: TodoDataService;
   let spinnerService: SpinnerService;
@@ -78,7 +79,7 @@ describe('TodoListEditorComponent', () => {
   let routeStub: ActivatedRouteStub;
 
   beforeEach(async () => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const spyNavigationService = jasmine.createSpyObj<ITodoNavigator>('NavigationService', ['navigate', 'back']);
     const toastrSpy = jasmine.createSpyObj('ToastrService', ['success', 'error']);
     const spinnerSpy = jasmine.createSpyObj('SpinnerService', ['show', 'hide']);
 
@@ -94,7 +95,7 @@ describe('TodoListEditorComponent', () => {
         NoopAnimationsModule
       ],
       providers: [
-        { provide: Router, useValue: routerSpy },
+        { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigationService },
         { provide: ToastrService, useValue: toastrSpy },
         { provide: TodoDataService, useValue: todoServiceFake },
         { provide: ActivatedRoute, useValue: routeStub },
@@ -111,7 +112,7 @@ describe('TodoListEditorComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TodoListEditorComponent);
-    router = TestBed.inject(Router);
+    navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     toastr = TestBed.inject(ToastrService);
     todoService = TestBed.inject(TodoDataService);
     spinnerService = TestBed.inject(SpinnerService);
@@ -345,7 +346,7 @@ describe('TodoListEditorComponent', () => {
     await cancelBtnHarness.click();
 
     expect(onCancelSpy).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(navigationService.back).toHaveBeenCalled();
   }));
 
   it('should be able to save a list.', fakeAsync(async () => {
@@ -493,7 +494,7 @@ describe('TodoListEditorComponent', () => {
     component.onSave();
     fixture.detectChanges();
     tick();
-    expect(router.navigate).toHaveBeenCalledWith(['', 'matrix', '6a93632e-0e04-47ea-bd7f-619862a71c30']);
+    expect(navigationService.navigate).toHaveBeenCalledWith(['', 'matrix', '6a93632e-0e04-47ea-bd7f-619862a71c30']);
   }));
 
 });
