@@ -45,7 +45,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
       }, 
       error: (err) => {
         console.error(err);
-        this.toastr.error('Ops, Sorry! Something went wrong. Could not load todo lists.');
+        this.toastr.error('Ops, Sorry! Something went wrong. Could not load todo stats.');
       }
     });
 

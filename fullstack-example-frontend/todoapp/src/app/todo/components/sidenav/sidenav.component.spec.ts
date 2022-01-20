@@ -1,3 +1,4 @@
+import { throwError } from 'rxjs';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TodoDataService } from 'src/app/common/data';
 import { ReplaySubject, Observable } from 'rxjs';
@@ -85,6 +86,8 @@ describe('SidenavComponent', () => {
   let fixture: ComponentFixture<SidenavComponent>;
   let router: Router;
   let loader: HarnessLoader;
+  let todoDataService: TodoDataService;
+  let toastr: ToastrService;
 
   let fakeTodoDataService: FakeTodoService;
   beforeEach(async () => {
@@ -122,6 +125,8 @@ describe('SidenavComponent', () => {
     router = TestBed.inject(Router);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
+    todoDataService = TestBed.inject(TodoDataService);
+    toastr = TestBed.inject(ToastrService);
   });
 
   it('should create', () => {
@@ -147,6 +152,14 @@ describe('SidenavComponent', () => {
     const matProgressValue = await matProgressHarness.getValue();
 
     expect(matProgressValue).toEqual(stats.numberOfItemsMarkedAsDonePercentage);
+  }));
+
+  it('should show an error if user\'s todo stats can\'t be loaded.', fakeAsync(() => {
+    spyOn(todoDataService, 'getTodoStats').and.returnValue(throwError('mock error'));
+
+    fixture.detectChanges(); // ngOnInit
+
+    expect(toastr.error).toHaveBeenCalledWith('Ops, Sorry! Something went wrong. Could not load todo stats.');
   }));
 
   it('should have a redirect to today matrix view.', () => {
@@ -234,6 +247,14 @@ describe('SidenavComponent', () => {
     expect(link1.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[0].id]);
     expect(link2.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[1].id]);
     expect(link3.linkParams).toEqual(['', 'matrix', INITIAL_MOCK_DATA[2].id]);
+  }));
+
+  it('should show an error if user\'s todo lists can\'t be loaded.', fakeAsync(() => {
+    spyOn(todoDataService, 'getLists').and.returnValue(throwError('mock error'));
+
+    fixture.detectChanges(); // ngOnInit
+
+    expect(toastr.error).toHaveBeenCalledWith('Ops, Sorry! Something went wrong. Could not load todo lists.');
   }));
 
   it('should be able to open user\'s list matrix view.', fakeAsync(() => {

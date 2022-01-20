@@ -8,7 +8,7 @@ describe('ApiErrorHandler', () => {
   beforeEach(() => {
     logger = jasmine.createSpyObj('Logger', ['logError']);
     testObject = new ApiErrorHandler(logger);
-  })
+  });
   it('should create an instance', () => {
     expect(new ApiErrorHandler(logger)).toBeTruthy();
   });
@@ -28,7 +28,7 @@ describe('ApiErrorHandler', () => {
     testObject.handleError(error);
 
     expect(logger.logError).toHaveBeenCalledWith('The backend returned an unsuccessful response code: 500 Internal Server Error');
-  })
+  });
 
   it('should handle errors by rethrowing with a user facing message.', (done) => {
     const error = new HttpErrorResponse({ status: 500, error: 'Internal Server Error' });
