@@ -1,0 +1,1 @@
+export const ABOUT_ROUTING_PATH = 'about';

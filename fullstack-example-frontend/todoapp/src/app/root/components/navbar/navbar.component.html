@@ -11,11 +11,14 @@
         <span id="user-email" class="m-2 text-sm">{{ user?.email }}</span>
         <app-avatar class="user-avatar" [matMenuTriggerFor]="userMenu"></app-avatar>
           <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="onAbout()">
+              <mat-icon>info_outline</mat-icon>
+              <span>About</span>
+            </button>
             <button mat-menu-item (click)="onLogout()">
               <mat-icon>logout</mat-icon>
               <span>Logout</span>
             </button>
           </mat-menu>
     </div>
-
 </mat-toolbar>

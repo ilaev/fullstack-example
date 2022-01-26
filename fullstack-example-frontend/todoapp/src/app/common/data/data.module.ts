@@ -5,6 +5,7 @@ import { DataApiSettings } from './data-api-settings';
 import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoApiSettings, TODO_API_SETTINGS_INJECTION_TOKEN, ApiModule, API_LOGGER_INJECTION_TOKEN } from '../api';
+import { LicenseService } from './services/license.service';
 
 
 
@@ -17,7 +18,8 @@ import { TodoApiSettings, TODO_API_SETTINGS_INJECTION_TOKEN, ApiModule, API_LOGG
   ],
   providers: [
     TodoDataService,
-    UserDataService
+    UserDataService,
+    LicenseService
   ]
 })
 export class DataModule {
