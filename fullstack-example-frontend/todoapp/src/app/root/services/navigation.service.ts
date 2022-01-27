@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { Observable, ReplaySubject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
+import { Navigator } from 'src/app/common';
 import { ITodoNavigator, TodoNavigator } from 'src/app/todo';
+import { ABOUT_ROUTING_PATH } from '../app-routing-path';
 
 @Injectable({
   providedIn: 'root'
@@ -82,5 +84,9 @@ export class NavigationService implements ITodoNavigator  {
     } else {
       return this.router.navigateByUrl('/');
     }
+  }
+
+  public navigateToAbout(): Promise<boolean> {
+    return new Navigator(this.router, []).setActivePrimaryOutlet(ABOUT_ROUTING_PATH).navigate(undefined, true);
   }
 }

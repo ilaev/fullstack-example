@@ -9,13 +9,15 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button';
 import { MainContainerComponent } from './main-container/main-container.component'
 import { MatMenuModule } from '@angular/material/menu';
+import { AboutComponent } from './about/about.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    MainContainerComponent
+    MainContainerComponent,
+    AboutComponent
   ],
   imports: [
     CommonModule,
