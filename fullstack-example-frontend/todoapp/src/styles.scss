@@ -1,11 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss/base";
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+      display: inline;
+      vertical-align: middle;
+    }
+}
+
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 @import './styles/material-icons.scss';
 @import './styles/google-roboto.scss';
 @import './styles/todo-theme.scss';
 
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+
 
 @import '~ngx-toastr/toastr';
 
