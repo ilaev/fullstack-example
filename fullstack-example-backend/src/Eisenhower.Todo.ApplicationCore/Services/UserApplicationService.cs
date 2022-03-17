@@ -24,7 +24,7 @@ public class UserApplicationService : IUserReadApplicationService, IUserWriteApp
     {
         var dictOfExistingKeys = await _repository.ExistsAsync(createCommands.Select(c => c.UserId).ToArray());
         var nonExistingCreateCmds = createCommands.Where(c => !dictOfExistingKeys[c.UserId]).ToArray();
-        var usersToAdd = nonExistingCreateCmds.Select(cmd => new User()).ToArray();
+        var usersToAdd = nonExistingCreateCmds.Select(cmd => new User(new UserId(cmd.UserId.Id))).ToArray();
         await _repository.AddAsync(usersToAdd);
         await _unitOfWork.CommitAsync();
         // TODO: throw expection if one object exists ? or have some kind of CreateTodoItemResult ?
@@ -54,10 +54,10 @@ public class UserApplicationService : IUserReadApplicationService, IUserWriteApp
             var usersToUpdate = new List<User>();
             for(int i = 0; i < updateCommands.Length; i++) {
                 var cmd = updateCommands[i];
-                var existingList = users[i];
-                if (existingList != null) {
+                var existingUser = users[i];
+                if (existingUser != null) {
                     // update
-                    var list = new User(); // TODO: update relevant properties by creating a new object with the same id
+                    var list = new User(new UserId(existingUser.UserId.Id)); // TODO: update relevant properties by creating a new object with the same id
                     usersToUpdate.Add(list);
                 } else {
                     // err case, no item to update

@@ -8,7 +8,7 @@ public class TodoList : Entity
     public string Color { get; set;}
     public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
-    public DateTime DeletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
     public virtual ICollection<TodoItem> TodoItems { get; set; }
@@ -30,7 +30,7 @@ public class TodoList : Entity
         string color,
         DateTime createdAt,
         DateTime modifiedAt,
-        DateTime deletedAt,
+        DateTime? deletedAt,
         ICollection<TodoItem> todoItems,
         ICollection<User> users
     ) : base(dbId)

@@ -1,7 +1,9 @@
 using Eisenhower.Todo.Infrastructure.DI;
+using Eisenhower.Todo.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var apiOptions = builder.Configuration.Get<ApiOptions>();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -9,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddEisenhowerTodo();
+builder.Services.AddEisenhowerTodo(apiOptions.GetAppDependencyInjectionOptions());
 
 var app = builder.Build();
 

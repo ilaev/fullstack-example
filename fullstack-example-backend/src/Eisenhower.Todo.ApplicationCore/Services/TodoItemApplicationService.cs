@@ -24,20 +24,34 @@ public class TodoItemApplicationService : ITodoItemReadApplicationService, ITodo
     {
         var dictOfExistingKeys = await _repository.ExistsAsync(createCommands.Select(c => c.TodoItemId).ToArray());
         var nonExistingCreateCmds = createCommands.Where(c => !dictOfExistingKeys[c.TodoItemId]).ToArray();
-        var todoItemsToAdd = nonExistingCreateCmds.Select(cmd => new TodoItem()).ToArray();
+        var todoItemsToAdd = nonExistingCreateCmds.Select(cmd => new TodoItem(new TodoItemId(cmd.TodoItemId.Id), null)).ToArray();
         await _repository.AddAsync(todoItemsToAdd);
         await _unitOfWork.CommitAsync();
         // TODO: throw expection if one object exists ? or have some kind of CreateTodoItemResult ?
         // if result
     }
 
+    // TODO: cancellationToken
     public async Task DeleteAsync(params TodoItemDeleteCommand[] deleteCommands)
     {
-        var dictOfExistingKeys = await _repository.ExistsAsync(deleteCommands.Select(cmd => cmd.TodoItemId).ToArray());
-        var keysOfExistingItemsToDelete = deleteCommands.Where(cmd => dictOfExistingKeys[cmd.TodoItemId]).Select(cmd => cmd.TodoItemId).ToArray();
-        await _repository.RemoveAsync(keysOfExistingItemsToDelete);
+        var existingItems = await _repository.LoadAsync(deleteCommands.Select(cmd => cmd.TodoItemId).ToArray());
+        var nonNullExistingItems = existingItems.Where(item => item is not null).ToDictionary(keySelector => keySelector.TodoItemId);
+        var keysOfInvalidDeleteCmds = deleteCommands.Where(cmd => !nonNullExistingItems.ContainsKey(cmd.TodoItemId)).Select(cmd => cmd.TodoItemId).ToArray();
+        // TODO: Could return result or throw if cmd is invalid. Need a decision on a concept soon since this question pops up everywhere.
+        var itemsToDelete = new List<TodoItem>(nonNullExistingItems.Count);
+
+        foreach(var existingItem in nonNullExistingItems)
+        {
+            // delete through "soft-delete" by settng deletedAt datetime
+            var itemToDelete = new TodoItem(
+                new TodoItemId(existingItem.Value.TodoItemId.Id),
+                DateTime.UtcNow);
+            itemsToDelete.Add(itemToDelete);
+        }
+
+        await _repository.RemoveAsync(itemsToDelete);
         await _unitOfWork.CommitAsync();
-        // TODO: what to do with items that can't be deleted, with errors 
+
     }
 
     public Task<TodoItem[]> GetAsync(params TodoItemReadCommand[] readCommands)
@@ -58,7 +72,7 @@ public class TodoItemApplicationService : ITodoItemReadApplicationService, ITodo
                 var existingItem = items[i];
                 if (existingItem != null) {
                     // update
-                    var todoItem = new TodoItem(); // TODO: update relevant properties by creating a new object with the same id
+                    var todoItem = new TodoItem(new TodoItemId(cmd.TodoItemId.Id), existingItem.DeletedAt); // TODO: update relevant properties by creating a new object with the same id
                     itemsToUpdate.Add(todoItem);
                 } else {
                     // err case, no item to update

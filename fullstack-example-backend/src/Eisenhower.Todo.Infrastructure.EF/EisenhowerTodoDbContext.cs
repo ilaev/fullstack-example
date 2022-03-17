@@ -1,22 +1,26 @@
-using Eisenhower.Todo.Infrastructure.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Eisenhower.Todo.Infrastructure.EF;
 
-public class EisenhowerTodoDbContext : DbContext 
+public class EisenhowerTodoDbContext : DbContext
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly EisenhowerTodoDbOptions _options;
-    public DbSet<TodoItem> TodoItems { get; set;}
-    public DbSet<TodoList> TodoLists { get; set; }
-    public DbSet<User> Users { get; set; }
+    public DbSet<Entities.TodoItem> TodoItems { get; set;}
+    public DbSet<Entities.TodoList> TodoLists { get; set; }
+    public DbSet<Entities.User> Users { get; set; }
 
     public EisenhowerTodoDbContext(
         ILoggerFactory loggerFactory,
         EisenhowerTodoDbOptions options
     ): base() {
+        if (options is null)
+            throw new ArgumentNullException(nameof(options));
+        if (loggerFactory is null)
+            throw new ArgumentNullException(nameof(loggerFactory));
+        
         _loggerFactory = loggerFactory;
         _options = options;
     }
@@ -43,14 +47,14 @@ public class EisenhowerTodoDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
     {
         optionsBuilder.UseLoggerFactory(_loggerFactory);  
-        optionsBuilder.UseNpgsql(this.GetNpgsqlConnectionString(), optionsAction => { 
+        optionsBuilder.UseNpgsql(this.GetNpgsqlConnectionString(), optionsAction => {
             optionsAction.EnableRetryOnFailure(3);
         });
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("public");
+        modelBuilder.HasDefaultSchema(_options.DefaultSchema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EntityTypeConfigurationUser).Assembly);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EntityTypeConfigurationTodoList).Assembly);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EntityTypeConfigurationTodoItem).Assembly);

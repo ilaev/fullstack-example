@@ -22,12 +22,12 @@ public static class EisenhowerTodoServiceCollectionExtensions
     /// </summary>
     /// <param name"services">Service collection</param>
     /// <returns>Builder</returns>
-    public static IEisenhowerTodoBuilder AddEisenhowerTodo(this IServiceCollection services) 
+    public static IEisenhowerTodoBuilder AddEisenhowerTodo(this IServiceCollection services, EisenhowerTodoAppDIOptions options) 
     {
         return services
         .AddEisenhowerTodoBuilder()
         .AddEisenhowerTodoCoreServices()
-        .AddInfrastructureEFCoreServices();
+        .AddInfrastructureEFCoreServices(options.DbOptions);
     }
 
 }

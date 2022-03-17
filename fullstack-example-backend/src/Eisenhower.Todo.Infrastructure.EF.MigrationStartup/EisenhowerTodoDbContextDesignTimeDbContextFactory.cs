@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace Eisenhower.Todo.Infrastructure.EF.MigrationStartup;
@@ -9,21 +10,15 @@ public class EisenhowerTodoDbContextDesignTimeDbContextFactory : IDesignTimeDbCo
 {
 public EisenhowerTodoDbContext CreateDbContext(string[] args)
    {
-        //   var configuration = new ConfigurationBuilder()
-        //        .SetBasePath(Directory.GetCurrentDirectory())
-        //        .AddJsonFile("appsettings.json")
-        //        .Build();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-        var dbContextBuilder = new DbContextOptionsBuilder();
+        var dbOptions = configuration.GetSection("DbOptions").Get<EisenhowerTodoDbOptions>();
+        if (dbOptions is null)
+            throw new ArgumentNullException(nameof(dbOptions));
 
-        //   var connectionString = configuration
-        //               .GetConnectionString("SqlConnectionString");
-
-
-        // dbContextBuilder.UseNpgsql(npgsqlConnectionStringBuilder.ToString(), (options) => {
-        //     options.EnableRetryOnFailure(3);
-        // });  
-        var dbOptions = new EisenhowerTodoDbOptions();
         return new EisenhowerTodoDbContext(NullLoggerFactory.Instance, dbOptions);
     }
 }

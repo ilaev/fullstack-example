@@ -1,10 +1,10 @@
 namespace Eisenhower.Todo.Domain;
 
-public interface ITodoListRepository
+public interface ITodoListRepository : IDisposable, IAsyncDisposable
 {
-    Task<TodoList[]> LoadAsync(params TodoListId[] ids);
-    Task AddAsync(params TodoList[] models);
-    Task RemoveAsync(params TodoListId[] ids);
-    Task UpdateAsync(params IEnumerable<TodoList>[] models);
-    Task<Dictionary<TodoListId, bool>> ExistsAsync(params TodoListId[] ids);
+    Task<TodoList[]> LoadAsync(IEnumerable<TodoListId> ids, CancellationToken cancellationToken = default(CancellationToken));
+    Task AddAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken));
+    Task RemoveAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken));
+    Task UpdateAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken));
+    Task<Dictionary<TodoListId, bool>> ExistsAsync(IEnumerable<TodoListId> ids, CancellationToken cancellationToken = default(CancellationToken));
 }
