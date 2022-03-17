@@ -34,7 +34,7 @@ Used only to create and manage Entity Framework Core migrations since EF Core re
 
 ### src/Eisenhower.Todo.Api
 
-The API with it's own DTO will use the cross concern project
+The API with it's own DTOs. The Angular frontend will talk to this API. 
 
 ### tests/
 

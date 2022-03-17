@@ -1,6 +1,6 @@
-# Migration Startup for EF Core
+# Migration Startup for EF Core for development environment
 
-Migrations for EF Core will be done through this project.
+Migrations for Entity Framework Core will be done through this project.
 
 ## Create Migration
 
@@ -16,6 +16,3 @@ dotnet ef migrations add InitialCreate --context EisenhowerTodoDbContext --proje
 ```
 dotnet ef database update --context EisenhowerTodoDbContext --project Eisenhower.Todo.Infrastructure.EF.csproj --startup-project ../Eisenhower.Todo.Infrastructure.EF.MigrationStartup/Eisenhower.Todo.Infrastructure.EF.MigrationStartup.csproj
 ```
-
-
-// TODO: Read db configuration from appSettings/environment variables to avoid hard-coded values. May not need it at the moment for this project. Need this 100% in API
