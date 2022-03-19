@@ -2,14 +2,32 @@ using Eisenhower.Todo.Domain;
 
 namespace Eisenhower.Todo.ApplicationCore.Command;
 
-public class UserCreateCommand 
+public class UserWriteCommand 
 {
     public UserId UserId { get; private set; }
+    public string Email { get; private set; }
+    public string Name { get; private set; }
 
-    public UserCreateCommand(
-        Guid userId
+    public UserWriteCommand(
+        Guid userId,
+        string email,
+        string name
     ) {
         this.UserId = new UserId(userId);
+        this.Email = email;
+        this.Name = name;
+    }
+}
+
+public class UserCreateCommand : UserWriteCommand
+{
+    public UserCreateCommand(
+        Guid userId,
+        string email,
+        string name
+    ) : base (userId, email, name)
+    {
+
     }
 }
 
@@ -24,14 +42,15 @@ public class UserReadCommand
     }
 }
 
-public class UserUpdateCommand
+public class UserUpdateCommand : UserWriteCommand
 {
-    public UserId UserId { get; private set; }
-
     public UserUpdateCommand(
-        Guid userId
-    ) {
-        this.UserId = new UserId(userId);
+        Guid userId,
+        string email,
+        string name
+    ) : base (userId, email, name)
+    {
+        
     }
 }
 

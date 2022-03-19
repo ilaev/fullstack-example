@@ -26,8 +26,8 @@ public static class EisenhowerTodoServiceCollectionExtensions
     {
         return services
         .AddEisenhowerTodoBuilder()
-        .AddEisenhowerTodoCoreServices()
-        .AddInfrastructureEFCoreServices(options.DbOptions);
+        .AddInfrastructureEFCoreServices(options.DbOptions)
+        .AddEisenhowerTodoCoreServices();
     }
 
 }

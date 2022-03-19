@@ -1,9 +1,7 @@
-namespace Eisenhower.Todo.Api.DTO;
+namespace Eisenhower.Todo.Api.Dto;
 
-public record UserDTO(
+public record UserDto(
     Guid id,
     string email,
-    string name,
-    DateTime createdAt,
-    DateTime modifiedAt
+    string name
     );

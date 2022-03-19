@@ -2,14 +2,43 @@ using Eisenhower.Todo.Domain;
 
 namespace Eisenhower.Todo.ApplicationCore.Command;
 
-public class TodoListCreateCommand 
+public class TodoListWriteCommand 
 {
     public TodoListId TodoListId { get; private set; }
+    public UserId UserId { get; private set; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public string Color { get; private set; }
+    public IEnumerable<TodoItemId> TodoItemIds { get; private set; }
     
-    public TodoListCreateCommand(
-        Guid listId
+    public TodoListWriteCommand(
+        Guid listId,
+        Guid userId,
+        string name,
+        string description,
+        string color,
+        IEnumerable<TodoItemId> todoItemIds
     ) {
         this.TodoListId = new TodoListId(listId);
+        this.UserId = new UserId(userId);
+        this.Name = name;
+        this.Description = description;
+        this.Color = color;
+        this.TodoItemIds = todoItemIds;
+    }
+}
+
+public class TodoListCreateCommand : TodoListWriteCommand
+{
+    public TodoListCreateCommand(
+        Guid listId,
+        Guid userId,
+        string name,
+        string description,
+        string color,
+        IEnumerable<TodoItemId> todoItemIds
+    ) : base(listId, userId, name, description, color, todoItemIds)
+    {
     }
 }
 
@@ -24,14 +53,17 @@ public class TodoListReadCommand
     }
 }
 
-public class TodoListUpdateCommand
+public class TodoListUpdateCommand : TodoListWriteCommand
 {
-    public TodoListId TodoListId { get; private set; }
-    
     public TodoListUpdateCommand(
-        Guid listId
-    ) {
-        this.TodoListId = new TodoListId(listId);
+        Guid listId,
+        Guid userId,
+        string name,
+        string description,
+        string color,
+        IEnumerable<TodoItemId> todoItemIds
+    ) : base(listId, userId, name, description, color, todoItemIds)
+    {
     }
 }
 

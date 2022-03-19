@@ -4,12 +4,12 @@ namespace Eisenhower.Todo.ApplicationCore.Service;
 
 public interface ITodoListReadApplicationService 
 {
-    Task GetAsync(params TodoListReadCommand[] readCommands);
+    Task<Domain.TodoList[]> GetAsync(TodoListReadCommand[] readCommands, CancellationToken cancellationToken = default(CancellationToken));
 }
 
 public interface ITodoListWriteApplicationService 
 {
-    Task CreateAsync(params TodoListCreateCommand[] createCommands);
-    Task UpdateAsync(params TodoListUpdateCommand[] updateCommands);
-    Task DeleteAsync(params TodoListDeleteCommand[] deleteCommands);
+    Task CreateAsync(TodoListCreateCommand[] createCommands, CancellationToken cancellationToken = default(CancellationToken));
+    Task UpdateAsync(TodoListUpdateCommand[] updateCommands, CancellationToken cancellationToken = default(CancellationToken));
+    Task DeleteAsync(TodoListDeleteCommand[] deleteCommands, CancellationToken cancellationToken = default(CancellationToken));
 }

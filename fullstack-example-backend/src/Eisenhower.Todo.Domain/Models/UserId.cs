@@ -2,7 +2,6 @@ namespace Eisenhower.Todo.Domain;
 
 public class UserId 
 {
-
     public Guid Id { get; private set; }
 
     public UserId(Guid id) 

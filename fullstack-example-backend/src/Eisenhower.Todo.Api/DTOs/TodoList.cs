@@ -1,6 +1,6 @@
-namespace Eisenhower.Todo.Api.DTO;
+namespace Eisenhower.Todo.Api.Dto;
 
-public record TodoList(
+public record TodoListDto(
     Guid id,
     string name,
     string description,

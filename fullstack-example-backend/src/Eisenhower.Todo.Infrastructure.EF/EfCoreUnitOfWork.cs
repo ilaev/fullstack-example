@@ -12,9 +12,9 @@ public class EfCoreUnitOfWork : IUnitOfWork
         this._dbContext = dbContext;
     }
 
-    public Task CommitAsync()
+    public Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        return _dbContext.SaveChangesAsync();
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     protected virtual async ValueTask DisposeAsyncCore()

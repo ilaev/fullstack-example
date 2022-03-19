@@ -4,8 +4,10 @@ using Eisenhower.Todo.Api;
 var builder = WebApplication.CreateBuilder(args);
 
 var apiOptions = builder.Configuration.Get<ApiOptions>();
-// Add services to the container.
 
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

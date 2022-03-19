@@ -5,5 +5,5 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     ///
     // Commits any outstanding changes.
     ///
-    Task CommitAsync();
+    Task CommitAsync(CancellationToken cancellationToken = default);
 }

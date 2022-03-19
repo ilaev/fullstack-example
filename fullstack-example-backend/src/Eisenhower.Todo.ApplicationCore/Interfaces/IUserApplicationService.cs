@@ -1,15 +1,16 @@
 using Eisenhower.Todo.ApplicationCore.Command;
+using Eisenhower.Todo.Domain;
 
 namespace Eisenhower.Todo.ApplicationCore.Service;
 
 public interface IUserReadApplicationService 
 {
-    Task GetAsync(params UserReadCommand[] readCommands);
+    Task<User[]> GetAsync(UserReadCommand[] readCommands, CancellationToken cancellationToken = default(CancellationToken));
 }
 
 public interface IUserWriteApplicationService 
 {
-    Task CreateAsync(params UserCreateCommand[] createCommands);
-    Task UpdateAsync(params UserUpdateCommand[] updateCommands);
-    Task DeleteAsync(params UserDeleteCommand[] deleteCommands);
+    Task CreateAsync(UserCreateCommand[] createCommands, CancellationToken cancellationToken = default(CancellationToken));
+    Task UpdateAsync(UserUpdateCommand[] updateCommands, CancellationToken cancellationToken = default(CancellationToken));
+    Task DeleteAsync(UserDeleteCommand[] deleteCommands, CancellationToken cancellationToken = default(CancellationToken));
 }
