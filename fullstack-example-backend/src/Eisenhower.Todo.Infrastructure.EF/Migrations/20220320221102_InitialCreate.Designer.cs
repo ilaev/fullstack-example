@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eisenhower.Todo.Infrastructure.EF.Migrations
 {
     [DbContext(typeof(EisenhowerTodoDbContext))]
-    [Migration("20220318174534_InitialCreate")]
+    [Migration("20220320221102_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,10 +67,15 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
                         .HasMaxLength(16384)
                         .HasColumnType("character varying(16384)");
 
+                    b.Property<long>("TodoListDbId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("DbId");
 
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("TodoListDbId");
 
                     b.ToTable("Items", "public");
                 });
@@ -110,10 +115,15 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<long>("UserDbId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("DbId");
 
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("UserDbId");
 
                     b.ToTable("Lists", "public");
                 });
@@ -153,64 +163,36 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
                     b.ToTable("Users", "public");
                 });
 
-            modelBuilder.Entity("TodoItemTodoList", b =>
+            modelBuilder.Entity("Eisenhower.Todo.Infrastructure.EF.Entities.TodoItem", b =>
                 {
-                    b.Property<long>("TodoItemsDbId")
-                        .HasColumnType("bigint");
+                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.TodoList", "TodoList")
+                        .WithMany("TodoItems")
+                        .HasForeignKey("TodoListDbId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<long>("TodoListsDbId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("TodoItemsDbId", "TodoListsDbId");
-
-                    b.HasIndex("TodoListsDbId");
-
-                    b.ToTable("ListItems", "public");
+                    b.Navigation("TodoList");
                 });
 
-            modelBuilder.Entity("TodoListUser", b =>
+            modelBuilder.Entity("Eisenhower.Todo.Infrastructure.EF.Entities.TodoList", b =>
                 {
-                    b.Property<long>("TodoListsDbId")
-                        .HasColumnType("bigint");
+                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.User", "User")
+                        .WithMany("TodoLists")
+                        .HasForeignKey("UserDbId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<long>("UsersDbId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("TodoListsDbId", "UsersDbId");
-
-                    b.HasIndex("UsersDbId");
-
-                    b.ToTable("UserLists", "public");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TodoItemTodoList", b =>
+            modelBuilder.Entity("Eisenhower.Todo.Infrastructure.EF.Entities.TodoList", b =>
                 {
-                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.TodoItem", null)
-                        .WithMany()
-                        .HasForeignKey("TodoItemsDbId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.TodoList", null)
-                        .WithMany()
-                        .HasForeignKey("TodoListsDbId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("TodoItems");
                 });
 
-            modelBuilder.Entity("TodoListUser", b =>
+            modelBuilder.Entity("Eisenhower.Todo.Infrastructure.EF.Entities.User", b =>
                 {
-                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.TodoList", null)
-                        .WithMany()
-                        .HasForeignKey("TodoListsDbId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Eisenhower.Todo.Infrastructure.EF.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersDbId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("TodoLists");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,8 +16,6 @@ public class EntityTypeConfigurationUser : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.Id).IsUnique();
         builder.Property(u => u.ModifiedAt);
         builder.Property(u => u.Name).HasMaxLength(64);
-        builder.HasMany(u => u.TodoLists)
-            .WithMany(u => u.Users)
-            .UsingEntity(join => join.ToTable("UserLists"));
+
     }
 }

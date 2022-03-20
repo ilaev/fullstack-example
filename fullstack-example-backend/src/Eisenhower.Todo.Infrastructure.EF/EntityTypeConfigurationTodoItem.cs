@@ -21,9 +21,8 @@ public class EntityTypeConfigurationTodoItem : IEntityTypeConfiguration<TodoItem
         builder.Property(i => i.MatrixY);
         builder.Property(i => i.Name).HasMaxLength(1024);
         builder.Property(i => i.Note).HasMaxLength(16384);
-         // TODO: unsure, maybe only in EntityTypeBuilder<TodoList>???
-        // builder.HasMany(i => i.TodoLists)
-        // .WithMany(i => i.TodoItems)      
-        // .UsingEntity(join => join.ToTable("ListItems") );
+        builder.HasOne(i => i.TodoList)
+            .WithMany(l => l.TodoItems)
+            .HasForeignKey(i => i.TodoListDbId);
     }
 }

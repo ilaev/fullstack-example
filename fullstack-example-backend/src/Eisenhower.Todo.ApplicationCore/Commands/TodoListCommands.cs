@@ -9,22 +9,19 @@ public class TodoListWriteCommand
     public string Name { get; private set; }
     public string Description { get; private set; }
     public string Color { get; private set; }
-    public IEnumerable<TodoItemId> TodoItemIds { get; private set; }
     
     public TodoListWriteCommand(
         Guid listId,
         Guid userId,
         string name,
         string description,
-        string color,
-        IEnumerable<TodoItemId> todoItemIds
+        string color
     ) {
         this.TodoListId = new TodoListId(listId);
         this.UserId = new UserId(userId);
         this.Name = name;
         this.Description = description;
         this.Color = color;
-        this.TodoItemIds = todoItemIds;
     }
 }
 
@@ -35,9 +32,8 @@ public class TodoListCreateCommand : TodoListWriteCommand
         Guid userId,
         string name,
         string description,
-        string color,
-        IEnumerable<TodoItemId> todoItemIds
-    ) : base(listId, userId, name, description, color, todoItemIds)
+        string color
+    ) : base(listId, userId, name, description, color)
     {
     }
 }
@@ -60,9 +56,8 @@ public class TodoListUpdateCommand : TodoListWriteCommand
         Guid userId,
         string name,
         string description,
-        string color,
-        IEnumerable<TodoItemId> todoItemIds
-    ) : base(listId, userId, name, description, color, todoItemIds)
+        string color
+    ) : base(listId, userId, name, description, color)
     {
     }
 }

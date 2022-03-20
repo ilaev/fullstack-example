@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
     [HttpGet("@me")]
     public async Task<UserDto> GetCurrentUser()
     {
-        var currentUserId = Guid.NewGuid(); // define interface ICurrentUserAccessor and implementation in 
+        var currentUserId = new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"); // define interface ICurrentUserAccessor and implementation in 
         var cmd = new UserReadCommand(currentUserId);
         var users = await _userReadApplicationService.GetAsync(new UserReadCommand[1] { cmd });
         return users.Select(u => UserApiDtoMapper.toApiDto(u)).First();

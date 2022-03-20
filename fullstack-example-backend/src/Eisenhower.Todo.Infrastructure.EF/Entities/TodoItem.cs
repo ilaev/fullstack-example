@@ -14,13 +14,13 @@ public class TodoItem : Entity
     public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
-    public virtual ICollection<TodoList> TodoLists { get; set; }
+    public long TodoListDbId { get; set; }
+    public TodoList TodoList { get; set; }
 
     public TodoItem()
     {
         this.Name = string.Empty;
         this.Note = string.Empty;
-        this.TodoLists = new List<TodoList>();
     }
 
     public TodoItem(
@@ -34,8 +34,7 @@ public class TodoItem : Entity
         DateTime createdAt,
         DateTime modifiedAt,
         DateTime? deletedAt,
-        bool markedAsDone,
-        ICollection<TodoList> todoLists) : base(dbId) {
+        bool markedAsDone) : base(dbId) {
             this.Id = id;
             this.Name = name;
             this.MatrixX = matrixX;
@@ -46,6 +45,5 @@ public class TodoItem : Entity
             this.ModifiedAt = modifiedAt;
             this.DeletedAt = deletedAt;
             this.MarkedAsDone = markedAsDone;
-            this.TodoLists = todoLists;
         }
 }

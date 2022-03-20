@@ -19,9 +19,8 @@ public class EntityTypeConfigurationTodoList : IEntityTypeConfiguration<TodoList
         builder.HasIndex(l => l.Id).IsUnique();
         builder.Property(l => l.ModifiedAt);
         builder.Property(l => l.Name).HasMaxLength(128);
-        // TODO: unsure, maybe only in oneß
-        builder.HasMany(l => l.TodoItems)
-        .WithMany(l => l.TodoLists)
-        .UsingEntity(join => join.ToTable("ListItems"));
+        builder.HasOne(l => l.User)
+            .WithMany(u => u.TodoLists)
+            .HasForeignKey(l => l.UserDbId);
     }
 }

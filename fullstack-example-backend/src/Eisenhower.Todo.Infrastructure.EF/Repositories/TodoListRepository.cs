@@ -25,10 +25,18 @@ public class TodoListRepository : ITodoListRepository
         return result.Select(entityList => TodoListMapper.toDomain(entityList)).ToArray();
     }
 
-    public Task AddAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task AddAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken))
     {
+        var userIds = models.Select(m => m.UserId.Id).ToArray();
+        var usersDict = await _dbContext.Users.Where(u => userIds.Contains(u.Id)).ToDictionaryAsync((user) => user.Id, cancellationToken);
         var entities = models.Select(m => TodoListMapper.toEntity(m)).ToArray();
-        return _dbContext.TodoLists.AddRangeAsync(entities, cancellationToken);
+        for(int i = 0; i < entities.Length; i++)
+        {
+            var userIdFromModel = models.ElementAt(i).UserId.Id;
+            entities[i].User = usersDict[userIdFromModel];
+            entities[i].UserDbId = usersDict[userIdFromModel].DbId;
+        }
+        await _dbContext.TodoLists.AddRangeAsync(entities, cancellationToken);
     }
 
     public Task RemoveAsync(IEnumerable<TodoList> models, CancellationToken cancellationToken = default(CancellationToken))

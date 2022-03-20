@@ -5,12 +5,10 @@ public static class TodoItemMapper
 {
     public static Domain.TodoItem toDomain(Entities.TodoItem entity) 
     {
-        var listEntity = entity.TodoLists.First();
-        var userEntity = listEntity.Users.First();
         var domainItem = new Domain.TodoItem(
             new Domain.TodoItemId(entity.Id),
-            new Domain.UserId(userEntity.Id),
-            new Domain.TodoListId(listEntity.Id),
+            new Domain.UserId(entity.TodoList.User.Id),
+            new Domain.TodoListId(entity.TodoList.Id),
             entity.Name,
             (Domain.MatrixX)entity.MatrixX,
             (Domain.MatrixY)entity.MatrixY,

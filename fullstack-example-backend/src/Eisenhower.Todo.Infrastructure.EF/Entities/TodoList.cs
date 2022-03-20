@@ -10,9 +10,11 @@ public class TodoList : Entity
     public DateTime ModifiedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    // Navigation properties
     public virtual ICollection<TodoItem> TodoItems { get; set; }
-    public virtual ICollection<User> Users { get; set; }
+
+    // Navigation properties
+    public long UserDbId { get; set; }
+    public User User { get; set; }
 
     public TodoList()
     {
@@ -20,7 +22,6 @@ public class TodoList : Entity
         this.Description = string.Empty;
         this.Color = string.Empty;
         this.TodoItems = new List<TodoItem>();
-        this.Users = new List<User>();
     }
     public TodoList(
         long dbId,
@@ -31,8 +32,7 @@ public class TodoList : Entity
         DateTime createdAt,
         DateTime modifiedAt,
         DateTime? deletedAt,
-        ICollection<TodoItem> todoItems,
-        ICollection<User> users
+        ICollection<TodoItem> todoItems
     ) : base(dbId)
     {
         this.Id = id;
@@ -43,6 +43,5 @@ public class TodoList : Entity
         this.ModifiedAt = modifiedAt;
         this.DeletedAt = deletedAt;
         this.TodoItems = todoItems;
-        this.Users = users;
     }
 }

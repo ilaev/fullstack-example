@@ -26,10 +26,18 @@ public class TodoItemRepository : ITodoItemRepository
         return result.Select(entityItem => TodoItemMapper.toDomain(entityItem)).ToArray();
     }
 
-    public Task AddAsync(IEnumerable<Domain.TodoItem> models, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task AddAsync(IEnumerable<Domain.TodoItem> models, CancellationToken cancellationToken = default(CancellationToken))
     {
+        var listIds = models.Select(m => m.TodoListId.Id).ToArray();
+        var listsDict = await _dbContext.TodoLists.Where(l => listIds.Contains(l.Id)).ToDictionaryAsync(list => list.Id, cancellationToken);
         var entities = models.Select(m => TodoItemMapper.toEntity(m)).ToArray();
-        return _dbContext.TodoItems.AddRangeAsync(entities, cancellationToken);
+        for(int i = 0; i < entities.Length; i++)
+        {
+            var listIdFromModel = models.ElementAt(i).TodoListId.Id;
+            entities[i].TodoList = listsDict[listIdFromModel];
+            entities[i].TodoListDbId = listsDict[listIdFromModel].DbId;
+        }
+        await _dbContext.TodoItems.AddRangeAsync(entities, cancellationToken);
     }
 
     public Task RemoveAsync(IEnumerable<Domain.TodoItem> models, CancellationToken cancellationToken = default(CancellationToken))

@@ -5,6 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 var apiOptions = builder.Configuration.Get<ApiOptions>();
 
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy((corsPolicyBuilder) => 
+        corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+    );
+});
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
 
 // Add services to the container.
@@ -25,7 +30,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors();
 // TODO:
 //app.UseAuthorization();
 

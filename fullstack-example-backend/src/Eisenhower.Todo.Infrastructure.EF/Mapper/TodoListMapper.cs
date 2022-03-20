@@ -7,7 +7,7 @@ public static class TodoListMapper
     {
         var domainItem = new Domain.TodoList(
             new Domain.TodoListId(entity.Id),
-            new Domain.UserId(entity.Users.First().Id),
+            new Domain.UserId(entity.User.Id),
             entity.Name,
             entity.Description,
             entity.Color,

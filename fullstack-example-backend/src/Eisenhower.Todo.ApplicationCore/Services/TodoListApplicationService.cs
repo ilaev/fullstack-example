@@ -37,8 +37,10 @@ public class TodoListApplicationService : ITodoListReadApplicationService, ITodo
             DateTime.UtcNow,
             DateTime.UtcNow,
             null,
-            cmd.TodoItemIds.Select(tid => new TodoItemId(tid.Id)))).ToArray();
+            new TodoItemId[0])).ToArray();
         await _repository.AddAsync(todoListToAdd, cancellationToken);
+        // TODO: add lists to user
+        
         await _unitOfWork.CommitAsync(cancellationToken);
     }
 
@@ -100,7 +102,7 @@ public class TodoListApplicationService : ITodoListReadApplicationService, ITodo
                         existingList.CreatedAt,
                         DateTime.UtcNow,
                         existingList.DeletedAt,
-                        cmd.TodoItemIds);
+                        existingList.TodoItemIds);
                     listsToUpdate.Add(list);
                 } else {
                     throw new InvalidOperationException(string.Format("List can't be updated. Model with provided id {0} does not exist.", cmd.TodoListId.Id.ToString()));
