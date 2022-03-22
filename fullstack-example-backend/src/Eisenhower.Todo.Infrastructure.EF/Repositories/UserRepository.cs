@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     public Task<Entities.User[]> LoadEntitiesAsync(IEnumerable<UserId> ids, CancellationToken cancellationToken = default(CancellationToken))
     {
         var guids = ids.Select(uid => uid.Id);
-        return _dbContext.Users.Where(user => guids.Contains(user.Id)).OrderBy(item => item.CreatedAt).ToArrayAsync(cancellationToken);  
+        return _dbContext.Users.Include(u => u.TodoLists).Where(user => guids.Contains(user.Id)).OrderBy(item => item.CreatedAt).ToArrayAsync(cancellationToken);  
     }
 
     public async Task<User[]> LoadAsync(IEnumerable<UserId> ids, CancellationToken cancellationToken = default)
@@ -59,7 +59,11 @@ public class UserRepository : IUserRepository
             var clientEntity = clientEntities.ElementAt(i);
             if (existingEntitiesDict.ContainsKey(clientEntity.Id)) 
             {
-                _dbContext.Entry(existingEntitiesDict[clientEntity.Id]).CurrentValues.SetValues(clientEntity);
+                var existingEntity = existingEntitiesDict[clientEntity.Id];
+                existingEntity.Email = clientEntity.Email;
+                existingEntity.ModifiedAt = clientEntity.ModifiedAt;
+                existingEntity.Name = clientEntity.Name;
+                _dbContext.Entry(existingEntity).State = EntityState.Modified;
             } 
             else 
             {

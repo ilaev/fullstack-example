@@ -60,7 +60,7 @@ public class TodoListsController : ControllerBase
         // TODO: Authentication/Authorization 
         var currentUserId = new Guid("5b3a67e2-adad-4582-8e81-115513f6a917");
         var listUpdateCmds = listDtos.Select(listDto => new TodoListUpdateCommand(
-            listDto.Id ?? Guid.NewGuid(),
+            listDto.Id == Guid.Empty ? Guid.NewGuid() : listDto.Id,
             currentUserId,
             listDto.Name,
             listDto.Description,

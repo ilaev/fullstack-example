@@ -1,7 +1,7 @@
 namespace Eisenhower.Todo.Api.Dto;
 
 public record TodoListDto(
-    Guid? Id,
+    Guid Id,
     string Name,
     string Description,
     DateTime CreatedAt,

@@ -55,7 +55,16 @@ public class TodoItemRepository : ITodoItemRepository
             var clientEntity = clientEntities.ElementAt(i);
             if (existingEntitiesDict.ContainsKey(clientEntity.Id)) 
             {
-                _dbContext.Entry(existingEntitiesDict[clientEntity.Id]).CurrentValues.SetValues(clientEntity);
+                var existingEntity = existingEntitiesDict[clientEntity.Id];
+                existingEntity.DeletedAt = clientEntity.DeletedAt;
+                existingEntity.DueDate = clientEntity.DueDate;
+                existingEntity.MarkedAsDone = clientEntity.MarkedAsDone;
+                existingEntity.MatrixX = clientEntity.MatrixX;
+                existingEntity.MatrixY = clientEntity.MatrixY;
+                existingEntity.ModifiedAt = clientEntity.ModifiedAt;
+                existingEntity.Name = clientEntity.Name;
+                existingEntity.Note = clientEntity.Note;
+                _dbContext.Entry(existingEntity).State = EntityState.Modified;
             } else 
             {
                 throw new InvalidOperationException(String.Format("Entity can't be updated because it does not exist, add the entity first. {0} - {1}", clientEntity, clientEntity.Id.ToString()));

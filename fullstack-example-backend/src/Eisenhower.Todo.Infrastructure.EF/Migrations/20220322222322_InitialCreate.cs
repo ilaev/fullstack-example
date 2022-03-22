@@ -107,8 +107,7 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
                 name: "IX_Lists_Id",
                 schema: "public",
                 table: "Lists",
-                column: "Id",
-                unique: true);
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lists_UserDbId",

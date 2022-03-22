@@ -16,7 +16,7 @@ public class TodoListRepository : ITodoListRepository
     public Task<Entities.TodoList[]> LoadEntitiesAsync(IEnumerable<TodoListId> ids, CancellationToken cancellationToken = default(CancellationToken))
     {
         var guids = ids.Select(lid => lid.Id);
-        return _dbContext.TodoLists.Where(list => guids.Contains(list.Id) && list.DeletedAt == null).OrderBy(list => list.CreatedAt).ToArrayAsync(cancellationToken);  
+        return _dbContext.TodoLists.Include(l => l.User).Include(l => l.TodoItems).Where(list => guids.Contains(list.Id) && list.DeletedAt == null).OrderBy(list => list.CreatedAt).ToArrayAsync(cancellationToken);  
     }
 
     public async Task<Domain.TodoList[]> LoadAsync(IEnumerable<TodoListId> ids, CancellationToken cancellationToken = default(CancellationToken))
@@ -54,7 +54,14 @@ public class TodoListRepository : ITodoListRepository
             var clientEntity = clientEntities.ElementAt(i);
             if (existingEntitiesDict.ContainsKey(clientEntity.Id)) 
             {
-                _dbContext.Entry(existingEntitiesDict[clientEntity.Id]).CurrentValues.SetValues(clientEntity);
+                var existingEntity = existingEntitiesDict[clientEntity.Id];
+                existingEntity.Color = clientEntity.Color;
+                existingEntity.DeletedAt = clientEntity.DeletedAt;
+                existingEntity.Description = clientEntity.Description;
+                existingEntity.ModifiedAt = clientEntity.ModifiedAt;
+                existingEntity.Name = clientEntity.Name;
+                _dbContext.Entry(existingEntity).State = EntityState.Modified;
+
             } else 
             {
                 throw new InvalidOperationException(String.Format("Entity can't be updated because it does not exist, add the entity first. {0} - {1}", clientEntity, clientEntity.Id.ToString()));

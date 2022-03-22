@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eisenhower.Todo.Infrastructure.EF.Migrations
 {
     [DbContext(typeof(EisenhowerTodoDbContext))]
-    [Migration("20220320221102_InitialCreate")]
+    [Migration("20220322222322_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -120,8 +120,7 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
 
                     b.HasKey("DbId");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasIndex("Id");
 
                     b.HasIndex("UserDbId");
 

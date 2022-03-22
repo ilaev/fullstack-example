@@ -14,19 +14,22 @@ public class UsersController : ControllerBase
     private readonly IUserWriteApplicationService _userWriteApplicationService;
     private readonly ITodoListReadApplicationService _todoListReadApplicationService;
     private readonly ITodoItemReadApplicationService _todoItemReadApplicationService;
+    private ITodoListWriteApplicationService _todoListWriteApplicationService;
 
     public UsersController(
         ILogger<UsersController> logger,
         IUserReadApplicationService userReadApplicationService,
         IUserWriteApplicationService userWriteApplicationService,
         ITodoListReadApplicationService todoListReadApplicationService,
-        ITodoItemReadApplicationService todoItemReadApplicationService)
+        ITodoItemReadApplicationService todoItemReadApplicationService,
+        ITodoListWriteApplicationService todoListWriteApplicationService)
     {
         _logger = logger;
         _userReadApplicationService = userReadApplicationService;
         _userWriteApplicationService = userWriteApplicationService;
         _todoListReadApplicationService = todoListReadApplicationService;
         _todoItemReadApplicationService = todoItemReadApplicationService;
+        _todoListWriteApplicationService = todoListWriteApplicationService;
     }
 
     [HttpGet("@me")]
@@ -74,8 +77,16 @@ public class UsersController : ControllerBase
     [HttpPost(Name = "")]
     public async Task<IActionResult> CreateUser([FromBody] UserDto user)
     {
-        var createCmd = new UserCreateCommand(Guid.NewGuid(), "ramil-ilaev@outlook.com", "r.ilaev");
-        await _userWriteApplicationService.CreateAsync(new UserCreateCommand[1] { createCmd }, this.HttpContext.RequestAborted);
+        // seed initial data -> when a user registers, the default list has to be seeded.
+        var createUserCmd = new UserCreateCommand(new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"), "ramil-ilaev@outlook.com", "r.ilaev");
+        // await _userWriteApplicationService.CreateAsync(new UserCreateCommand[1] { createUserCmd }, this.HttpContext.RequestAborted);
+        var createDefaultListCmd = new TodoListCreateCommand(
+            Domain.TodoList.DefaultListGuid,
+            createUserCmd.UserId.Id,
+            "Default list",
+            string.Empty,
+            "#2a2a2a");
+        await _todoListWriteApplicationService.CreateAsync(new TodoListCreateCommand[1] { createDefaultListCmd }, this.HttpContext.RequestAborted);
         return Ok();
     }
 

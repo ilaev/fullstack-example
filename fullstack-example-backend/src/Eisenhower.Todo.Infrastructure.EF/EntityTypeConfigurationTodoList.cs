@@ -16,7 +16,7 @@ public class EntityTypeConfigurationTodoList : IEntityTypeConfiguration<TodoList
         builder.Property(l => l.DeletedAt);
         builder.Property(l => l.Description).HasMaxLength(2048);
         builder.Property(l => l.Id);
-        builder.HasIndex(l => l.Id).IsUnique();
+        builder.HasIndex(l => l.Id);
         builder.Property(l => l.ModifiedAt);
         builder.Property(l => l.Name).HasMaxLength(128);
         builder.HasOne(l => l.User)

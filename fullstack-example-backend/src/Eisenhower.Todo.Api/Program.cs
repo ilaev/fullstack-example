@@ -10,10 +10,13 @@ builder.Services.AddCors(options => {
         corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
     );
 });
+
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => {
+    options.JsonSerializerOptions.Converters.Add(new GuidConverter());
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,6 +1,7 @@
 using Eisenhower.Todo.Api.Dto;
 using Eisenhower.Todo.ApplicationCore.Command;
 using Eisenhower.Todo.ApplicationCore.Service;
+using Eisenhower.Todo.Domain;
 using Microsoft.AspNetCore.Mvc;
 namespace Eisenhower.Todo.Api.Controllers;
 
@@ -43,7 +44,7 @@ public class TodoItemsController : ControllerBase
         // TODO: Authentication/Authorization 
         var currentUserId = new Guid("5b3a67e2-adad-4582-8e81-115513f6a917");
         var itemCreateCmds = itemDtos.Select(item => new TodoItemCreateCommand(
-            item.Id,
+            Guid.NewGuid(),
             currentUserId,
             item.ListId,
             item.Name,

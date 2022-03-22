@@ -118,8 +118,7 @@ namespace Eisenhower.Todo.Infrastructure.EF.Migrations
 
                     b.HasKey("DbId");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasIndex("Id");
 
                     b.HasIndex("UserDbId");
 

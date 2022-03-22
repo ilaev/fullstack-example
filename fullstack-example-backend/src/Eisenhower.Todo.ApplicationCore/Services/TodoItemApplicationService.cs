@@ -31,7 +31,7 @@ public class TodoItemApplicationService : ITodoItemReadApplicationService, ITodo
         var todoItems = createCommands.Select(cmd => new TodoItem(
             new TodoItemId(cmd.TodoItemId.Id),
             new UserId(cmd.UserId.Id),
-            new TodoListId(cmd.TodoListId.Id),
+            new TodoListId(cmd.TodoListId.Id == Guid.Empty ? TodoList.DefaultListGuid : cmd.TodoListId.Id),
             cmd.Name,
             cmd.MatrixX,
             cmd.MatrixY,

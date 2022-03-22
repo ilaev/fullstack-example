@@ -39,13 +39,12 @@ public class TodoListApplicationService : ITodoListReadApplicationService, ITodo
             null,
             new TodoItemId[0])).ToArray();
         await _repository.AddAsync(todoListToAdd, cancellationToken);
-        // TODO: add lists to user
-        
         await _unitOfWork.CommitAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(TodoListDeleteCommand[] deleteCommands, CancellationToken cancellationToken = default(CancellationToken))
     {
+        // TODO: forbid deletion of default list here and in client
         var existingLists = await _repository.LoadAsync(deleteCommands.Select(cmd => cmd.TodoListId).ToArray(), cancellationToken);
         var nonNullExistingLists = existingLists.Where(list => list is not null).ToDictionary(keySelector => keySelector.TodoListId);
         var keysOfInvalidDeleteCmds = deleteCommands.Where(cmd => !nonNullExistingLists.ContainsKey(cmd.TodoListId)).Select(cmd => cmd.TodoListId).ToArray();

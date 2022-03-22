@@ -2,6 +2,7 @@ namespace Eisenhower.Todo.Domain;
 
 public class TodoList 
 {
+    public static Guid DefaultListGuid = new Guid("00000000-0000-0000-0000-111111000000");
     public TodoListId TodoListId { get; private set; }    
     public UserId UserId { get; private set; }
     public string Name { get; private set; }
