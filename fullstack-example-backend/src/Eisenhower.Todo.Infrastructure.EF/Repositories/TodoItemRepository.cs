@@ -17,7 +17,7 @@ public class TodoItemRepository : ITodoItemRepository
     public Task<Entities.TodoItem[]> LoadEntitiesAsync(IEnumerable<TodoItemId> ids, CancellationToken cancellationToken = default(CancellationToken))
     {
         var guids = ids.Select(tid => tid.Id);
-        return _dbContext.TodoItems.Where(item => guids.Contains(item.Id) && item.DeletedAt == null).OrderBy(item => item.CreatedAt).ToArrayAsync(cancellationToken);  
+        return _dbContext.TodoItems.Include(i => i.TodoList).ThenInclude(l => l.User).Where(item => guids.Contains(item.Id) && item.DeletedAt == null).OrderBy(item => item.CreatedAt).ToArrayAsync(cancellationToken);  
     }
 
     public async Task<Domain.TodoItem[]> LoadAsync(IEnumerable<TodoItemId> ids, CancellationToken cancellationToken = default(CancellationToken))
