@@ -119,7 +119,6 @@ public class TodoItemApplicationService : ITodoItemReadApplicationService, ITodo
                     throw new InvalidOperationException(string.Format("Item can't be updated. Model with provided id {0} does not exist.", cmd.TodoItemId.Id.ToString()));
                 }
             }
-            // TODO: add item to list
             await _repository.UpdateAsync(itemsToUpdate, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
         }
