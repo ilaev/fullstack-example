@@ -2,7 +2,7 @@ using Eisenhower.Todo.Domain;
 
 namespace Eisenhower.Todo.ApplicationCore.Command;
 
-public class TodoListWriteCommand 
+public class TodoListWriteCommand : IEquatable<TodoListWriteCommand>
 {
     public TodoListId TodoListId { get; private set; }
     public UserId UserId { get; private set; }
@@ -23,9 +23,22 @@ public class TodoListWriteCommand
         this.Description = description;
         this.Color = color;
     }
+
+    public bool Equals(TodoListWriteCommand? other)
+    {
+        if (other is null)
+            return false;
+        return this.TodoListId.Equals(other.TodoListId) 
+            && this.UserId.Equals(other.UserId) 
+            && this.Name == other.Name 
+            && this.Description == other.Description
+            && this.Color == other.Color;
+    }
+    public override bool Equals(object obj) => Equals(obj as TodoListWriteCommand);
+    public override int GetHashCode() => (TodoListId.Id, UserId.Id, Name, Description, Color).GetHashCode();
 }
 
-public class TodoListCreateCommand : TodoListWriteCommand
+public class TodoListCreateCommand : TodoListWriteCommand, IEquatable<TodoListCreateCommand>
 {
     public TodoListCreateCommand(
         Guid listId,
@@ -35,6 +48,11 @@ public class TodoListCreateCommand : TodoListWriteCommand
         string color
     ) : base(listId, userId, name, description, color)
     {
+    }
+    
+    public bool Equals(TodoListCreateCommand? other)
+    {
+        return base.Equals(other);
     }
 }
 

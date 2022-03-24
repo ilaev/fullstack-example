@@ -1,4 +1,6 @@
 ﻿namespace Eisenhower.Todo.Domain;
+
+// TODO: implement IEquatable
 public class TodoItem
 {
     public TodoItemId TodoItemId { get; private set; }

@@ -1,5 +1,6 @@
 namespace Eisenhower.Todo.Domain;
 
+// TODO: implement IEquatable
 public class TodoList 
 {
     public static Guid DefaultListGuid = new Guid("00000000-0000-0000-0000-111111000000");

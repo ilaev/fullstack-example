@@ -25,6 +25,16 @@ public class EisenhowerTodoDbContext : DbContext
         _options = options;
     }
 
+    public EisenhowerTodoDbContext(
+        ILoggerFactory loggerFactory,
+        DbContextOptions dbContextoptions,
+        EisenhowerTodoDbOptions options
+    ) : base(dbContextoptions)
+    {
+        _loggerFactory = loggerFactory;
+        _options = options;
+    }
+
     private string GetNpgsqlConnectionString() 
     {
         var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder();
@@ -46,10 +56,12 @@ public class EisenhowerTodoDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
     {
-        optionsBuilder.UseLoggerFactory(_loggerFactory);  
-        optionsBuilder.UseNpgsql(this.GetNpgsqlConnectionString(), optionsAction => {
-            optionsAction.EnableRetryOnFailure(3);
-        });
+        if (!optionsBuilder.IsConfigured) {
+            optionsBuilder.UseLoggerFactory(_loggerFactory); 
+            optionsBuilder.UseNpgsql(this.GetNpgsqlConnectionString(), optionsAction => {
+                optionsAction.EnableRetryOnFailure(3);
+            });
+        }
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

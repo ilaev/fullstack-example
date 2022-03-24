@@ -14,7 +14,8 @@ public class UsersController : ControllerBase
     private readonly IUserWriteApplicationService _userWriteApplicationService;
     private readonly ITodoListReadApplicationService _todoListReadApplicationService;
     private readonly ITodoItemReadApplicationService _todoItemReadApplicationService;
-    private ITodoListWriteApplicationService _todoListWriteApplicationService;
+    private readonly ITodoListWriteApplicationService _todoListWriteApplicationService;
+    private readonly ICurrentUserAccessor _currentUserAccessor;
 
     public UsersController(
         ILogger<UsersController> logger,
@@ -22,7 +23,8 @@ public class UsersController : ControllerBase
         IUserWriteApplicationService userWriteApplicationService,
         ITodoListReadApplicationService todoListReadApplicationService,
         ITodoItemReadApplicationService todoItemReadApplicationService,
-        ITodoListWriteApplicationService todoListWriteApplicationService)
+        ITodoListWriteApplicationService todoListWriteApplicationService,
+        ICurrentUserAccessor currentUserAccessor)
     {
         _logger = logger;
         _userReadApplicationService = userReadApplicationService;
@@ -30,12 +32,13 @@ public class UsersController : ControllerBase
         _todoListReadApplicationService = todoListReadApplicationService;
         _todoItemReadApplicationService = todoItemReadApplicationService;
         _todoListWriteApplicationService = todoListWriteApplicationService;
+        _currentUserAccessor = currentUserAccessor;
     }
 
     [HttpGet("@me")]
     public async Task<UserDto> GetCurrentUser()
     {
-        var currentUserId = new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"); // define interface ICurrentUserAccessor and implementation in 
+        var currentUserId = _currentUserAccessor.GetCurrentUserId(); // define interface ICurrentUserAccessor and implementation in 
         var cmd = new UserReadCommand(currentUserId);
         var users = await _userReadApplicationService.GetAsync(new UserReadCommand[1] { cmd });
         return users.Select(u => UserApiDtoMapper.toApiDto(u)).First();
@@ -49,7 +52,7 @@ public class UsersController : ControllerBase
     public async Task<TodoItemDto[]> GetItemsOfUser()
     {
         // TODO: replace with ICurrentUserAccessor to get the guid of the current user
-        var userReadCmd = new UserReadCommand(new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"));
+        var userReadCmd = new UserReadCommand(_currentUserAccessor.GetCurrentUserId());
         // TODO: move into a IUserReadAppicationService later or a combi one.
         var users = await _userReadApplicationService.GetAsync(new UserReadCommand[1] { userReadCmd }, HttpContext.RequestAborted);
         var currentUser = users.First();
@@ -65,7 +68,7 @@ public class UsersController : ControllerBase
     public async Task<TodoListDto[]> GetListsOfUser()
     {
         // TODO: replace with ICurrentUserAccessor to get the guid of the current user
-        var userReadCmd = new UserReadCommand(new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"));
+        var userReadCmd = new UserReadCommand(_currentUserAccessor.GetCurrentUserId());
         // TODO: move into a IUserReadAppicationService later or a combi one.
         var users = await _userReadApplicationService.GetAsync(new UserReadCommand[1] { userReadCmd }, HttpContext.RequestAborted);
         var currentUser = users.First();
@@ -74,12 +77,13 @@ public class UsersController : ControllerBase
         return lists.Select(list => TodoListApiDtoMapper.toApiDto(list)).ToArray();
     }
 
+    // TODO: tmp for dev purposes
     [HttpPost(Name = "")]
     public async Task<IActionResult> CreateUser([FromBody] UserDto user)
     {
         // seed initial data -> when a user registers, the default list has to be seeded.
-        var createUserCmd = new UserCreateCommand(new Guid("5b3a67e2-adad-4582-8e81-115513f6a917"), "ramil-ilaev@outlook.com", "r.ilaev");
-        // await _userWriteApplicationService.CreateAsync(new UserCreateCommand[1] { createUserCmd }, this.HttpContext.RequestAborted);
+        var createUserCmd = new UserCreateCommand(_currentUserAccessor.GetCurrentUserId(), "ramil-ilaev@moon.com", "r.ilaev");
+        await _userWriteApplicationService.CreateAsync(new UserCreateCommand[1] { createUserCmd }, this.HttpContext.RequestAborted);
         var createDefaultListCmd = new TodoListCreateCommand(
             Domain.TodoList.DefaultListGuid,
             createUserCmd.UserId.Id,

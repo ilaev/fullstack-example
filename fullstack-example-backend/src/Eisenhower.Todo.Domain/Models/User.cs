@@ -1,6 +1,6 @@
 namespace Eisenhower.Todo.Domain;
 
-
+// TODO: implement IEquatable
 public class User 
 {
     public UserId UserId { get; private set; }

@@ -21,6 +21,8 @@ builder.Services.AddControllers().AddJsonOptions(options => {
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// TODO: use tmp fake current user accessor
+builder.Services.AddScoped<ICurrentUserAccessor, TmpCurrentUserAccessor>();
 builder.Services.AddEisenhowerTodo(apiOptions.GetAppDependencyInjectionOptions());
 
 var app = builder.Build();
