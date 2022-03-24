@@ -37,25 +37,19 @@ describe('UserApiService', () => {
         expect(user).toEqual({
           id: '960b9dbc-87c1-492c-b042-84d4dab14e9d',
           email: 'dwight.eisenhower@outlook.com',
-          name: 'Dwight Eisenhower',
-          avatar: 'placeholder',
-          createdAt: '2021-08-01T21:45:13.982Z',
-          modifiedAt: '2021-08-01T21:45:13.982Z',
+          name: 'Dwight Eisenhower'
         });
         done();
       },
     });
 
-    let req = httpMock.expectOne('http://localhost:4444/user/@me');
+    const req = httpMock.expectOne('http://localhost:4444/users/@me');
     expect(req.request.method).toBe('GET');
 
     req.flush({
       id: '960b9dbc-87c1-492c-b042-84d4dab14e9d',
       email: 'dwight.eisenhower@outlook.com',
-      name: 'Dwight Eisenhower',
-      avatar: 'placeholder',
-      createdAt: '2021-08-01T21:45:13.982Z',
-      modifiedAt: '2021-08-01T21:45:13.982Z',
+      name: 'Dwight Eisenhower'
     });
     httpMock.verify();
   });

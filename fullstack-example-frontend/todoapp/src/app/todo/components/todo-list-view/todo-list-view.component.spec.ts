@@ -12,7 +12,7 @@ import { TodoListViewComponent } from './todo-list-view.component';
 import { CommonModule } from '@angular/common';
 import { ActivatedRouteStub, FakeTodoService } from 'src/app/testing';
 import { ActivatedRoute, Params } from '@angular/router';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { DateTime } from 'luxon';
 import { MATRIX_KIND } from '../../matrix-kind';
@@ -45,7 +45,7 @@ describe('TodoListViewComponent', () => {
   let component: TodoListViewComponent;
   let fixture: ComponentFixture<TodoListViewComponent>;
   let loader: HarnessLoader;
-  let todoDataService: TodoDataService;
+  let todoDataService: ITodoDataService;
   let navigationService: ITodoNavigator;
 
   let fakeActivatedRoute: ActivatedRouteStub;
@@ -67,7 +67,7 @@ describe('TodoListViewComponent', () => {
       ],
       providers: [
         { provide: ActivatedRoute, useValue: fakeActivatedRoute },
-        { provide: TodoDataService, useValue: fakeTodoDataService },
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useValue: fakeTodoDataService },
         { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigationService },
         { provide: ToastrService, useValue: spyToastr }
       ],
@@ -82,7 +82,7 @@ describe('TodoListViewComponent', () => {
     fixture = TestBed.createComponent(TodoListViewComponent);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    todoDataService = TestBed.inject(TodoDataService);
+    todoDataService = TestBed.inject(TODO_DATA_SERVICE_INJECTION_TOKEN);
     navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
   });
 

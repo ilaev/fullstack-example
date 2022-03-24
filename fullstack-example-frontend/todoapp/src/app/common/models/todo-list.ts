@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { isDateEqual } from "../date-utility";
 
 export class TodoList {
+    public static defaultListId = '00000000-0000-0000-0000-111111000000';
     public readonly id: string;
     public readonly name: string;
     public readonly description: string;

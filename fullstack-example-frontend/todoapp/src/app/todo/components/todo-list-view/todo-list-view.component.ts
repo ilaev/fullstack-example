@@ -7,7 +7,7 @@ import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { first, map, switchMap } from 'rxjs/operators';
 import { validate as uuidValidate } from 'uuid';
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { filterItemsByMatrixKind } from '../../filters';
 import { MATRIX_KIND } from '../../matrix-kind';
 import { DateTime } from 'luxon';
@@ -35,7 +35,8 @@ export class TodoListViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[];
   constructor(
     private activatedRoute: ActivatedRoute,
-    private todoDataService: TodoDataService,
+    
+    @Inject(TODO_DATA_SERVICE_INJECTION_TOKEN) private todoDataService: ITodoDataService,
     @Inject(TODO_NAVIGATOR_TOKEN) private navigator: ITodoNavigator,
     private toastr: ToastrService
   ) {

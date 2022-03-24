@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { TodoItem, MatrixX, MatrixY, TodoList } from 'src/app/common/models';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
 import { ActivatedRoute } from '@angular/router';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
@@ -59,7 +59,7 @@ function createTodoItem(id?: string, name?: string, note?: string,
 describe('TodoItemEditorComponent', () => {
   let component: TodoItemEditorComponent;
   let fixture: ComponentFixture<TodoItemEditorComponent>;
-  let todoService: TodoDataService;
+  let todoService: ITodoDataService;
   let navigationService: ITodoNavigator;
   let spinnerService: SpinnerService;
   let toastr: ToastrService;
@@ -95,7 +95,7 @@ describe('TodoItemEditorComponent', () => {
         { provide: ToastrService, useValue: toastrSpy },
         { provide: SpinnerService, useValue: spinnerSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
-        { provide: TodoDataService, useValue: fakeTodoService },
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useValue: fakeTodoService },
         {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
         {provide: MAT_LUXON_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true }}
       ],
@@ -109,7 +109,7 @@ describe('TodoItemEditorComponent', () => {
     navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     spinnerService = TestBed.inject(SpinnerService);
     toastr = TestBed.inject(ToastrService);
-    todoService = TestBed.inject(TodoDataService);
+    todoService = TestBed.inject(TODO_DATA_SERVICE_INJECTION_TOKEN);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.detectChanges();

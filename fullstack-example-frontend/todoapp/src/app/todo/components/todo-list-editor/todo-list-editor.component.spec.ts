@@ -1,3 +1,4 @@
+import { MATRIX_KIND } from './../../matrix-kind';
 import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { TodoList } from 'src/app/common/models';
 import { throwError, of } from 'rxjs';
@@ -12,7 +13,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, forwardRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
 import { ActivatedRouteStub, FakeTodoService } from 'src/app/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
@@ -71,7 +72,7 @@ describe('TodoListEditorComponent', () => {
   let fixture: ComponentFixture<TodoListEditorComponent>;
   let navigationService: ITodoNavigator;
   let toastr: ToastrService;
-  let todoService: TodoDataService;
+  let todoService: ITodoDataService;
   let spinnerService: SpinnerService;
   let loader: HarnessLoader;
 
@@ -97,7 +98,7 @@ describe('TodoListEditorComponent', () => {
       providers: [
         { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigationService },
         { provide: ToastrService, useValue: toastrSpy },
-        { provide: TodoDataService, useValue: todoServiceFake },
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useValue: todoServiceFake },
         { provide: ActivatedRoute, useValue: routeStub },
         { provide: SpinnerService, useValue: spinnerSpy }
       ],
@@ -114,7 +115,7 @@ describe('TodoListEditorComponent', () => {
     fixture = TestBed.createComponent(TodoListEditorComponent);
     navigationService = TestBed.inject(TODO_NAVIGATOR_TOKEN);
     toastr = TestBed.inject(ToastrService);
-    todoService = TestBed.inject(TodoDataService);
+    todoService = TestBed.inject(TODO_DATA_SERVICE_INJECTION_TOKEN);
     spinnerService = TestBed.inject(SpinnerService);
     loader = TestbedHarnessEnvironment.loader(fixture);
     component = fixture.componentInstance;
@@ -475,7 +476,7 @@ describe('TodoListEditorComponent', () => {
     expect(toastr.error).toHaveBeenCalledWith('Ops. Sorry, something went wrong. :(');
   }));
 
-  it('should redirect to matrix view of a list.', fakeAsync(() => {
+  it('should redirect to matrix view of today.', fakeAsync(() => {
 
     todoServiceFake.setListReturnValue = of(new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'My Listname', '42', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#111111'));
         
@@ -494,7 +495,7 @@ describe('TodoListEditorComponent', () => {
     component.onSave();
     fixture.detectChanges();
     tick();
-    expect(navigationService.navigate).toHaveBeenCalledWith(['', 'matrix', '6a93632e-0e04-47ea-bd7f-619862a71c30']);
+    expect(navigationService.navigate).toHaveBeenCalledWith(['', 'matrix', MATRIX_KIND.TODAY]);
   }));
 
 });

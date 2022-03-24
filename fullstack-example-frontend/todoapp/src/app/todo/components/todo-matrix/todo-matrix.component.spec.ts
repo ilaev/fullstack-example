@@ -2,7 +2,7 @@ import { ITodoNavigator, TODO_NAVIGATOR_TOKEN } from 'src/app/todo';
 import { MatMenuModule } from '@angular/material/menu';
 import { MATRIX_KIND } from './../../matrix-kind';
 import { TODO_MATRIX_KIND_ID } from './../../todo-routing-path';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -62,7 +62,7 @@ describe('TodoMatrixComponent', () => {
   let fixture: ComponentFixture<TodoMatrixComponent>;
   let navigator: ITodoNavigator;
   let todoDataServiceFake: FakeTodoService;
-  let todoDataService: TodoDataService;
+  let todoDataService: ITodoDataService;
   let activatedRouteStub: ActivatedRouteStub;
   let loader: HarnessLoader;
 
@@ -100,7 +100,7 @@ describe('TodoMatrixComponent', () => {
         TodoMatrixComponent 
       ],
       providers: [
-        { provide: TodoDataService, useValue: todoDataServiceFake },
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useValue: todoDataServiceFake },
         { provide: ToastrService, useValue: toastrSpy },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
         { provide: TODO_NAVIGATOR_TOKEN, useValue: spyNavigator }
@@ -114,7 +114,7 @@ describe('TodoMatrixComponent', () => {
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
     navigator = TestBed.inject(TODO_NAVIGATOR_TOKEN);
-    todoDataService = TestBed.inject(TodoDataService);
+    todoDataService = TestBed.inject(TODO_DATA_SERVICE_INJECTION_TOKEN);
     fixture.detectChanges();
   });
 

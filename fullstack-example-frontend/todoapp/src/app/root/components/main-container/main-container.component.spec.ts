@@ -30,7 +30,6 @@ describe('MainContainerComponent', () => {
       '960b9dbc-87c1-492c-b042-84d4dab14e9d', 
       'dwight.eisenhower@outlook.com', 
       'Dwight Eisenhower',
-      'placeholder',
       DateTime.utc(2021, 1, 1),
       DateTime.utc(2021, 1, 1)
       );

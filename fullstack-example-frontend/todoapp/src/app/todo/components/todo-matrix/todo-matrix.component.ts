@@ -1,12 +1,12 @@
 import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
 import { MATRIX_KIND } from './../../matrix-kind';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { combineLatest, Subscription, of } from 'rxjs';
 import { TodoQuadrantItem } from './../todo-matrix-quadrant/todo-quadrant-item';
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { TodoDataService } from 'src/app/common/data';
-import { MatrixX, MatrixY, TodoItem } from 'src/app/common/models';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
+import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { TODO_MATRIX_KIND_ID } from '../../todo-routing-path';
 import { getToday } from 'src/app/common/date-utility';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -37,7 +37,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[];
 
   constructor(
-    private todoDataService: TodoDataService,
+    @Inject(TODO_DATA_SERVICE_INJECTION_TOKEN) private todoDataService: ITodoDataService,
     private toastr: ToastrService,
     private activatedRoute: ActivatedRoute,
     @Inject(TODO_NAVIGATOR_TOKEN) private navigator: ITodoNavigator 
@@ -93,7 +93,7 @@ export class TodoMatrixComponent implements OnInit, OnDestroy {
     const todoItemsSub = this.activatedRoute.paramMap.pipe(
       switchMap((paramMap) => {
         const matrixKindId = paramMap.get(TODO_MATRIX_KIND_ID) || '';
-        if (uuidValidate(matrixKindId)) {
+        if (uuidValidate(matrixKindId) || matrixKindId === TodoList.defaultListId) { // to remove this extra condition for the default list, I could create a valid guid for the default list
           return combineLatest([
             of(matrixKindId),
             this.todoDataService.getTodoItemsByListId(matrixKindId)

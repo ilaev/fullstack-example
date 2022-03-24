@@ -1,3 +1,5 @@
+import { InMemoryTodoDataService } from './services/inmemory-todo-data.service';
+import { TODO_DATA_SERVICE_INJECTION_TOKEN } from './interfaces/todo-data-service-injection-token';
 import { API_LOGGER_INJECTION_TOKEN, TODO_API_SETTINGS_INJECTION_TOKEN } from '../api';
 import { LogService } from '../log';
 import { DataApiSettings } from './data-api-settings';
@@ -28,14 +30,16 @@ describe('DataModule', () => {
 
   it('it should return module with providers to be used in the root module of an application.', () => {
     const dataSettings: DataApiSettings = {
-        todoApiUri: 'https://localhost:4444/api/'
+        todoApiUri: 'https://localhost:4444/api/',
+        useInMemoryServices: true
     };
     const forRootModule = DataModule.forRoot(dataSettings);
 
     expect(forRootModule).toBeDefined();
     expect(forRootModule.ngModule).toEqual(DataModule);
     expect(forRootModule.providers).toEqual([
-        { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: dataSettings },
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryTodoDataService },
+        { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: { todoApiUri: 'https://localhost:4444/api/' } },
         { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
     ]);
   });

@@ -1,15 +1,15 @@
 import { TODO_NAVIGATOR_TOKEN, ITodoNavigator } from 'src/app/todo';
-import { NavigationService } from './../../../root/services/navigation.service';
 import { of, Subscription } from 'rxjs';
 import { TodoList } from 'src/app/common/models';
 import { ToastrService } from 'ngx-toastr';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { TodoDataService } from 'src/app/common/data';
-import { switchMap } from 'rxjs/operators';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
+import { first, switchMap } from 'rxjs/operators';
 import { SpinnerService } from 'src/app/root/services/spinner.service';
 import { DateTime } from 'luxon';
+import { MATRIX_KIND } from '../../matrix-kind';
 
 function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
@@ -40,7 +40,7 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     @Inject(TODO_NAVIGATOR_TOKEN) private navigationService: ITodoNavigator,
     private toastr: ToastrService,
-    private todoService: TodoDataService,
+    @Inject(TODO_DATA_SERVICE_INJECTION_TOKEN) private todoService: ITodoDataService,
     private spinnerService: SpinnerService
   ) {
     this.subscriptions = [];
@@ -165,11 +165,10 @@ export class TodoListEditorComponent implements OnInit, OnDestroy {
     if (this.todoList && this.form && !this.isSaveDisabled()) {
       const listToSave = this.ensureExistenceOfColor(this.extractModelFromForm(this.todoList, this.form));
       this.activateSpinner();
-      this.todoService.setList(listToSave).subscribe({
+      this.todoService.setList(listToSave).pipe(first()).subscribe({
         next: (result) => {
-          // TODO: new idea: redirect to the matrix few of the created list.
           // TODO: centralized navigator, so that these route commands are not distributed in dozens of components
-          this.navigationService.navigate(['', 'matrix', result.id]);
+          this.navigationService.navigate(['', 'matrix',  MATRIX_KIND.TODAY]);
           this.deactivateSpinner();
           this.toastr.success('List has been successfully saved.');
         },

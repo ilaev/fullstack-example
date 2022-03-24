@@ -1,62 +1,44 @@
-import { map } from 'rxjs/operators';
+import { ITodoDataService } from './../interfaces/i-todo-data-service';
+import { map, switchMap, first } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { of, Observable, BehaviorSubject } from 'rxjs';
-import { MatrixX, MatrixY, TodoItem, TodoList, TodoStats } from 'src/app/common/models';
-import { DateTime } from 'luxon';
+import { Observable, ReplaySubject, combineLatest } from 'rxjs';
+import { TodoItem, TodoList, TodoStats } from 'src/app/common/models';
 import { getToday } from '../../date-utility';
-import { v4 as uuidv4 } from 'uuid';
+import { TodoApiService, UserApiService } from '../../api';
+import { transformFromTodoListDTO, transformToTodoListDTO } from '../transform/transform-todo-list-dto';
+import { transformFromTodoItemDTO, transformToTodoItemDTO } from '../transform/transform-todo-item-dto';
 
-const INITIAL_MOCK_DATA: TodoList[] = [
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('6a93632e-0e04-47ea-bd7f-619862a71c30', 'Project X', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#4caf50'),
-  new TodoList('15ed938b-ec9b-49ec-8575-5c721eff6639', 'Project Y', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#e91e63'),
-  new TodoList('d227c8e8-7aa8-4b7b-8782-644f87de5b98', 'Project Z', '', DateTime.utc(2021, 1, 22), DateTime.utc(2021, 1, 22), null, '#ffc107')
-];
-
-const INITIAL_MOCK_TODO_ITEM_DATA: TodoItem[] = [
-  new TodoItem('id1', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 1', MatrixX.Urgent, MatrixY.Important, "Note 1", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, true),
-  new TodoItem('id2', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 2', MatrixX.Urgent, MatrixY.NotImportant, "Note 2", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-  new TodoItem('id3', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 3', MatrixX.NotUrgent, MatrixY.Important, "Note 3", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-  new TodoItem('id4', '6a93632e-0e04-47ea-bd7f-619862a71c30', 'Task 4', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 4", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-
-  new TodoItem('id5', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 5', MatrixX.Urgent, MatrixY.Important, "Note 5", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-  new TodoItem('id6', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 6', MatrixX.Urgent, MatrixY.NotImportant, "Note 6", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-  new TodoItem('id7', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 7', MatrixX.NotUrgent, MatrixY.Important, "Note 7", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-  new TodoItem('id8', '15ed938b-ec9b-49ec-8575-5c721eff6639', 'Task 8', MatrixX.NotUrgent, MatrixY.NotImportant, "Note 8", null,  DateTime.now().toUTC(), DateTime.now().toUTC(), null, false),
-];
-
+// TODO: interface since I need to be able to replace this service based on environment configuration 
+// so that I can host it without the backend. 
 @Injectable({
   providedIn: 'root'
 })
-export class TodoDataService {
-  // TODO: tmp until there is a solution for client side storage or server side persistence 
-  private listsSubject: BehaviorSubject<TodoList[]> = new BehaviorSubject<TodoList[]>(INITIAL_MOCK_DATA);
-  private todoItemsSubject: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>(INITIAL_MOCK_TODO_ITEM_DATA);
+export class TodoDataService implements ITodoDataService {
+  private listsSubject: ReplaySubject<TodoList[]> | null = null;
+  private todoItemsSubject: ReplaySubject<TodoItem[]> | null = null;
+ 
+  constructor(
+      private todoApiService: TodoApiService,
+      private userApiService: UserApiService
+  ) {}
 
-
+  private loadItems(): Observable<TodoItem[]> {
+    if (this.todoItemsSubject == null)
+      this.todoItemsSubject = new ReplaySubject<TodoItem[]>(1);
+    // maybe load the items through the lists.
+    return this.userApiService.getItemsOfCurrentUser().pipe(
+      switchMap((itemsDtos: any[]) => {
+        (this.todoItemsSubject as ReplaySubject<TodoItem[]>).next(itemsDtos.map(itemDto => transformFromTodoItemDTO(itemDto)));
+        return (this.todoItemsSubject as ReplaySubject<TodoItem[]>).asObservable();
+      })
+    );
+  }
   public getTodoItems(): Observable<TodoItem[]> {
-    return this.todoItemsSubject.asObservable();
+    if (this.todoItemsSubject === null) {
+      return this.loadItems();
+    } else {
+      return this.todoItemsSubject.asObservable();
+    }
   }
 
   public getTodoItem(id: string): Observable<TodoItem | undefined> {
@@ -90,83 +72,88 @@ export class TodoDataService {
     );
   }
 
-  public setTodoItem(todoItem: TodoItem): Observable<TodoItem> {
-    const currentItems = this.todoItemsSubject.getValue();
-    const foundItemIndex = currentItems.findIndex(i => i.id === todoItem.id);
-    if (foundItemIndex === -1) {
-      const itemToAdd = new TodoItem(uuidv4(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
-      const newTodoItemList = currentItems.concat([itemToAdd]);
-      this.todoItemsSubject.next(newTodoItemList);
-      return of(itemToAdd);
+  public setTodoItem(todoItem: TodoItem): Observable<void> {
+    const isNewItem = todoItem.id === '';
+    if (isNewItem) {
+      return this.todoApiService.createItems([transformToTodoItemDTO(todoItem)]).pipe(
+        switchMap(() => {
+          return combineLatest([this.loadLists(), this.loadItems()]).pipe(map(() => { return; }));
+        }));
     } else {
-      currentItems[foundItemIndex] = todoItem;
-      this.todoItemsSubject.next(currentItems);
-      return of(todoItem);
+      return this.todoApiService.updateItems([transformToTodoItemDTO(todoItem)]).pipe(
+        switchMap(() => {
+          return combineLatest([this.loadLists(), this.loadItems()]).pipe(map(() => { return; }));
+        }));
     }
   }
 
-  public setTodoItems(todoItems: TodoItem[]): Observable<TodoItem[]> {
-    const currentItems = this.todoItemsSubject.getValue();
-    const itemsToAdd: TodoItem[] = [];
-
-    todoItems.forEach(todoItem => {
-      const foundItemIndex = currentItems.findIndex(i => i.id === todoItem.id);
-      if (foundItemIndex === -1) {
-        const itemToAdd = new TodoItem((currentItems.length + 1).toString(), todoItem.listId, todoItem.name, todoItem.matrixX, todoItem.matrixY, todoItem.note, todoItem.dueDate, todoItem.createdAt, todoItem.modifiedAt, todoItem.deletedAt, todoItem.markedAsDone);
-        itemsToAdd.push(itemToAdd);
-      } else {
-        currentItems[foundItemIndex] = todoItem;
-      }
-    });
-
-    if (itemsToAdd.length > 0) {
-      this.todoItemsSubject.next(currentItems.concat(itemsToAdd));
-    } else {
-      this.todoItemsSubject.next(currentItems);
-    }
-    return of(itemsToAdd);
+  public updateTodoItems(todoItems: TodoItem[]): Observable<TodoItem[]> {
+    return this.todoApiService.updateItems(todoItems.map(item => transformToTodoItemDTO(item))).pipe(
+      switchMap(() => {
+        return this.loadItems();
+      })
+    );
   }
 
   public changeDoneStatusOfItems(mapOfChanges: { [key: string]: boolean }): Observable<TodoItem[]> {
-    const currentItems = this.todoItemsSubject.getValue();
-    const affectedItems: TodoItem[] = [];
-    const keys = Object.keys(mapOfChanges);
-    for (let i = 0; i < keys.length; i++) {
-      const currentItem = currentItems.find(item => item.id === keys[i]);
-      if (currentItem) {
-        currentItem.markedAsDone = mapOfChanges[keys[i]];
-        affectedItems.push(currentItem);
-      }
-    }
-
-    return this.setTodoItems(affectedItems);
+    return this.getTodoItems().pipe(
+      first(),
+      switchMap((items) => {
+        const keys = Object.keys(mapOfChanges);
+        const affectedItems: TodoItem[] = [];
+        for (let i = 0; i < keys.length; i++) {
+          const currentItem = items.find(item => item.id === keys[i]);
+          if (currentItem) {
+            currentItem.markedAsDone = mapOfChanges[keys[i]];
+            affectedItems.push(currentItem);
+          }
+        }
+        return this.updateTodoItems(affectedItems);
+      })
+    );
+  }
+  
+  private loadLists(): Observable<TodoList[]> {
+    if (this.listsSubject == null)
+      this.listsSubject = new ReplaySubject<TodoList[]>(1);
+    return this.userApiService.getListsOfCurrentUser().pipe(
+      switchMap((listDtos: any[]) => {
+          (this.listsSubject as ReplaySubject<TodoList[]>).next(listDtos.map((dto) => transformFromTodoListDTO(dto)));
+          return (this.listsSubject as ReplaySubject<TodoList[]>).asObservable();
+      }));
   }
 
   public getLists(): Observable<TodoList[]> {
-    return this.listsSubject.asObservable();
+    if (this.listsSubject === null) {
+      return this.loadLists();
+    } else {
+      return this.listsSubject.asObservable();
+    }
+    
   }
 
   public getList(id: string): Observable<TodoList | undefined> {
-    return this.listsSubject.asObservable().pipe(
+    return this.getLists().pipe(
       map((lists) => {
         return lists.find(l => l.id == id);
       })
     );
   }
 
-  public setList(list: TodoList): Observable<TodoList> {
-    const currentLists = this.listsSubject.getValue();
-    const foundIndex = currentLists.findIndex(l => l.id === list.id);
-    if (foundIndex === -1) {
-      const newList = new TodoList(uuidv4(), list.name, list.description, list.createdAt, list.modifiedAt, list.deletedAt, list.color);
-      const newLists = currentLists.concat([newList]);
-      this.listsSubject.next(newLists);
-      return of(newList);
+  public setList(list: TodoList): Observable<void> {
+    const isNewList = list.id === '';
+    if (isNewList) {
+        return this.todoApiService.createLists([transformToTodoListDTO(list)])
+          .pipe(
+            switchMap(() => {
+              return this.loadLists().pipe(map(() => { return; }));
+            }));
     } else {
-      currentLists[foundIndex] = list;
-      const newLists = currentLists.concat([list]);
-      this.listsSubject.next(newLists);
-      return of(list);
+      return this.todoApiService.updateLists([transformToTodoListDTO(list)])
+        .pipe(
+          switchMap(() => {
+            return this.loadLists().pipe(map(() => { return; }));
+          }));
     }
   }
 }

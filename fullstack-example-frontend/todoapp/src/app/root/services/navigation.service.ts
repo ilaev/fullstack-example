@@ -74,6 +74,7 @@ export class NavigationService implements ITodoNavigator  {
     return this.router.navigate(commands, extras);
   }
 
+  // todo subscribe to popstate event to capture browser back button
   public back(): Promise<boolean> {
     this.routingHistory.pop();
     if (this.routingHistory.length > 0) {

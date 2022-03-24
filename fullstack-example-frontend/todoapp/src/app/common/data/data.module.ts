@@ -6,6 +6,8 @@ import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { TodoApiSettings, TODO_API_SETTINGS_INJECTION_TOKEN, ApiModule, API_LOGGER_INJECTION_TOKEN } from '../api';
 import { LicenseService } from './services/license.service';
+import { TODO_DATA_SERVICE_INJECTION_TOKEN } from './interfaces/todo-data-service-injection-token';
+import { InMemoryTodoDataService } from './services/inmemory-todo-data.service';
 
 
 
@@ -17,7 +19,6 @@ import { LicenseService } from './services/license.service';
     ApiModule.forChild()
   ],
   providers: [
-    TodoDataService,
     UserDataService,
     LicenseService
   ]
@@ -34,10 +35,16 @@ export class DataModule {
     const apiSettings: TodoApiSettings = {
       todoApiUri: dataSettings.todoApiUri
     };
-
+    let todoDataServiceProvider = null
+    if (dataSettings.useInMemoryServices) {
+      todoDataServiceProvider = { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryTodoDataService };
+    } else {
+      todoDataServiceProvider = { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: TodoDataService };
+    }
     return {
       ngModule: DataModule,
       providers: [
+        todoDataServiceProvider,
         { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: apiSettings },
         { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
       ]
