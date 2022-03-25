@@ -3,12 +3,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { MatrixX, MatrixY, TodoItem, TodoList } from 'src/app/common/models';
 import { ToastrService } from 'ngx-toastr';
-import { TodoDataService } from 'src/app/common/data';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { SpinnerService } from './../../../root/services/spinner.service';
 import { combineLatest, of, Subscription } from 'rxjs';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { first, switchMap } from 'rxjs/operators';
 import { DateTime } from 'luxon';
 
 @Component({
@@ -36,7 +36,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
     @Inject(TODO_NAVIGATOR_TOKEN) private navigationService: ITodoNavigator,
     private spinnerService: SpinnerService,
     private toastr: ToastrService,
-    private todoDataService: TodoDataService
+    @Inject(TODO_DATA_SERVICE_INJECTION_TOKEN) private todoDataService: ITodoDataService
   ) {
     this.subscriptions = [];
   }
@@ -171,7 +171,7 @@ export class TodoItemEditorComponent implements OnInit, OnDestroy {
     if (this.form && this.todoItem && !this.isSaveDisabled()) {
       const todoItemToSave = this.extractModelFromForm(this.todoItem, this.form);
       this.activateSpinner();
-      this.todoDataService.setTodoItem(todoItemToSave).subscribe({
+      this.todoDataService.setTodoItem(todoItemToSave).pipe(first()).subscribe({
         next: (result) => {
           // TODO: reset component after save to 'new' state?
           this.initComponent(this.createEmptyTodoItem(), this.todoLists);

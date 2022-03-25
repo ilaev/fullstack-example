@@ -5,3 +5,6 @@ export { TodoApiSettings } from './todo-api-settings';
 export { ApiModule } from './api.module';
 export { ApiErrorHandler } from './api-error-handler'
 export { API_LOGGER_INJECTION_TOKEN } from './api-logger-injection-token';
+export { TodoItemDto } from './todo-item-dto';
+export { TodoListDto } from './todo-list-dto';
+export { UserDto } from './user-dto';

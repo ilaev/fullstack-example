@@ -1,7 +1,6 @@
 import { throwError } from 'rxjs';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { TodoDataService } from 'src/app/common/data';
-import { ReplaySubject, Observable } from 'rxjs';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
 import { ToastrService } from 'ngx-toastr';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -86,7 +85,7 @@ describe('SidenavComponent', () => {
   let fixture: ComponentFixture<SidenavComponent>;
   let router: Router;
   let loader: HarnessLoader;
-  let todoDataService: TodoDataService;
+  let todoDataService: ITodoDataService;
   let toastr: ToastrService;
 
   let fakeTodoDataService: FakeTodoService;
@@ -114,7 +113,7 @@ describe('SidenavComponent', () => {
       ],
       providers: [
         { provide: ToastrService, useValue: toastrSpy },
-        { provide: TodoDataService, useValue: fakeTodoDataService }
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useValue: fakeTodoDataService }
       ]
     })
       .compileComponents();
@@ -125,7 +124,7 @@ describe('SidenavComponent', () => {
     router = TestBed.inject(Router);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    todoDataService = TestBed.inject(TodoDataService);
+    todoDataService = TestBed.inject(TODO_DATA_SERVICE_INJECTION_TOKEN);
     toastr = TestBed.inject(ToastrService);
   });
 

@@ -1,14 +1,21 @@
 # Fullstack example
 
+A small todo app. 
+
 ## Frontend 
-ToDo-App written in Angular
+The client ist written in Angular.
+
+### Demo
+
+All images of the frontend client can be found in [pictures](./pictures/).
+
+![Matrix view](./pictures/todo_matrix.png)
 
 ## Backend
-ToDo-API written in C#/ASP.NET Core
-EntityFramework Core with Postgres as the database
+The whole backend is written in .NET 6 with EF Core as the data persistence layer, Postgres as the Database and ASP.NET Core as the API layer.
 
-## Deployment
-Ansible 
+## DevOps
 
-High availability hosting with HAProxy and pgbouncer/pgpool
+Work in progress: probably Ansible & Terraform. Some kind of Loadbalancer and some connection pooler for the db. 
+
 

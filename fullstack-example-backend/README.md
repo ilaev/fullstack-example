@@ -6,10 +6,27 @@ Small projects like this or prototypes, which will not grow, don't necesarry nee
 
 # Install
 
-// TODO:
+- .NET 6 SDK
+- Visual Studio Code
+- Postgres 14
+
 # Build
 
-// TODO: 
+Use dotnet to build any of the projects.
+
+```
+dotnet build src/Eisenhower.Todo.Api/Eisenhower.Todo.Api.csproj
+```
+# Run
+
+Make sure postgresql service is running.
+Run the API either with Visual Studio Code or this command:
+
+```
+dotnet run --project src/Eisenhower.Todo.Api/Eisenhower.Todo.Api.csproj
+```
+
+TODO: create install, build and run scripts.
 
 ## Project explanation
 ### src/Eisenhower.Todo.Domain

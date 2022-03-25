@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { TodoList } from 'src/app/common/models';
-import { TodoDataService } from 'src/app/common/data';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ITodoDataService, TODO_DATA_SERVICE_INJECTION_TOKEN } from 'src/app/common/data';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-sidenav',
@@ -19,7 +19,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[];
   
   constructor(
-    private todoService: TodoDataService,
+    @Inject(TODO_DATA_SERVICE_INJECTION_TOKEN) private todoService: ITodoDataService,
     private toastr: ToastrService
   ) {
     this.lists = [];

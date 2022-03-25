@@ -1,7 +1,7 @@
 import { User } from './../../models/user';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { UserApiService } from '../../api';
+import { UserApiService, UserDto } from '../../api';
 
 import { UserDataService } from './user-data.service';
 
@@ -10,13 +10,10 @@ describe('UserDataService', () => {
 
   beforeEach(() => {
     const userApiServiceSpy = jasmine.createSpyObj('UserApiService', {
-      getCurrentUser: of({
+      getCurrentUser: of<UserDto>({
         id: '960b9dbc-87c1-492c-b042-84d4dab14e9d',
         email: 'dwight.eisenhower@outlook.com',
-        name: 'Dwight Eisenhower',
-        avatar: 'placeholder',
-        createdAt: '2021-08-01T21:45:13.982Z',
-        modifiedAt: '2021-08-01T21:45:13.982Z',
+        name: 'Dwight Eisenhower'
       })
     });
     TestBed.configureTestingModule({
