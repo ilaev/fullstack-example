@@ -8,6 +8,8 @@ import { TodoApiSettings, TODO_API_SETTINGS_INJECTION_TOKEN, ApiModule, API_LOGG
 import { LicenseService } from './services/license.service';
 import { TODO_DATA_SERVICE_INJECTION_TOKEN } from './interfaces/todo-data-service-injection-token';
 import { InMemoryTodoDataService } from './services/inmemory-todo-data.service';
+import { USER_DATA_SERVICE_INJECTION_TOKEN } from './interfaces/user-data-service-injection-token';
+import { InMemoryUserDataService } from './services/inmemory-user-data.service';
 
 
 
@@ -19,7 +21,6 @@ import { InMemoryTodoDataService } from './services/inmemory-todo-data.service';
     ApiModule.forChild()
   ],
   providers: [
-    UserDataService,
     LicenseService
   ]
 })
@@ -35,16 +36,20 @@ export class DataModule {
     const apiSettings: TodoApiSettings = {
       todoApiUri: dataSettings.todoApiUri
     };
-    let todoDataServiceProvider = null
+    let todoDataServiceProvider = null;
+    let userDataServiceProvider = null;
     if (dataSettings.useInMemoryServices) {
       todoDataServiceProvider = { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryTodoDataService };
+      userDataServiceProvider = { provide: USER_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryUserDataService };
     } else {
       todoDataServiceProvider = { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: TodoDataService };
+      userDataServiceProvider = { provide: USER_DATA_SERVICE_INJECTION_TOKEN, useClass: UserDataService };
     }
     return {
       ngModule: DataModule,
       providers: [
         todoDataServiceProvider,
+        userDataServiceProvider,
         { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: apiSettings },
         { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
       ]

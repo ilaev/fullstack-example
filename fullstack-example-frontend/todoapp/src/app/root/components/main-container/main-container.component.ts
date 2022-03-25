@@ -1,5 +1,5 @@
-import { UserDataService } from './../../../common/data/services/user-data.service';
-import { Component, OnInit } from '@angular/core';
+import { IUserDataService, USER_DATA_SERVICE_INJECTION_TOKEN } from './../../../common/data';
+import { Component, Inject, OnInit } from '@angular/core';
 import { User } from 'src/app/common/models';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +15,7 @@ export class MainContainerComponent implements OnInit {
   private subscriptions: Subscription[];
   
   constructor(
-    private userService: UserDataService
+    @Inject(USER_DATA_SERVICE_INJECTION_TOKEN) private userService: IUserDataService
   ) {
     this.subscriptions = new Array<Subscription>();
   }

@@ -4,6 +4,10 @@ import { API_LOGGER_INJECTION_TOKEN, TODO_API_SETTINGS_INJECTION_TOKEN } from '.
 import { LogService } from '../log';
 import { DataApiSettings } from './data-api-settings';
 import { DataModule } from './data.module';
+import { USER_DATA_SERVICE_INJECTION_TOKEN } from './interfaces/user-data-service-injection-token';
+import { InMemoryUserDataService } from './services/inmemory-user-data.service';
+import { TodoDataService } from './services/todo-data.service';
+import { UserDataService } from './services/user-data.service';
 
 describe('DataModule', () => {
 
@@ -28,7 +32,7 @@ describe('DataModule', () => {
     expect(forChildModule.providers).toEqual([]);
   });
 
-  it('it should return module with providers to be used in the root module of an application.', () => {
+  it('it should return module with providers to be used in the root module of an application if in-memory is enabled.', () => {
     const dataSettings: DataApiSettings = {
         todoApiUri: 'https://localhost:4444/api/',
         useInMemoryServices: true
@@ -39,6 +43,24 @@ describe('DataModule', () => {
     expect(forRootModule.ngModule).toEqual(DataModule);
     expect(forRootModule.providers).toEqual([
         { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryTodoDataService },
+        { provide: USER_DATA_SERVICE_INJECTION_TOKEN, useClass: InMemoryUserDataService },
+        { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: { todoApiUri: 'https://localhost:4444/api/' } },
+        { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
+    ]);
+  });
+
+  it('it should return module with providers to be used in the root module of an application if in-memory is disabled.', () => {
+    const dataSettings: DataApiSettings = {
+        todoApiUri: 'https://localhost:4444/api/',
+        useInMemoryServices: false
+    };
+    const forRootModule = DataModule.forRoot(dataSettings);
+
+    expect(forRootModule).toBeDefined();
+    expect(forRootModule.ngModule).toEqual(DataModule);
+    expect(forRootModule.providers).toEqual([
+        { provide: TODO_DATA_SERVICE_INJECTION_TOKEN, useClass: TodoDataService },
+        { provide: USER_DATA_SERVICE_INJECTION_TOKEN, useClass: UserDataService },
         { provide: TODO_API_SETTINGS_INJECTION_TOKEN, useValue: { todoApiUri: 'https://localhost:4444/api/' } },
         { provide: API_LOGGER_INJECTION_TOKEN, useClass: LogService }
     ]);

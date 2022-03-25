@@ -5,11 +5,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { transformFromUserDTO } from '../transform/transform-userdto';
+import { IUserDataService } from '../interfaces/i-user-data-service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserDataService {
+export class UserDataService implements IUserDataService {
   constructor(private userApiService: UserApiService) {
   }
 
